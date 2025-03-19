@@ -1,0 +1,13 @@
+langchain
+openai
+chromadb
+openpyscad
+python-dotenv
+langchain-anthropic
+langchain-openai
+langchain-community
+langchain-ollama
+
+
+
+
