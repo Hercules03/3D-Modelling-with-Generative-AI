@@ -1,35 +1,49 @@
-// Hexagonal Pencil Holder
-// All measurements in millimeters
+```openscad
+// Chair dimensions
+seat_width = 500;
+seat_depth = 450;
+seat_height = 450;
+back_height = 600;
+leg_length = 400;
+leg_width = 60;
+back_width = 70;
+back_thickness = 10;
 
-// Main parameters
-height = 100;        // Height of the pencil holder
-outer_radius = 60;   // Radius to the vertices of the hexagon
-wall_thickness = 3;  // Wall thickness
-bottom_thickness = 5; // Bottom thickness
-sides = 6;           // Number of sides for the hexagon
+// Leg parameters
+leg_offset_x = seat_width / 2 - leg_width / 2;
+leg_offset_y = seat_depth / 2 - leg_width / 2;
 
-// Derived parameters
-inner_radius = outer_radius - wall_thickness;
+// Backrest parameters
+back_offset_x = seat_width / 2 - back_width / 2;
+back_offset_y = seat_depth / 2 - back_thickness / 2;
 
-// Create the hexagonal pencil holder
-difference() {
-    // Outer hexagonal prism
-    cylinder(h=height, r=outer_radius, $fn=sides);
-    
-    // Inner hexagonal cutout
-    translate([0, 0, bottom_thickness])
-    cylinder(h=height, r=inner_radius, $fn=sides);
+// Create chair
+module chair() {
+    // Legs
+    translate([-leg_offset_x, -leg_offset_y, 0])
+    cube([leg_width, leg_width, leg_length]);
+
+    translate([leg_offset_x, -leg_offset_y, 0])
+    cube([leg_width, leg_width, leg_length]);
+
+    translate([-leg_offset_x, leg_offset_y, 0])
+    cube([leg_width, leg_width, leg_length]);
+
+    translate([leg_offset_x, leg_offset_y, 0])
+    cube([leg_width, leg_width, leg_length]);
+
+    translate([0, -leg_offset_y, 0])
+    cube([leg_width, leg_width, leg_length]);
+
+    // Seat
+    translate([0, 0, leg_length])
+    cube([seat_width, seat_depth, 20]);
+
+    // Backrest
+    translate([0, seat_depth - back_thickness, leg_length + 20])
+    cube([back_width, back_thickness, back_height]);
 }
 
-// Optional: Add a small bevel at the top edge
-difference() {
-    // Main body already created above
-    
-    // Cut a small chamfer at the top edge
-    translate([0, 0, height - 2])
-    difference() {
-        cylinder(h=3, r=outer_radius + 5, $fn=sides);
-        translate([0, 0, -0.5])
-        cylinder(h=4, r1=outer_radius - 1, r2=outer_radius - 3, $fn=sides);
-    }
-}
+// Render the chair
+chair();
+```
