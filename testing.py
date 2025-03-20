@@ -6,9 +6,10 @@ from myAPI import *
 
 def test_claude():
     """Test Claude API connection"""
+    testing_base_url = "https://api2.qyfxw.cn/v1"
     print("\nTesting Claude API connection...")
     
-    print(f"Using base URL: {base_url}")
+    print(f"Using base URL: {testing_base_url}")
     
     try:
         # Initialize ChatOpenAI for Claude
@@ -16,7 +17,7 @@ def test_claude():
             model="claude-3-5-sonnet-20240620",
             temperature=0.7,
             openai_api_key=api_key,
-            base_url=base_url
+            base_url=testing_base_url
         )
         
         # Simple test prompt using HumanMessage
@@ -38,14 +39,16 @@ def test_claude():
 def test_openai():
     """Test Ollama (O1-Mini) connection"""
     print("\nTesting O1-Mini connection...")
+    testing_base_url = "https://api2.qyfxw.cn/v1"
     
+    print(f"Using base URL: {testing_base_url}")
     try:
         # Initialize ChatOllama directly
         chat = ChatOpenAI(
             model="o1-mini",
             temperature=1,
             openai_api_key=api_key,
-            base_url=base_url
+            base_url=testing_base_url
         )
         
         # Simple test prompt using HumanMessage
