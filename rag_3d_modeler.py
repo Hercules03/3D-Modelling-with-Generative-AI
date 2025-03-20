@@ -17,9 +17,9 @@ from prompts import BASIC_KNOWLEDGE, OLLAMA_SYSTEM_PROMPT, KEYWORD_EXTRACTOR_PRO
 load_dotenv()
 
 # Constants
-KNOWLEDGE_DIR = "knowledge_base"
-CHROMA_PERSIST_DIR = os.path.join(KNOWLEDGE_DIR, "chroma")
-EXAMPLES_FILE = os.path.join(KNOWLEDGE_DIR, "examples.pkl")
+SCAD_KNOWLEDGE_DIR = "scad_knowledge_base"
+CHROMA_PERSIST_DIR = os.path.join(SCAD_KNOWLEDGE_DIR, "chroma")
+EXAMPLES_FILE = os.path.join(SCAD_KNOWLEDGE_DIR, "examples.pkl")
 
 
 
@@ -153,11 +153,11 @@ class KnowledgeBase:
     def load_examples(self):
         """Load existing examples from files"""
         self.examples = []
-        if os.path.exists(KNOWLEDGE_DIR):
-            for file in os.listdir(KNOWLEDGE_DIR):
+        if os.path.exists(SCAD_KNOWLEDGE_DIR):
+            for file in os.listdir(SCAD_KNOWLEDGE_DIR):
                 if file.endswith('.pkl'):
                     try:
-                        with open(os.path.join(KNOWLEDGE_DIR, file), 'rb') as f:
+                        with open(os.path.join(SCAD_KNOWLEDGE_DIR, file), 'rb') as f:
                             example = pickle.load(f)
                             self.examples.append(example)
                     except Exception as e:
@@ -165,11 +165,11 @@ class KnowledgeBase:
     
     def get_next_filename(self, base_name):
         """Get the next available numbered filename for a given base name"""
-        if not os.path.exists(KNOWLEDGE_DIR):
+        if not os.path.exists(SCAD_KNOWLEDGE_DIR):
             return f"{base_name}1.pkl"
             
         # Find all existing files with the same base name
-        existing_files = [f for f in os.listdir(KNOWLEDGE_DIR) 
+        existing_files = [f for f in os.listdir(SCAD_KNOWLEDGE_DIR) 
                          if f.startswith(base_name) and f.endswith('.pkl')]
         
         if not existing_files:
@@ -198,7 +198,7 @@ class KnowledgeBase:
     
     def save_example(self, description, code):
         """Save example to a numbered file based on object type"""
-        os.makedirs(KNOWLEDGE_DIR, exist_ok=True)
+        os.makedirs(SCAD_KNOWLEDGE_DIR, exist_ok=True)
         
         # Get base name from description
         base_name = self.get_base_name(description)
@@ -216,7 +216,7 @@ class KnowledgeBase:
         
         try:
             # Save to file
-            filepath = os.path.join(KNOWLEDGE_DIR, filename)
+            filepath = os.path.join(SCAD_KNOWLEDGE_DIR, filename)
             with open(filepath, 'wb') as f:
                 pickle.dump(example, f)
             
@@ -500,7 +500,7 @@ def delete_knowledge():
         name = f"{name}.pkl"
     
     # Check if file exists
-    file_path = os.path.join(KNOWLEDGE_DIR, name)
+    file_path = os.path.join(SCAD_KNOWLEDGE_DIR, name)
     if not os.path.exists(file_path):
         print(f"\nError: Knowledge file '{name}' not found.")
         return False

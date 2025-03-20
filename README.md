@@ -51,7 +51,7 @@ If you select option 1 (Generate a 3D object):
    - 4: DeepSeek-R1 7B - Local model with advanced reasoning
 2. Enter a description of the 3D object you want to create
 3. The script will generate OpenSCAD code and save it to `output.scad`
-4. A debug.txt file will be created with the full model response and reasoning process
+4. A `debug.txt` file will be created with the full model response and reasoning process
 5. You'll have the option to save the generated model to the knowledge base
 
 ### Managing Knowledge Base
@@ -83,7 +83,7 @@ Try these example prompts:
 
 ## LLM Provider Comparison
 
-### Anthropic (Claude-3-Sonnet)
+### Anthropic (Claude-3-5-Sonnet)
 - Best for complex designs
 - Excellent understanding of 3D modeling concepts
 - Default choice for production use
