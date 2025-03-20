@@ -18,8 +18,8 @@ class OpenSCADGenerator:
         self.llm_provider = llm_provider
         # Store model name based on provider
         self.model_name = {
-            "anthropic": "claude-3-5-sonnet-20240620",
-            # "anthropic": "claude-3-7-sonnet-20250219",
+            # "anthropic": "claude-3-5-sonnet-20240620",
+            "anthropic": "claude-3-7-sonnet-20250219",
             "openai": "o1-mini",
             "gemma": "gemma3:4b-it-q8_0",
             "deepseek": "deepseek-r1:7b"

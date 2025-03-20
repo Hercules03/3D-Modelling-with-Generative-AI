@@ -20,35 +20,37 @@ class LLMProvider:
         provider = provider.lower()
         
         if provider in ["anthropic", "openai"]:
-            if not api_key or not base_url:
-                raise ValueError("API_KEY and BASE_URL must be set in environment variables")
+            if not api_key:
+                raise ValueError("API_KEY must be set in environment variables")
         
         if provider == "anthropic":
-            model = "claude-3-5-sonnet-20240620"
-            # model="claude-3-7-sonnet-20250219"
+            anthropic_base_url = "https://api2.qyfxw.cn/v1"   
+            # model = "claude-3-5-sonnet-20240620"
+            model="claude-3-7-sonnet-20250219"
             print(f"Using anthropic model: {model}")
-            print(f"Using base url: {base_url}")
+            print(f"Using base url: {anthropic_base_url}")
             try:
                 return ChatOpenAI(
                     model=model,
                     temperature=temperature,
                     openai_api_key=api_key,
-                    base_url=base_url
+                    base_url=anthropic_base_url
                 )
             except Exception as e:
                 raise ValueError(f"Error initializing Anthropic model: {str(e)}")
             
         elif provider == "openai":
+            openai_base_url = "https://api2.qyfxw.cn/v1" 
             model = "o1-mini"
             print(f"Using openai model: {model}")
-            print(f"Using base url: {base_url}")
+            print(f"Using base url: {openai_base_url}")
             try:
                 # Add headers for O1-Mini specific requirements
                 return ChatOpenAI(
                     model=model,
                     temperature=1.0,  # O1-Mini only supports temperature=1.0
                     openai_api_key=api_key,
-                    base_url=base_url
+                    base_url=openai_base_url
                 )
             except Exception as e:
                 raise ValueError(f"Error initializing OpenAI model: {str(e)}")

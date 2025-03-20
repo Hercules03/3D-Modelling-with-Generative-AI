@@ -5,7 +5,7 @@ class KeywordExtractor:
     """Class to extract keywords using Llama 3.2"""
     def __init__(self):
         self.llm = ChatOllama(
-            model="llama3.2:1b",
+            model="gemma3:1b",
             temperature=0.0,  # Use 0 temperature for consistent results
             base_url="http://localhost:11434",
             system=KEYWORD_EXTRACTOR_SYSTEM_PROMPT

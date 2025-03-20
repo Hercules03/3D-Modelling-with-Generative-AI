@@ -131,3 +131,21 @@ Implementation Guidelines:
 3. Follow OpenSCAD best practices
 4. Maintain code readability"""
         
+VALIDATION_PROMPT = """You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
+
+User wants to create: {query}
+
+Retrieved example:
+Description: {description}
+Object type: {object_type}
+
+Consider:
+1. Is this example about the EXACT SAME type of object? (e.g., a fan example for creating a fan)
+2. If not the same object, does it have VERY SIMILAR structural components that would be directly useful?
+   (e.g., a propeller example might help with fan blades, but a desk example would not help with a fan)
+
+Answer with ONLY ONE WORD:
+- 'useful' - ONLY if the example is about the same object type OR has components that are directly applicable
+- 'unuseful' - if the example is about a different object type with unrelated components
+
+Answer: """

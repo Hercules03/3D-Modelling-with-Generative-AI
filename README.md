@@ -1,6 +1,6 @@
 # 3D Modelling with Generative AI
 
-A Python-based tool that uses various Large Language Models (LLMs) to generate OpenSCAD code for 3D models based on text descriptions. The system employs a step-back prompting approach and maintains a knowledge base of examples to improve generation quality.
+A Python-based tool that uses various Large Language Models (LLMs) to generate OpenSCAD code for 3D models based on text descriptions. The system employs intelligent example validation and maintains a curated knowledge base to improve generation quality.
 
 ## Features
 
@@ -10,26 +10,31 @@ A Python-based tool that uses various Large Language Models (LLMs) to generate O
   - Gemma (via Ollama)
   - DeepSeek (via Ollama)
 
-- **Step-back Analysis**: Performs geometric and technical analysis before code generation to ensure better understanding of the requirements.
+- **Smart Example Management**:
+  - Intelligent example validation using Gemma3 1B
+  - Semantic matching of object types and components
+  - Automatic filtering of non-useful examples
+  - Clear validation feedback in debug logs
 
 - **Knowledge Base Management**:
   - Stores successful examples for future reference
-  - Retrieves relevant examples to improve generation
+  - Smart retrieval of relevant examples
+  - Validates example usefulness before application
   - Allows manual input of new examples
   - Supports deletion of stored examples
 
 - **Debugging Support**:
   - Comprehensive debug logs in `debug.txt`
-  - Tracks API interactions
-  - Records model responses and parsing steps
-  - Monitors error conditions
+  - Tracks API interactions and validation decisions
+  - Records model responses and example matching
+  - Monitors error conditions with detailed context
 
 ## Prerequisites
 
 1. Python 3.x
 2. OpenSCAD installed on your system
 3. API keys for Anthropic and/or OpenAI (if using those providers)
-4. Ollama installed (if using Gemma or DeepSeek)
+4. Ollama installed (required for example validation and optional LLM providers)
 
 ## Installation
 
@@ -50,12 +55,13 @@ export ANTHROPIC_API_KEY=your_anthropic_key
 export OPENAI_API_KEY=your_openai_key
 ```
 
-4. (Optional) For Gemma or DeepSeek, install Ollama and pull the models:
+4. Install Ollama and required models:
 ```bash
-# For Gemma
-ollama pull gemma3:4b-it-q8_0
+# Required for example validation
+ollama pull gemma3:1b
 
-# For DeepSeek
+# Optional for generation (if using these providers)
+ollama pull gemma3:4b-it-q8_0
 ollama pull deepseek-r1:7b
 ```
 
@@ -75,7 +81,7 @@ python rag_3d_modeler.py
 When generating a 3D object:
 1. Select your preferred LLM provider
 2. Enter your object description
-3. Review and validate the step-back analysis
+3. System retrieves and validates relevant examples
 4. Review the generated OpenSCAD code
 5. Optionally save successful generations to the knowledge base
 
@@ -101,6 +107,12 @@ Available LLM Providers:
 Select LLM provider (1-4, default is 1): 1
 
 What would you like to model? A simple chair
+
+Retrieving knowledge from SCAD knowledge base...
+Searching for examples related to: chair
+
+Validating usefulness of 3 examples using Gemma3 1B...
+[Example validation details will be shown here]
 ```
 
 ## Project Structure
@@ -109,7 +121,8 @@ What would you like to model? A simple chair
 - `OpenSCAD_Generator.py`: Core generation logic
 - `LLM.py`: LLM provider management
 - `SCADKnowledgeBase.py`: Knowledge base management
-- `KeywordExtractor.py`: Keyword extraction for validation
+- `KeywordExtractor.py`: Smart keyword extraction for matching
+- `ExampleValidator.py`: Intelligent example validation
 - `prompts.py`: System prompts and templates
 - `constant.py`: System constants and configurations
 
@@ -117,10 +130,34 @@ What would you like to model? A simple chair
 
 The system generates detailed debug information in `debug.txt`, including:
 - Provider and model information
+- Example validation decisions with rationale
 - Full prompts sent to LLMs
 - Raw responses received
 - Parsed components
 - Error details (if any)
+
+### Example Validation Debug Output
+```
+=== STARTING EXAMPLE VALIDATION SESSION ===
+Query: I want a fan
+Number of examples to validate: 3
+==================================================
+
+Checking example:
+--------------------------------------------------
+Desired Object:  I want a fan
+Example Object:  A rotating desk fan with blades
+Decision:        ✓ USEFUL
+--------------------------------------------------
+
+[Additional examples and decisions...]
+
+=== VALIDATION SESSION SUMMARY ===
+Total examples checked: 3
+Examples kept: 1
+Examples discarded: 2
+==================================================
+```
 
 ## Contributing
 

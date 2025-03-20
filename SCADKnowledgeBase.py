@@ -1,5 +1,6 @@
 from constant import *
 from KeywordExtractor import KeywordExtractor
+from ExampleValidator import ExampleValidator
 import os
 import pickle
 import datetime
@@ -9,6 +10,7 @@ class KnowledgeBase:
         """Initialize the knowledge base"""
         self.examples = []
         self.keyword_extractor = KeywordExtractor()
+        self.example_validator = ExampleValidator()
         self.load_examples()
         
     def load_examples(self):
@@ -100,29 +102,40 @@ class KnowledgeBase:
             print("No examples found in SCAD knowledge base.")
             return ""
         
-        # Get base name from query
-        query_base = self.get_base_name(query)
-        print(f"Searching for examples related to: {query_base}")
+        # Extract main object type using KeywordExtractor
+        query_object = self.keyword_extractor.extract_keyword(query)
+        print(f"Searching for examples related to: {query_object}")
         
-        # First, try to find examples with the same base name
-        relevant = [ex for ex in self.examples 
-                   if ex['filename'].startswith(query_base)]
+        # First, try to find examples that mention the same object
+        candidates = []
+        for ex in self.examples:
+            desc_words = ex['description'].lower().split()
+            # Check if the example mentions the requested object type
+            if query_object in desc_words:
+                candidates.append(ex)
         
-        # If we don't have enough, add other recent examples
-        if len(relevant) < n:
+        # If we don't have enough candidates, add other recent examples
+        if len(candidates) < n:
             other_examples = [ex for ex in self.examples 
-                            if ex not in relevant][-n + len(relevant):]
-            relevant.extend(other_examples)
+                            if ex not in candidates][-n + len(candidates):]
+            candidates.extend(other_examples)
         
-        # Take the most recent n examples
-        relevant = relevant[-n:]
+        # Take the most recent n candidates
+        candidates = candidates[-n:]
         
-        if relevant:
-            print(f"{len(relevant)} relevant examples found.")
-        else:
-            print("No relevant examples found.")
+        if not candidates:
+            print("No candidate examples found.")
+            return ""
+            
+        # Validate usefulness using Gemma3
+        useful = self.example_validator.filter_relevant_examples(query, candidates)
         
+        if not useful:
+            print("No examples passed usefulness validation.")
+            return ""
+            
         examples_text = "\nRelevant examples:\n"
-        for ex in relevant:
+        for ex in useful:
             examples_text += f"\nDescription: {ex['description']}\nCode:\n{ex['code']}\n"
+        
         return examples_text
