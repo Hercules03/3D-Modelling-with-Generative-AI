@@ -11,6 +11,7 @@ import json
 import pickle
 from pathlib import Path
 import datetime
+from prompts import BASIC_KNOWLEDGE, OLLAMA_SYSTEM_PROMPT, KEYWORD_EXTRACTOR_PROMPT, KEYWORD_EXTRACTOR_SYSTEM_PROMPT, OPENSCAD_GNERATOR_PROMPT_TEMPLATE
 
 # Load environment variables
 load_dotenv()
@@ -20,26 +21,7 @@ KNOWLEDGE_DIR = "knowledge_base"
 CHROMA_PERSIST_DIR = os.path.join(KNOWLEDGE_DIR, "chroma")
 EXAMPLES_FILE = os.path.join(KNOWLEDGE_DIR, "examples.pkl")
 
-# Basic OpenSCAD knowledge
-BASIC_KNOWLEDGE = """
-OpenSCAD is a 3D modeling language that uses programming concepts to create 3D objects.
 
-Basic shapes:
-1. cube([width, depth, height]) - Creates a rectangular prism
-2. sphere(r=radius) - Creates a sphere
-3. cylinder(h=height, r=radius) - Creates a cylinder
-4. polyhedron(points=[[x,y,z], ...], faces=[[p1,p2,p3], ...]) - Creates complex shapes
-
-Transformations:
-1. translate([x,y,z]) - Moves object
-2. rotate([x,y,z]) - Rotates object (degrees)
-3. scale([x,y,z]) - Scales object
-
-Operations:
-1. union() - Combines objects
-2. difference() - Subtracts second object from first
-3. intersection() - Shows overlap between objects
-"""
 
 class LLMProvider:
     """Class to manage different LLM providers"""
@@ -49,7 +31,7 @@ class LLMProvider:
         """
         Get LLM instance based on provider
         Args:
-            provider (str): 'anthropic', 'openai', or 'ollama'
+            provider (str): 'anthropic', 'openai', 'gemma', 'deepseek'
             temperature (float): Temperature for generation
         Returns:
             LLM instance
@@ -84,7 +66,7 @@ class LLMProvider:
                 base_url=base_url
             )
             
-        elif provider == "ollama":
+        elif provider == "gemma":
             return ChatOllama(
                 model="gemma3:4b-it-q8_0",
                 temperature=temperature,
@@ -92,7 +74,17 @@ class LLMProvider:
                 stop=None,
                 streaming=False,
                 seed=None,
-                system="You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on user descriptions. Only output the code itself, no explanations or JSON. The code should be well-commented and use appropriate measurements."
+                system=OLLAMA_SYSTEM_PROMPT
+            )
+        elif provider == "deepseek":
+            return ChatOllama(
+                model="deepseek-r1:7b",
+                temperature=temperature,
+                base_url="http://localhost:11434",
+                stop=None,
+                streaming=False,
+                seed=None,
+                system=OLLAMA_SYSTEM_PROMPT
             )
         
         else:
@@ -105,19 +97,10 @@ class KeywordExtractor:
             model="llama3.2:1b",
             temperature=0.0,  # Use 0 temperature for consistent results
             base_url="http://localhost:11434",
-            system="You are a keyword extractor. Extract only the main object name from the user's 3D modeling request. Return ONLY the object name, nothing else."
+            system=KEYWORD_EXTRACTOR_SYSTEM_PROMPT
         )
         
-        self.prompt = ChatPromptTemplate.from_template(
-            """Extract the main object name from this 3D modeling request.
-            Only return the object name, no other words or punctuation.
-            If there are multiple objects, return the main one.
-            If it's a compound word (like 'snowman' or 'birdhouse'), keep it as one word.
-            
-            Request: {description}
-            
-            Return ONLY the object name, nothing else."""
-        )
+        self.prompt = ChatPromptTemplate.from_template(KEYWORD_EXTRACTOR_PROMPT)
 
     def extract_keyword(self, description):
         """Extract the main object keyword from the description"""
@@ -279,26 +262,14 @@ class OpenSCADGenerator:
         """
         Initialize the OpenSCAD generator
         Args:
-            llm_provider (str): LLM provider to use ('anthropic', 'openai', or 'ollama')
+            llm_provider (str): LLM provider to use ('anthropic', 'openai', or 'gemma')
         """
         self.llm = LLMProvider.get_llm(llm_provider)
         self.llm_provider = llm_provider
         self.knowledge_base = KnowledgeBase()
         
         # Create prompt template
-        template = """You are an expert in 3D modeling with OpenSCAD. Generate OpenSCAD code for the user's request.
-        If the request is complex, break it down into simpler shapes and combine them.
-
-        Basic Knowledge:
-        {basic_knowledge}
-
-        {examples}
-
-        User Request: {request}
-
-        Important: Generate ONLY pure OpenSCAD code. Do not include any JSON, explanations, or formatting.
-        The code should be well-commented and use appropriate measurements.
-        """
+        template = OPENSCAD_GNERATOR_PROMPT_TEMPLATE
         
         self.prompt = ChatPromptTemplate.from_template(template)
         
@@ -319,9 +290,18 @@ class OpenSCADGenerator:
             prompt_value = self.prompt.format(**inputs)
             response = self.llm.invoke(prompt_value)
             
+            # Save raw response to debug file
+            with open("debug.txt", "w") as f:
+                f.write(f"Provider: {self.llm_provider}\n")
+                f.write(f"Prompt:\n{prompt_value}\n\n")
+                f.write(f"Raw Response:\n{str(response)}\n")
+            
+            # Initialize reasoning variable
+            reasoning_process = None
+            
             # Extract code from response based on provider
-            if self.llm_provider == "ollama":
-                # Handle Ollama's response format
+            if self.llm_provider == "gemma":
+                # Handle gemma's response format
                 if hasattr(response, 'content'):
                     scad_code = response.content
                 elif isinstance(response, dict):
@@ -330,11 +310,11 @@ class OpenSCADGenerator:
                     scad_code = str(response)
             elif self.llm_provider == "openai":
                 # Handle OpenAI's response format
-                reasoning_process = None
                 if hasattr(response, 'response_metadata'):
                     metadata = response.response_metadata
                     if 'token_usage' in metadata and 'completion_tokens_details' in metadata['token_usage']:
                         reasoning_process = metadata['token_usage']['completion_tokens_details'].get('reasoning_tokens')
+                scad_code = str(response)
             elif self.llm_provider == "anthropic":
                 # Handle Anthropic's response format
                 if hasattr(response, 'content'):
@@ -357,8 +337,54 @@ class OpenSCADGenerator:
                         scad_code = content
                 else:
                     scad_code = str(response)
+            elif self.llm_provider == "deepseek":
+                # Handle DeepSeek's response format
+                if hasattr(response, 'content'):
+                    content = response.content
+                else:
+                    content = str(response)
+                
+                # Extract thinking/reasoning process if present
+                if '<think>' in content and '</think>' in content:
+                    think_start = content.find('<think>') + len('<think>')
+                    think_end = content.find('</think>')
+                    reasoning_process = content[think_start:think_end].strip()
+                    # Remove the thinking section from the code
+                    content = content[:think_start-len('<think>')] + content[think_end+len('</think>'):]
+                
+                # Clean up the content
+                if 'content=' in content:
+                    # Extract content between content=" and the next quotation mark
+                    content_start = content.find('content="') + len('content="')
+                    content_end = content.find('"', content_start)
+                    if content_end != -1:
+                        content = content[content_start:content_end]
+                
+                # Unescape newlines
+                content = content.replace('\\n', '\n')
+                
+                # Look for code block markers
+                if '```' in content:
+                    # Find the first and last code block
+                    blocks = content.split('```')
+                    for block in blocks:
+                        # Skip empty blocks or blocks that start with plaintext/scad
+                        if block.strip() and not block.strip().startswith('plaintext') and not block.strip().startswith('scad'):
+                            scad_code = block.strip()
+                            break
+                    else:
+                        # If no suitable block found, use the cleaned content
+                        scad_code = content.strip()
+                else:
+                    # If no code block markers, clean up the content
+                    scad_code = content.strip()
+                
+                # Update debug file with parsed components
+                with open("debug.txt", "a") as f:
+                    f.write("\nParsed Components:\n")
+                    f.write(f"Reasoning Process:\n{reasoning_process}\n\n")
+                    f.write(f"Extracted SCAD Code:\n{scad_code}\n")
             else:
-                # For other providers (Anthropic)
                 scad_code = str(response)
             
             # Clean up any empty responses
@@ -375,6 +401,15 @@ class OpenSCADGenerator:
             print(scad_code)
             print("-" * 40)
             
+            """
+            # If there was reasoning, display it
+            if reasoning_process:
+                print("\nModel's Reasoning Process:")
+                print("-" * 40)
+                print(reasoning_process)
+                print("-" * 40)
+            """
+            
             # Ask user if they want to add this to the knowledge base
             add_to_kb = input("\nWould you like to add this example to the knowledge base? (y/n): ").lower().strip()
             if add_to_kb == 'y':
@@ -385,15 +420,23 @@ class OpenSCADGenerator:
         except Exception as e:
             print(f"Error generating model: {str(e)}")
             print("\nDebug - Exception details:", e)
+            # Write error to debug file
+            with open("debug.txt", "a") as f:
+                f.write(f"\nError occurred:\n{str(e)}\n")
             return False
 
-def check_ollama():
+def check_ollama(llm_provider):
     """Check if Ollama is installed and running"""
     try:
         response = subprocess.run(['curl', '-s', 'http://localhost:11434/api/tags'], capture_output=True, text=True)
         if response.returncode == 0:
             # Check if the required model is available
-            model_name = "gemma3:4b-it-q8_0"
+            if llm_provider == "gemma":
+                model_name = "gemma3:4b-it-q8_0"
+            elif llm_provider == "deepseek":
+                model_name = "deepseek-r1:7b"
+            else:
+                model_name = "gemma3:4b-it-q8_0"
             model_list = json.loads(response.stdout)
             if not any(model['name'] == model_name for model in model_list['models']):
                 print(f"\nWarning: {model_name} not found. Please run: ollama pull {model_name}")
@@ -403,55 +446,162 @@ def check_ollama():
     except Exception:
         return False
 
+def input_manual_knowledge():
+    """Function to handle manual input of knowledge"""
+    print("\nManual Knowledge Input Mode")
+    print("---------------------------")
+    
+    # Get the description/query
+    description = input("\nEnter the description/query for the 3D model: ").strip()
+    if not description:
+        print("Description cannot be empty.")
+        return False
+        
+    # Get the OpenSCAD code
+    print("\nEnter the OpenSCAD code (press Enter twice to finish):")
+    print("----------------------------------------------------")
+    
+    lines = []
+    while True:
+        line = input()
+        if line.strip() == "" and (not lines or lines[-1].strip() == ""):
+            break
+        lines.append(line)
+    
+    scad_code = "\n".join(lines[:-1])  # Remove the last empty line
+    
+    if not scad_code.strip():
+        print("OpenSCAD code cannot be empty.")
+        return False
+    
+    # Initialize knowledge base and save the example
+    try:
+        kb = KnowledgeBase()
+        kb.add_example(description, scad_code)
+        print("\nKnowledge has been successfully saved!")
+        return True
+    except Exception as e:
+        print(f"\nError saving knowledge: {str(e)}")
+        return False
+
+def delete_knowledge():
+    """Function to handle deletion of knowledge"""
+    print("\nDelete Knowledge Mode")
+    print("--------------------")
+    
+    # Get the knowledge name
+    name = input("\nEnter the name of the knowledge to delete (e.g., 'snowman1' for snowman1.pkl): ").strip()
+    if not name:
+        print("Name cannot be empty.")
+        return False
+    
+    # Add .pkl extension if not provided
+    if not name.endswith('.pkl'):
+        name = f"{name}.pkl"
+    
+    # Check if file exists
+    file_path = os.path.join(KNOWLEDGE_DIR, name)
+    if not os.path.exists(file_path):
+        print(f"\nError: Knowledge file '{name}' not found.")
+        return False
+    
+    # Confirm deletion
+    confirm = input(f"\nAre you sure you want to delete '{name}'? (y/n): ").lower().strip()
+    if confirm != 'y':
+        print("\nDeletion cancelled.")
+        return False
+    
+    # Delete the file
+    try:
+        os.remove(file_path)
+        print(f"\nKnowledge file '{name}' has been successfully deleted!")
+        return True
+    except Exception as e:
+        print(f"\nError deleting knowledge file: {str(e)}")
+        return False
+
 def main():
     print("Welcome to the 3D Model Generator!")
-    print("\nAvailable LLM Providers:")
-    print("1. Anthropic (Claude-3-Sonnet)")
-    print("2. OpenAI (O1-Mini)")
-    print("3. Ollama (Gemma3 4B-IT)")
     
     while True:
-        try:
-            choice = input("\nSelect LLM provider (1-3, default is 1): ").strip()
-            
-            if choice == "":
-                choice = "1"
-                
-            if choice not in ["1", "2", "3"]:
-                print("Invalid choice. Please select 1, 2, or 3.")
-                continue
-            
-            provider = {
-                "1": "anthropic",
-                "2": "openai",
-                "3": "ollama"
-            }[choice]
-            
-            # Check if Ollama is available when selected
-            if provider == "ollama" and not check_ollama():
-                print("Ollama is not installed or not running. Please install and start Ollama first.")
-                print("Make sure to run: ollama pull gemma3:4b-it-q8_0")
-                continue
-            
-            # Initialize generator with selected provider
-            generator = OpenSCADGenerator(provider)
-            break
-            
-        except Exception as e:
-            print(f"Error: {str(e)}")
-            print("Please check your environment variables and try again.")
-            return
-    
-    print("\nDescribe the 3D object you want to create, and I'll generate OpenSCAD code for it.")
-    print("Type 'quit' to exit.")
-    
-    while True:
-        description = input("\nWhat would you like to model? ")
-        quit_words = ['quit', 'exit', 'bye', 'q']
-        if description.lower() in quit_words:
-            break
+        print("\nSelect an option:")
+        print("1. Generate a 3D object")
+        print("2. Input knowledge manually")
+        print("3. Delete knowledge")
+        print("4. Quit")
         
-        generator.generate_model(description)
+        choice = input("\nEnter your choice (1-4): ").strip()
+        
+        if choice == "4":
+            print("\nGoodbye!")
+            break
+            
+        elif choice == "2":
+            input_manual_knowledge()
+            continue
+            
+        elif choice == "3":
+            delete_knowledge()
+            continue
+            
+        elif choice == "1":
+            print("\nAvailable LLM Providers:")
+            print("1. Anthropic (Claude-3-Sonnet)")
+            print("2. OpenAI (O1-Mini)")
+            print("3. Gemma3:4B")
+            print("4. DeepSeek-R1:7B")
+            
+            while True:
+                try:
+                    provider_choice = input("\nSelect LLM provider (1-4, default is 1): ").strip()
+                    
+                    if provider_choice == "":
+                        provider_choice = "1"
+                        
+                    if provider_choice not in ["1", "2", "3", "4"]:
+                        print("Invalid choice. Please select 1, 2, 3, or 4.")
+                        continue
+                    
+                    provider = {
+                        "1": "anthropic",
+                        "2": "openai",
+                        "3": "gemma",
+                        "4": "deepseek"
+                    }[provider_choice]
+                    
+                    # Check if Ollama is available when selected
+                    if provider == "gemma" and not check_ollama("gemma"):
+                        print("Ollama is not installed or not running. Please install and start Ollama first.")
+                        print("Make sure to run: ollama pull gemma3:4b-it-q8_0")
+                        continue
+                    elif provider == "deepseek" and not check_ollama("deepseek"):
+                        print("Ollama is not installed or not running. Please install and start Ollama first.")
+                        print("Make sure to run: ollama pull deepseek-r1:7b")
+                        continue
+                    
+                    # Initialize generator with selected provider
+                    generator = OpenSCADGenerator(provider)
+                    break
+                    
+                except Exception as e:
+                    print(f"Error: {str(e)}")
+                    print("Please check your environment variables and try again.")
+                    return
+            
+            print("\nDescribe the 3D object you want to create, and I'll generate OpenSCAD code for it.")
+            print("Type 'quit' to exit.")
+            
+            while True:
+                description = input("\nWhat would you like to model? ")
+                quit_words = ['quit', 'exit', 'bye', 'q']
+                if description.lower() in quit_words:
+                    break
+                
+                print("I am generating, please be patient...")
+                generator.generate_model(description)
+        
+        else:
+            print("Invalid choice. Please select 1, 2, 3, or 4.")
 
 if __name__ == "__main__":
     main()
