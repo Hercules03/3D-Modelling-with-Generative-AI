@@ -1,137 +1,137 @@
-# 3D Model Generator with RAG
+# 3D Modelling with Generative AI
 
-This project uses Retrieval Augmented Generation (RAG) to create 3D models in OpenSCAD based on text descriptions. It supports multiple LLM providers including Claude-3-Sonnet, O1-Mini, Gemma3 4B, and DeepSeek-R1 7B.
+A Python-based tool that uses various Large Language Models (LLMs) to generate OpenSCAD code for 3D models based on text descriptions. The system employs a step-back prompting approach and maintains a knowledge base of examples to improve generation quality.
 
-## Setup
+## Features
 
-1. Install the required dependencies:
+- **Multiple LLM Provider Support**:
+  - Anthropic (Claude-3-Sonnet)
+  - OpenAI (O1-Mini)
+  - Gemma (via Ollama)
+  - DeepSeek (via Ollama)
+
+- **Step-back Analysis**: Performs geometric and technical analysis before code generation to ensure better understanding of the requirements.
+
+- **Knowledge Base Management**:
+  - Stores successful examples for future reference
+  - Retrieves relevant examples to improve generation
+  - Allows manual input of new examples
+  - Supports deletion of stored examples
+
+- **Debugging Support**:
+  - Comprehensive debug logs in `debug.txt`
+  - Tracks API interactions
+  - Records model responses and parsing steps
+  - Monitors error conditions
+
+## Prerequisites
+
+1. Python 3.x
+2. OpenSCAD installed on your system
+3. API keys for Anthropic and/or OpenAI (if using those providers)
+4. Ollama installed (if using Gemma or DeepSeek)
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/3D-Modelling-with-Generative-AI.git
+cd 3D-Modelling-with-Generative-AI
+```
+
+2. Install required packages:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Create a `.env` file with your API configuration:
+3. Set up environment variables:
 ```bash
-API_KEY=your_api_key_here
-BASE_URL=your_base_url_here
+export ANTHROPIC_API_KEY=your_anthropic_key
+export OPENAI_API_KEY=your_openai_key
 ```
 
-3. For Local Models (optional):
-   - Install Ollama from [https://ollama.ai/](https://ollama.ai/)
-   - Pull the required models:
-     ```bash
-     # For Gemma3 4B
-     ollama pull gemma3:4b-it-q8_0
-     
-     # For DeepSeek-R1 7B
-     ollama pull deepseek-r1:7b
-     ```
-   - Start the Ollama service
+4. (Optional) For Gemma or DeepSeek, install Ollama and pull the models:
+```bash
+# For Gemma
+ollama pull gemma3:4b-it-q8_0
 
-4. Install OpenSCAD from [https://openscad.org/downloads.html](https://openscad.org/downloads.html)
+# For DeepSeek
+ollama pull deepseek-r1:7b
+```
 
 ## Usage
 
-1. Run the script:
+Run the main script:
 ```bash
 python rag_3d_modeler.py
 ```
 
-2. Choose from the main menu options:
-   - 1: Generate a 3D object
-   - 2: Input knowledge manually
-   - 3: Delete knowledge
-   - 4: Quit
+### Options:
+1. Generate a 3D object
+2. Input knowledge manually
+3. Delete knowledge
+4. Quit
 
-### Generating 3D Objects (Option 1)
-If you select option 1 (Generate a 3D object):
-1. Select your preferred LLM provider:
-   - 1: Anthropic (Claude-3-Sonnet) - Default, best for complex designs
-   - 2: OpenAI (O1-Mini) - Lightweight alternative
-   - 3: Gemma3 4B - Local, efficient model
-   - 4: DeepSeek-R1 7B - Local model with advanced reasoning
-2. Enter a description of the 3D object you want to create
-3. The script will generate OpenSCAD code and save it to `output.scad`
-4. A `debug.txt` file will be created with the full model response and reasoning process
-5. You'll have the option to save the generated model to the knowledge base
+When generating a 3D object:
+1. Select your preferred LLM provider
+2. Enter your object description
+3. Review and validate the step-back analysis
+4. Review the generated OpenSCAD code
+5. Optionally save successful generations to the knowledge base
 
-### Managing Knowledge Base
-The system maintains a knowledge base of 3D models that can be used to improve future generations.
+### Example:
+```bash
+$ python rag_3d_modeler.py
+Welcome to the 3D Model Generator!
 
-#### Adding Knowledge Manually (Option 2)
-1. Enter a description/query for the 3D model
-2. Input the OpenSCAD code (press Enter twice to finish)
-3. The knowledge will be automatically saved with a filename based on the main object (e.g., "cup1.pkl")
+Select an option:
+1. Generate a 3D object
+2. Input knowledge manually
+3. Delete knowledge
+4. Quit
 
-#### Deleting Knowledge (Option 3)
-1. Enter the name of the knowledge file to delete (e.g., "snowman1" for snowman1.pkl)
-2. Confirm the deletion when prompted
+Enter your choice (1-4): 1
 
-## Examples
+Available LLM Providers:
+1. Anthropic (Claude-3-Sonnet)
+2. OpenAI (O1-Mini)
+3. Gemma3:4B
+4. DeepSeek-R1:7B
 
-Try these example prompts:
-- "Create a simple cup with a handle"
-- "Make a basic chair with a backrest"
-- "Generate a hexagonal pencil holder"
+Select LLM provider (1-4, default is 1): 1
 
-## How it Works
+What would you like to model? A simple chair
+```
 
-1. The system uses a knowledge base of OpenSCAD fundamentals
-2. Your description is processed using the selected LLM provider
-3. The system generates appropriate OpenSCAD code
-4. The code is saved to output.scad and debug information to debug.txt
-5. The generated code can be opened in OpenSCAD
+## Project Structure
 
-## LLM Provider Comparison
-
-### Anthropic (Claude-3-5-Sonnet)
-- Best for complex designs
-- Excellent understanding of 3D modeling concepts
-- Default choice for production use
-- Requires API key
-- Most reliable output format
-
-### OpenAI (O1-Mini)
-- Lightweight model
-- Good for basic shapes
-- Faster response times
-- Requires API key
-- Includes reasoning process in output
-
-### Gemma3 4B
-- Runs completely locally
-- No API key required
-- 4B parameter model
-- Good balance of performance and resource usage
-- Efficient for simple to moderate designs
-- Requires GPU for optimal performance
-
-### DeepSeek-R1 7B
-- Runs completely locally
-- Advanced reasoning capabilities
-- 7B parameter model
-- Excellent for complex designs
-- Includes detailed reasoning process
-- Higher resource requirements
-- No API key required
-- Best local model for complex designs
+- `rag_3d_modeler.py`: Main application file
+- `OpenSCAD_Generator.py`: Core generation logic
+- `LLM.py`: LLM provider management
+- `SCADKnowledgeBase.py`: Knowledge base management
+- `KeywordExtractor.py`: Keyword extraction for validation
+- `prompts.py`: System prompts and templates
+- `constant.py`: System constants and configurations
 
 ## Debug Information
 
-The system creates two main output files:
-1. `output.scad`: Contains the clean, generated OpenSCAD code
-2. `debug.txt`: Contains:
-   - The LLM provider used
-   - The full prompt sent to the model
-   - The raw model response
-   - Parsed components (code and reasoning)
-   - Any errors that occurred
+The system generates detailed debug information in `debug.txt`, including:
+- Provider and model information
+- Full prompts sent to LLMs
+- Raw responses received
+- Parsed components
+- Error details (if any)
 
-## Limitations
+## Contributing
 
-- The system generates basic 3D models. Complex designs may need manual refinement
-- All measurements are approximate and may need adjustment
-- Some complex shapes may require manual optimization
-- Local models require sufficient computational resources:
-  - Gemma3 4B: Minimum 8GB RAM
-  - DeepSeek-R1 7B: Recommended 16GB RAM
-- API-based models require valid API keys and internet connection
+Contributions are welcome! Please feel free to submit pull requests.
+
+## License
+
+[Your chosen license]
+
+## Acknowledgments
+
+- OpenSCAD community
+- LLM providers (Anthropic, OpenAI, Google, DeepSeek)
+- Ollama project
