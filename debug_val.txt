@@ -1,0 +1,111 @@
+
+=== STARTING EXAMPLE VALIDATION SESSION ===
+Query: I want a mug
+Number of examples to validate: 3
+==================================================
+
+Checking example:
+--------------------------------------------------
+Desired Object:  I want a mug
+Example Object:  I want a desk
+Decision:        Checking...
+--------------------------------------------------
+Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
+
+User wants to create: I want a mug
+
+Retrieved example:
+Description: I want a desk
+Object type: desk
+
+Consider:
+1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
+2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
+3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
+
+Answer with ONLY ONE WORD:
+- 'useful' - if the example is about the same object type OR a variant OR has similar components
+- 'unuseful' - if the example is completely unrelated with no useful components
+
+Answer: 
+
+Validation Result:
+--------------------------------------------------
+Desired Object:  I want a mug
+Example Object:  I want a desk
+Decision:        ✗ UNUSEFUL
+--------------------------------------------------
+==================================================
+
+Checking example:
+--------------------------------------------------
+Desired Object:  I want a mug
+Example Object:  I want a snowman
+Decision:        Checking...
+--------------------------------------------------
+Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
+
+User wants to create: I want a mug
+
+Retrieved example:
+Description: I want a snowman
+Object type: snowman
+
+Consider:
+1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
+2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
+3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
+
+Answer with ONLY ONE WORD:
+- 'useful' - if the example is about the same object type OR a variant OR has similar components
+- 'unuseful' - if the example is completely unrelated with no useful components
+
+Answer: 
+
+Validation Result:
+--------------------------------------------------
+Desired Object:  I want a mug
+Example Object:  I want a snowman
+Decision:        ✗ UNUSEFUL
+--------------------------------------------------
+==================================================
+
+Checking example:
+--------------------------------------------------
+Desired Object:  I want a mug
+Example Object:  I want a desk
+Decision:        Checking...
+--------------------------------------------------
+Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
+
+User wants to create: I want a mug
+
+Retrieved example:
+Description: I want a desk
+Object type: desk
+
+Consider:
+1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
+2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
+3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
+
+Answer with ONLY ONE WORD:
+- 'useful' - if the example is about the same object type OR a variant OR has similar components
+- 'unuseful' - if the example is completely unrelated with no useful components
+
+Answer: 
+
+Validation Result:
+--------------------------------------------------
+Desired Object:  I want a mug
+Example Object:  I want a desk
+Decision:        ✗ UNUSEFUL
+--------------------------------------------------
+==================================================
+
+=== VALIDATION SESSION SUMMARY ===
+Total examples checked: 3
+Examples kept: 0
+Examples discarded: 3
+==================================================
+

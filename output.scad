@@ -1,48 +1,60 @@
-// Book Shelf Implementation in OpenSCAD
+// Parametric Coffee Mug Design
+// Core dimensions
+mug_height = 95;
+mug_diameter = 65;
+wall_thickness = 3.5;
+bottom_thickness = 5;
 
-// Parameters for the bookshelf
-bookShelfWidth = 100;       // Width of the bookshelf (X-axis)
-bookShelfHeight = 200;      // Height of the bookshelf (Y-axis)
-bookShelfDepth = 30;        // Depth of the bookshelf (Z-axis)
-shelfThickness = 2;         // Thickness of each shelf
-sideThickness = 3;          // Thickness of the side panels
-backThickness = 1.5;        // Thickness of the back panel
-numShelves = 5;             // Number of shelves
-wallSpacing = (bookShelfHeight - shelfThickness) / (numShelves + 1); // Spacing between shelves
+// Handle parameters
+handle_thickness = 8;
+handle_width = 12;
+handle_clearance = 10;
+handle_vertical_span = 0.7; // Percentage of mug height
 
-// Module for side panels
-module sidePanel() {
-    cube([sideThickness, bookShelfHeight, bookShelfDepth], center = false);
-}
-
-// Module for a single shelf
-module shelf() {
-    cube([bookShelfWidth - 2 * sideThickness, shelfThickness, bookShelfDepth], center = false);
-}
-
-// Module for the back panel
-module backPanel() {
-    cube([bookShelfWidth, bookShelfHeight, backThickness], center = false);
-}
-
-// Assembly of the bookshelf
-module bookShelfAssembly() {
-    // Create side panels
-    translate([0, 0, 0])
-        sidePanel();
-    translate([bookShelfWidth - sideThickness, 0, 0])
-        sidePanel();
-    
-    // Create shelves
-    for (i = [1 : numShelves]) {
-        translate([sideThickness, wallSpacing * i, 0])
-            shelf();
+module mug_body() {
+    difference() {
+        // Outer shell
+        cylinder(h=mug_height, d=mug_diameter, $fn=100);
+        
+        // Inner cavity
+        translate([0, 0, bottom_thickness])
+            cylinder(h=mug_height, 
+                    d=mug_diameter - (wall_thickness * 2), 
+                    $fn=100);
     }
-    
-    // Create back panel
-    translate([0, 0, bookShelfDepth - backThickness])
-        backPanel();
 }
 
-// Render the bookshelf
-bookShelfAssembly();
+module handle() {
+    // Handle attachment points
+    handle_height = mug_height * handle_vertical_span;
+    handle_offset = mug_diameter/2 + handle_clearance;
+    
+    // Create smooth handle using hull() between spheres
+    translate([mug_diameter/2, 0, mug_height * 0.8])
+    hull() {
+        // Top connection point
+        sphere(d=handle_thickness, $fn=30);
+        
+        // Outer curve points
+        translate([handle_offset-mug_diameter/2, 0, -handle_height/3])
+            sphere(d=handle_thickness, $fn=30);
+        
+        translate([handle_offset-mug_diameter/2, 0, -handle_height*2/3])
+            sphere(d=handle_thickness, $fn=30);
+            
+        // Bottom connection point
+        translate([0, 0, -handle_height])
+            sphere(d=handle_thickness, $fn=30);
+    }
+}
+
+// Final assembly
+module complete_mug() {
+    union() {
+        mug_body();
+        handle();
+    }
+}
+
+// Render mug
+complete_mug();

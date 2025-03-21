@@ -3,6 +3,7 @@ from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from myAPI import *
 from prompts import OLLAMA_SYSTEM_PROMPT
+from LLMmodel import *
 
 class LLMProvider:
     """Class to manage different LLM providers"""
@@ -25,8 +26,7 @@ class LLMProvider:
         
         if provider == "anthropic":
             anthropic_base_url = "https://api2.qyfxw.cn/v1"   
-            # model = "claude-3-5-sonnet-20240620"
-            model="claude-3-7-sonnet-20250219"
+            model=anthropic_model
             print(f"Using anthropic model: {model}")
             print(f"Using base url: {anthropic_base_url}")
             try:
@@ -41,7 +41,7 @@ class LLMProvider:
             
         elif provider == "openai":
             openai_base_url = "https://api2.qyfxw.cn/v1" 
-            model = "o1-mini"
+            model = openai_model
             print(f"Using openai model: {model}")
             print(f"Using base url: {openai_base_url}")
             try:
@@ -57,7 +57,7 @@ class LLMProvider:
             
         elif provider == "gemma":
             return ChatOllama(
-                model="gemma3:4b-it-q8_0",
+                model=gemma_model,
                 temperature=temperature,
                 base_url="http://localhost:11434",
                 stop=None,
@@ -67,7 +67,7 @@ class LLMProvider:
             )
         elif provider == "deepseek":
             return ChatOllama(
-                model="deepseek-r1:7b",
+                model=deepseek_model,
                 temperature=temperature,
                 base_url="http://localhost:11434",
                 stop=None,

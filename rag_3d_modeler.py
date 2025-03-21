@@ -1,6 +1,5 @@
 import os
 from myAPI import *
-
 from langchain_community.vectorstores import Chroma
 from openpyscad import *
 import subprocess
@@ -8,8 +7,7 @@ import json
 from constant import *
 from SCADKnowledgeBase import KnowledgeBase
 from OpenSCAD_Generator import OpenSCADGenerator
-
-
+from LLMmodel import *
 
 def check_ollama(llm_provider):
     """Check if Ollama is installed and running"""
@@ -18,11 +16,11 @@ def check_ollama(llm_provider):
         if response.returncode == 0:
             # Check if the required model is available
             if llm_provider == "gemma":
-                model_name = "gemma3:4b-it-q8_0"
+                model_name = gemma_model
             elif llm_provider == "deepseek":
-                model_name = "deepseek-r1:7b"
+                model_name = deepseek_model
             else:
-                model_name = "gemma3:4b-it-q8_0"
+                model_name = gemma_model
             model_list = json.loads(response.stdout)
             if not any(model['name'] == model_name for model in model_list['models']):
                 print(f"\nWarning: {model_name} not found. Please run: ollama pull {model_name}")
@@ -133,10 +131,10 @@ def main():
             
         elif choice == "1":
             print("\nAvailable LLM Providers:")
-            print("1. Anthropic (Claude-3-Sonnet)")
-            print("2. OpenAI (O1-Mini)")
-            print("3. Gemma3:4B")
-            print("4. DeepSeek-R1:7B")
+            print(f"1. Anthropic ({anthropic_model})")
+            print(f"2. OpenAI ({openai_model})")
+            print(f"3. Gemma3 ({gemma_model})")
+            print(f"4. DeepSeek ({deepseek_model})")
             
             while True:
                 try:
@@ -159,11 +157,11 @@ def main():
                     # Check if Ollama is available when selected
                     if provider == "gemma" and not check_ollama("gemma"):
                         print("Ollama is not installed or not running. Please install and start Ollama first.")
-                        print("Make sure to run: ollama pull gemma3:4b-it-q8_0")
+                        print(f"Make sure to run: ollama pull {gemma_model}")
                         continue
                     elif provider == "deepseek" and not check_ollama("deepseek"):
                         print("Ollama is not installed or not running. Please install and start Ollama first.")
-                        print("Make sure to run: ollama pull deepseek-r1:7b")
+                        print(f"Make sure to run: ollama pull {deepseek_model}")
                         continue
                     
                     # Initialize generator with selected provider

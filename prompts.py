@@ -140,12 +140,12 @@ Description: {description}
 Object type: {object_type}
 
 Consider:
-1. Is this example about the EXACT SAME type of object? (e.g., a fan example for creating a fan)
-2. If not the same object, does it have VERY SIMILAR structural components that would be directly useful?
-   (e.g., a propeller example might help with fan blades, but a desk example would not help with a fan)
+1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
+2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
+3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
 
 Answer with ONLY ONE WORD:
-- 'useful' - ONLY if the example is about the same object type OR has components that are directly applicable
-- 'unuseful' - if the example is about a different object type with unrelated components
+- 'useful' - if the example is about the same object type OR a variant OR has similar components
+- 'unuseful' - if the example is completely unrelated with no useful components
 
 Answer: """
