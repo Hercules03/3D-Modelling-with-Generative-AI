@@ -2,121 +2,241 @@
   {
     "desired_object": "I want a fork",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a fork",
     "example_object": "I want a snowman",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a fork",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a spoon",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a spoon",
     "example_object": "I want a snowman",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a spoon",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a coffee cup",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a coffee cup",
     "example_object": "I want a snowman",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a coffee cup",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a cup",
     "example_object": "I want a coffee cup",
-    "decision": "USEFUL"
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a cup",
     "example_object": "Create a simple cup with a handle",
-    "decision": "USEFUL"
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a cup",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a take away coffee cup please",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a take away coffee cup please",
     "example_object": "I want a snowman",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a take away coffee cup please",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a mug",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a mug",
     "example_object": "I want a snowman",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a mug",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a mug",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a mug",
     "example_object": "I want a snowman",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": "I want a mug",
     "example_object": "I want a desk",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": " I want a cup",
     "example_object": "I want a take away coffee cup please",
-    "decision": "UNUSEFUL"
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": " I want a cup",
     "example_object": "I want a coffee cup",
-    "decision": "USEFUL"
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
   },
   {
     "desired_object": " I want a cup",
     "example_object": "Create a simple cup with a handle",
-    "decision": "USEFUL"
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
+  },
+  {
+    "desired_object": "I want a fan",
+    "example_object": "I want a fan",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
+  },
+  {
+    "desired_object": "I want a fan",
+    "example_object": "I want a fan",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
+  },
+  {
+    "desired_object": "I want a cup with handle",
+    "example_object": "Create a simple cup with a handle",
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
+  },
+  {
+    "desired_object": "I want a cup with handle",
+    "example_object": "I want a take away coffee cup please",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
+  },
+  {
+    "desired_object": "I want a cup with handle",
+    "example_object": "I want a coffee cup",
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T18:50:00.000000"
+  },
+  {
+    "desired_object": "I want a latern",
+    "example_object": "I want a lamp",
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T18:55:17.194446"
+  },
+  {
+    "desired_object": "I want a latern",
+    "example_object": "I want a bench",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:55:24.791281"
+  },
+  {
+    "desired_object": "I want a fence",
+    "example_object": "I want a lamp",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:59:17.866368"
+  },
+  {
+    "desired_object": "I want a fence",
+    "example_object": "I want a bench",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:59:25.243304"
+  },
+  {
+    "desired_object": "I want a fence",
+    "example_object": "I want a take away coffee cup please",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:59:34.751685"
+  },
+  {
+    "desired_object": "I want a fence",
+    "example_object": "I want a coffee cup",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T18:59:40.888445"
+  },
+  {
+    "desired_object": "I want a door",
+    "example_object": "I want a fence",
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T19:06:46.765861"
+  },
+  {
+    "desired_object": "I want a door",
+    "example_object": "I want a lamp",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T19:06:53.973659"
+  },
+  {
+    "desired_object": "I want a door",
+    "example_object": "I want a bench",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T19:07:02.074524"
+  },
+  {
+    "desired_object": "I want a door",
+    "example_object": "I want a take away coffee cup please",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T19:07:12.769358"
+  },
+  {
+    "desired_object": "I want a door",
+    "example_object": "I want a coffee cup",
+    "decision": "UNUSEFUL",
+    "timestamp": "2025-03-21T19:07:19.969692"
   }
 ]

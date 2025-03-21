@@ -1,92 +1,57 @@
-// Parametric Cup Implementation
-// Author: Assistant
-// Description: Modular cup design with ergonomic handle
+// Door dimensions (in mm)
+door_height = 2032;  // 80 inches
+door_width = 813;    // 32 inches
+door_thickness = 44; // 1.75 inches
 
-// Quality Settings
-$fn = 100;  // Smoothness factor for curved surfaces
+// Frame dimensions
+frame_width = 89;    // 3.5 inches
+frame_depth = 152;   // 6 inches
+frame_gap = 3;       // Gap between door and frame
 
-// Main Cup Parameters
-cup_height = 95;
-cup_diameter = 75;
-wall_thickness = 3.5;
-base_thickness = 4;
-taper_angle = 2;  // Degrees of taper for stability
+// Hinge dimensions
+hinge_radius = 10;
+hinge_height = 89;   // 3.5 inches
+hinge_count = 3;
 
-// Handle Parameters
-handle_thickness = 8;
-handle_width = 15;
-handle_height = 60;
-handle_offset = cup_height * 0.3;  // Position from top
-handle_curve_radius = 20;
+module door_panel() {
+    cube([door_width, door_thickness, door_height]);
+}
 
-// Calculated Values
-cup_top_radius = cup_diameter / 2;
-cup_bottom_radius = cup_top_radius - (cup_height * tan(taper_angle));
-rim_fillet = 2;
-
-module cup_body() {
+module door_frame() {
     difference() {
-        // Outer shell with taper
-        cylinder(
-            h = cup_height,
-            r1 = cup_bottom_radius,
-            r2 = cup_top_radius
-        );
+        // Outer frame
+        cube([door_width + 2*frame_width, frame_depth, door_height + frame_width]);
         
-        // Interior hollow
-        translate([0, 0, base_thickness])
-            cylinder(
-                h = cup_height,
-                r1 = cup_bottom_radius - wall_thickness,
-                r2 = cup_top_radius - wall_thickness
-            );
-            
-        // Rim fillet
-        translate([0, 0, cup_height - rim_fillet])
-            rotate_extrude()
-                translate([cup_top_radius - rim_fillet, 0, 0])
-                    circle(r = rim_fillet);
+        // Inner cutout
+        translate([frame_width, 0, frame_width])
+            cube([door_width + 2*frame_gap, frame_depth, door_height + frame_gap]);
     }
 }
 
-module handle() {
-    translate([0, cup_top_radius - wall_thickness/2, cup_height - handle_offset]) {
-        difference() {
-            // Outer handle curve
-            rotate([0, 0, 0])
-                rotate_extrude(angle = 180)
-                    translate([handle_curve_radius, 0, 0])
-                        scale([1, 0.8])  // Slight vertical compression
-                            circle(d = handle_thickness);
-            
-            // Inner cutout for grip
-            rotate([0, 0, 0])
-                rotate_extrude(angle = 180)
-                    translate([handle_curve_radius, 0, 0])
-                        scale([1, 0.8])
-                            circle(d = handle_thickness * 0.6);
+module hinge(z_pos) {
+    translate([-hinge_radius/2, door_thickness/2, z_pos])
+        rotate([0, 90, 0])
+            cylinder(r=hinge_radius, h=hinge_radius*2);
+}
+
+module door_assembly() {
+    // Door frame
+    color("SaddleBrown")
+        door_frame();
+    
+    // Door panel
+    color("Sienna")
+        translate([frame_width + frame_gap, frame_depth/4, frame_width])
+            door_panel();
+    
+    // Hinges
+    color("Silver")
+        translate([frame_width, frame_depth/4, 0]) {
+            hinge(door_height/6);
+            hinge(door_height/2);
+            hinge(5*door_height/6);
         }
-    }
 }
 
-module base_reinforcement() {
-    difference() {
-        cylinder(
-            h = base_thickness,
-            r1 = cup_bottom_radius + 1,
-            r2 = cup_bottom_radius
-        );
-        
-        // Concave bottom for stability
-        translate([0, 0, base_thickness/2])
-            scale([1, 1, 0.3])
-                sphere(r = cup_bottom_radius * 0.8);
-    }
-}
-
-// Final Assembly
-union() {
-    cup_body();
-    handle();
-    base_reinforcement();
-}
+// Create the complete door
+door_assembly();

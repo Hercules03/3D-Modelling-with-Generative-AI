@@ -1,84 +1,18 @@
 
 === STARTING EXAMPLE VALIDATION SESSION ===
-Query:  I want a cup
+Query: I want a cup with handle
 Number of examples to validate: 3
 ==================================================
 
 Checking example:
 --------------------------------------------------
-Desired Object:   I want a cup
-Example Object:  I want a take away coffee cup please
-Decision:        Checking...
---------------------------------------------------
-Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
-
-User wants to create:  I want a cup
-
-Retrieved example:
-Description: I want a take away coffee cup please
-Object type: take away
-
-Consider:
-1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
-2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
-3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
-
-Answer with ONLY ONE WORD:
-- 'useful' - if the example is about the same object type OR a variant OR has similar components
-- 'unuseful' - if the example is completely unrelated with no useful components
-
-Answer: 
-
-Validation Result:
---------------------------------------------------
-Desired Object:   I want a cup
-Example Object:  I want a take away coffee cup please
-Decision:        ✗ UNUSEFUL
---------------------------------------------------
-==================================================
-
-Checking example:
---------------------------------------------------
-Desired Object:   I want a cup
-Example Object:  I want a coffee cup
-Decision:        Checking...
---------------------------------------------------
-Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
-
-User wants to create:  I want a cup
-
-Retrieved example:
-Description: I want a coffee cup
-Object type: coffee cup
-
-Consider:
-1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
-2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
-3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
-
-Answer with ONLY ONE WORD:
-- 'useful' - if the example is about the same object type OR a variant OR has similar components
-- 'unuseful' - if the example is completely unrelated with no useful components
-
-Answer: 
-
-Validation Result:
---------------------------------------------------
-Desired Object:   I want a cup
-Example Object:  I want a coffee cup
-Decision:        ✓ USEFUL
---------------------------------------------------
-==================================================
-
-Checking example:
---------------------------------------------------
-Desired Object:   I want a cup
+Desired Object:  I want a cup with handle
 Example Object:  Create a simple cup with a handle
 Decision:        Checking...
 --------------------------------------------------
 Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
 
-User wants to create:  I want a cup
+User wants to create: I want a cup with handle
 
 Retrieved example:
 Description: Create a simple cup with a handle
@@ -97,8 +31,74 @@ Answer:
 
 Validation Result:
 --------------------------------------------------
-Desired Object:   I want a cup
+Desired Object:  I want a cup with handle
 Example Object:  Create a simple cup with a handle
+Decision:        ✓ USEFUL
+--------------------------------------------------
+==================================================
+
+Checking example:
+--------------------------------------------------
+Desired Object:  I want a cup with handle
+Example Object:  I want a take away coffee cup please
+Decision:        Checking...
+--------------------------------------------------
+Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
+
+User wants to create: I want a cup with handle
+
+Retrieved example:
+Description: I want a take away coffee cup please
+Object type: take away
+
+Consider:
+1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
+2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
+3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
+
+Answer with ONLY ONE WORD:
+- 'useful' - if the example is about the same object type OR a variant OR has similar components
+- 'unuseful' - if the example is completely unrelated with no useful components
+
+Answer: 
+
+Validation Result:
+--------------------------------------------------
+Desired Object:  I want a cup with handle
+Example Object:  I want a take away coffee cup please
+Decision:        ✗ UNUSEFUL
+--------------------------------------------------
+==================================================
+
+Checking example:
+--------------------------------------------------
+Desired Object:  I want a cup with handle
+Example Object:  I want a coffee cup
+Decision:        Checking...
+--------------------------------------------------
+Prompt:Human: You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
+
+User wants to create: I want a cup with handle
+
+Retrieved example:
+Description: I want a coffee cup
+Object type: coffee cup
+
+Consider:
+1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
+2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
+3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
+
+Answer with ONLY ONE WORD:
+- 'useful' - if the example is about the same object type OR a variant OR has similar components
+- 'unuseful' - if the example is completely unrelated with no useful components
+
+Answer: 
+
+Validation Result:
+--------------------------------------------------
+Desired Object:  I want a cup with handle
+Example Object:  I want a coffee cup
 Decision:        ✓ USEFUL
 --------------------------------------------------
 ==================================================
@@ -109,7 +109,7 @@ Examples kept: 2
 Examples discarded: 1
 
 Kept Examples:
-- I want a coffee cup
 - Create a simple cup with a handle
+- I want a coffee cup
 ==================================================
 

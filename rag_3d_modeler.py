@@ -5,7 +5,7 @@ from openpyscad import *
 import subprocess
 import json
 from constant import *
-from SCADKnowledgeBase import KnowledgeBase
+from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
 from OpenSCAD_Generator import OpenSCADGenerator
 from LLMmodel import *
 
@@ -58,51 +58,30 @@ def input_manual_knowledge():
         print("OpenSCAD code cannot be empty.")
         return False
     
-    # Initialize knowledge base and save the example
+    # Initialize enhanced knowledge base and save the example
     try:
-        kb = KnowledgeBase()
-        kb.add_example(description, scad_code)
-        print("\nKnowledge has been successfully saved!")
-        return True
+        kb = EnhancedSCADKnowledgeBase()
+        if kb.add_example(description, scad_code):
+            print("\nKnowledge has been successfully saved!")
+            return True
+        else:
+            print("\nFailed to save knowledge.")
+            return False
     except Exception as e:
         print(f"\nError saving knowledge: {str(e)}")
         return False
 
 def delete_knowledge():
-    """Function to handle deletion of knowledge"""
+    """Function to handle deletion of knowledge from ChromaDB"""
     print("\nDelete Knowledge Mode")
     print("--------------------")
     
-    # Get the knowledge name
-    name = input("\nEnter the name of the knowledge to delete (e.g., 'snowman1' for snowman1.pkl): ").strip()
-    if not name:
-        print("Name cannot be empty.")
-        return False
+    print("\nNote: This operation is not supported with ChromaDB.")
+    print("The knowledge base is now managed automatically with ChromaDB.")
+    print("Individual examples cannot be deleted manually.")
+    print("The system will automatically manage and update examples.")
     
-    # Add .pkl extension if not provided
-    if not name.endswith('.pkl'):
-        name = f"{name}.pkl"
-    
-    # Check if file exists
-    file_path = os.path.join(SCAD_KNOWLEDGE_DIR, name)
-    if not os.path.exists(file_path):
-        print(f"\nError: Knowledge file '{name}' not found.")
-        return False
-    
-    # Confirm deletion
-    confirm = input(f"\nAre you sure you want to delete '{name}'? (y/n): ").lower().strip()
-    if confirm != 'y':
-        print("\nDeletion cancelled.")
-        return False
-    
-    # Delete the file
-    try:
-        os.remove(file_path)
-        print(f"\nKnowledge file '{name}' has been successfully deleted!")
-        return True
-    except Exception as e:
-        print(f"\nError deleting knowledge file: {str(e)}")
-        return False
+    return False
 
 def main():
     print("Welcome to the 3D Model Generator!")

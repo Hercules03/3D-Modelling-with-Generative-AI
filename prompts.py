@@ -97,39 +97,30 @@ IMPLEMENTATION STEPS:
 Please maintain the XML-style tags and structured format shown above."""
 
 # Main OpenSCAD generator prompt template
-OPENSCAD_GNERATOR_PROMPT_TEMPLATE = """Let's create a technical implementation in OpenSCAD based on the following specifications:
+OPENSCAD_GNERATOR_PROMPT_TEMPLATE = """You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user's description.
 
-Technical Reference:
+BASIC KNOWLEDGE:
 {basic_knowledge}
 
-Project Requirements:
-{request}
-
-Reference Examples:
+RELEVANT EXAMPLES:
 {examples}
 
-Technical Analysis:
+Analysis to consider:
 {step_back_analysis}
 
-Please provide a structured implementation using these sections:
+USER REQUEST:
+{request}
 
-<think>
-Technical Considerations:
-- Implementation approach for geometric elements
-- Key measurements and calculations
-- Component organization strategy
-- Performance and optimization notes
-</think>
+Please generate OpenSCAD code that satisfies the user's request. Follow these guidelines:
+1. Use clear variable names and comments
+2. Break down complex shapes into modules
+3. Use proper indentation and formatting
+4. Include helpful comments explaining the code
+5. Wrap the code in <code> tags or ```scad code blocks
 
-<code>
-// Implementation with comments
-</code>
+Your response should ONLY contain the OpenSCAD code, properly wrapped in tags. Do not include any explanations or additional text.
 
-Implementation Guidelines:
-1. Use descriptive variable names
-2. Include clear technical comments
-3. Follow OpenSCAD best practices
-4. Maintain code readability"""
+OpenSCAD code:"""
         
 VALIDATION_PROMPT = """You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
 
