@@ -1,6 +1,6 @@
 # 3D Modelling with Generative AI
 
-A Python-based tool that uses various Large Language Models (LLMs) to generate OpenSCAD code for 3D models based on text descriptions. The system employs intelligent example validation and maintains a curated knowledge base to improve generation quality.
+A Python-based tool that uses various Large Language Models (LLMs) to generate OpenSCAD code for 3D models based on text descriptions. The system employs intelligent example validation, ChromaDB-powered semantic search, and maintains a curated knowledge base to improve generation quality.
 
 ## Features
 
@@ -10,24 +10,44 @@ A Python-based tool that uses various Large Language Models (LLMs) to generate O
   - Gemma (via Ollama)
   - DeepSeek (via Ollama)
 
+- **Enhanced Knowledge Base with ChromaDB**:
+  - Vector-based semantic search for better example matching
+  - Persistent storage of examples with automatic deduplication
+  - Multi-factor ranking system combining:
+    - Semantic similarity (25%)
+    - Step-back analysis matching (25%)
+    - Component matching (25%)
+    - Metadata matching (15%)
+    - Complexity scoring (10%)
+  - Configurable similarity thresholds
+  - Efficient incremental updates
+
 - **Smart Example Management**:
-  - Intelligent example validation using Gemma3 1B
-  - Semantic matching of object types and components
-  - Automatic filtering of non-useful examples
+  - Advanced component-based filtering
+  - Sophisticated complexity scoring system
+  - Automatic metadata extraction
   - Clear validation feedback in debug logs
 
-- **Knowledge Base Management**:
-  - Stores successful examples for future reference
-  - Smart retrieval of relevant examples
-  - Validates example usefulness before application
-  - Allows manual input of new examples
-  - Supports deletion of stored examples
+- **Category and Property System**:
+  - Hierarchical categorization of objects
+  - Standardized properties for filtering
+  - Multi-level category matching
+  - Property-based refinement
+  - Similar object suggestions
+
+- **Step-Back Analysis Integration**:
+  - Structured parsing of technical requirements
+  - Core principles extraction
+  - Shape component analysis
+  - Implementation step planning
+  - Enhanced example matching
 
 - **Debugging Support**:
   - Comprehensive debug logs in `debug.txt`
+  - Detailed similarity score breakdowns
+  - Component matching analysis
+  - Complexity score calculations
   - Tracks API interactions and validation decisions
-  - Records model responses and example matching
-  - Monitors error conditions with detailed context
 
 ## Prerequisites
 
@@ -118,44 +138,68 @@ Validating usefulness of 3 examples using Gemma3 1B...
 ## Project Structure
 
 - `rag_3d_modeler.py`: Main application file
+- `enhanced_scad_knowledge_base.py`: Enhanced knowledge base with ChromaDB integration
 - `OpenSCAD_Generator.py`: Core generation logic
 - `LLM.py`: LLM provider management
-- `SCADKnowledgeBase.py`: Knowledge base management
-- `KeywordExtractor.py`: Smart keyword extraction for matching
 - `ExampleValidator.py`: Intelligent example validation
 - `prompts.py`: System prompts and templates
 - `constant.py`: System constants and configurations
 
+## Advanced Features
+
+### Complexity Scoring
+The system uses a sophisticated scoring mechanism that evaluates:
+- Code structure (70%):
+  - Operations and functions
+  - Nesting levels
+  - Variables and modules
+  - Geometric operations
+- Metadata attributes (30%):
+  - Declared complexity level
+  - Printability assessment
+  - Support requirements
+
+### Component-Based Filtering
+Implements intelligent component matching:
+- Extracts components from queries and examples
+- Analyzes geometric primitives and operations
+- Matches based on technical requirements
+- Provides detailed component compatibility scores
+
+### Result Ranking
+Multi-factor ranking system combining:
+- Base semantic similarity
+- Step-back analysis matching
+- Component compatibility
+- Metadata alignment
+- Complexity appropriateness
+
 ## Debug Information
 
-The system generates detailed debug information in `debug.txt`, including:
-- Provider and model information
-- Example validation decisions with rationale
-- Full prompts sent to LLMs
-- Raw responses received
-- Parsed components
-- Error details (if any)
+The system now provides enhanced debugging information including:
+- Similarity score breakdowns
+- Component matching details
+- Complexity calculations
+- Step-back analysis results
+- ChromaDB query analytics
 
-### Example Validation Debug Output
+### Example Debug Output
 ```
-=== STARTING EXAMPLE VALIDATION SESSION ===
-Query: I want a fan
-Number of examples to validate: 3
-==================================================
-
-Checking example:
+=== SEARCH RESULTS ANALYSIS ===
+Query: "Complex coffee mug with decorative handle"
 --------------------------------------------------
-Desired Object:  I want a fan
-Example Object:  A rotating desk fan with blades
-Decision:        ✓ USEFUL
+Top Match Scores:
+- Final Score: 0.85
+  - Semantic Similarity: 0.92
+  - Step-back Match: 0.88
+  - Component Match: 0.85
+  - Metadata Match: 0.78
+  - Complexity Score: 0.70
 --------------------------------------------------
-
-[Additional examples and decisions...]
-
-=== VALIDATION SESSION SUMMARY ===
-Total examples checked: 3
-Examples kept: 1
-Examples discarded: 2
+Component Analysis:
+- Required: ['cylinder', 'handle', 'boolean_ops']
+- Found: ['cylinder', 'handle', 'difference']
+- Match Rate: 100%
 ==================================================
 ```
 

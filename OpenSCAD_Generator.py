@@ -221,7 +221,20 @@ class OpenSCADGenerator:
                 # Step 2: Get relevant examples from knowledge base
                 if retry_count == 0:  # Only get examples on first try
                     print("\nRetrieving relevant examples...")
-                    examples = self.knowledge_base.get_relevant_examples(description)
+                    # Get metadata from step-back analysis if available
+                    filters = None
+                    if step_back_result:
+                        filters = {
+                            "complexity": step_back_result.get("complexity", None),
+                            "style": step_back_result.get("style", None)
+                        }
+                        # Remove None values
+                        filters = {k: v for k, v in filters.items() if v is not None}
+                    
+                    examples = self.knowledge_base.get_relevant_examples(
+                        description,
+                        filters=filters
+                    )
                     self.write_debug(
                         "=== RETRIEVED EXAMPLES ===\n",
                         f"{examples}\n",

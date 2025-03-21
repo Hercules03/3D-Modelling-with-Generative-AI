@@ -1,57 +1,68 @@
-// Door dimensions (in mm)
-door_height = 2032;  // 80 inches
-door_width = 813;    // 32 inches
-door_thickness = 44; // 1.75 inches
+// Gate Parameters
+gate_width = 200;            // Total width of the gate
+gate_height = 300;           // Total height of the gate
+post_thickness = 20;         // Thickness of the vertical posts
+post_depth = 10;             // Depth of posts and frame
+crossbar_thickness = 15;     // Thickness of the horizontal crossbar
+crossbar_z = 180;            // Height at which the crossbar is positioned
+hinge_radius = 3;            // Radius of the hinge cylinder
+hinge_height = 25;           // Height (length) of the hinge cylinder
+hinge_offset = 5;            // Offset from the left edge for the hinge
+door_panel_depth = post_depth - 2; // Slightly inset door panel
 
-// Frame dimensions
-frame_width = 89;    // 3.5 inches
-frame_depth = 152;   // 6 inches
-frame_gap = 3;       // Gap between door and frame
+// Module for a Vertical Post
+module vertical_post() {
+    // Creates a vertical post with base at [0,0,0]
+    cube([post_thickness, post_depth, gate_height], center = false);
+}
 
-// Hinge dimensions
-hinge_radius = 10;
-hinge_height = 89;   // 3.5 inches
-hinge_count = 3;
+// Module for the Horizontal Crossbar
+module crossbar() {
+    // Creates the crossbar between the posts.
+    // Its length spans the gap between the two posts.
+    bar_length = gate_width - 2 * post_thickness;
+    cube([bar_length, post_depth, crossbar_thickness], center = false);
+}
 
+// Module for the Door Panel
 module door_panel() {
-    cube([door_width, door_thickness, door_height]);
+    // Creates an inset door panel occupying the space left by the posts and crossbar.
+    // It is inset slightly along the depth for a neat fit.
+    panel_width = gate_width - 2 * post_thickness;
+    panel_height = crossbar_z; // Panel fills from base up to the crossbar height
+    translate([post_thickness, 1, 0])
+        cube([panel_width, door_panel_depth, panel_height], center = false);
 }
 
-module door_frame() {
-    difference() {
-        // Outer frame
-        cube([door_width + 2*frame_width, frame_depth, door_height + frame_width]);
+// Module for a Hinge
+module hinge() {
+    // Creates a simple cylindrical hinge.
+    // The hinge is centered along its height.
+    cylinder(h = hinge_height, r = hinge_radius, center = true);
+}
+
+// Module to assemble the entire Gate
+module gate() {
+    // Left Vertical Post
+    translate([0, 0, 0])
+        vertical_post();
+    
+    // Right Vertical Post
+    translate([gate_width - post_thickness, 0, 0])
+        vertical_post();
         
-        // Inner cutout
-        translate([frame_width, 0, frame_width])
-            cube([door_width + 2*frame_gap, frame_depth, door_height + frame_gap]);
-    }
-}
-
-module hinge(z_pos) {
-    translate([-hinge_radius/2, door_thickness/2, z_pos])
-        rotate([0, 90, 0])
-            cylinder(r=hinge_radius, h=hinge_radius*2);
-}
-
-module door_assembly() {
-    // Door frame
-    color("SaddleBrown")
-        door_frame();
+    // Horizontal Crossbar positioned at crossbar_z
+    translate([post_thickness, 0, crossbar_z])
+        crossbar();
     
-    // Door panel
-    color("Sienna")
-        translate([frame_width + frame_gap, frame_depth/4, frame_width])
-            door_panel();
+    // Door Panel (between posts, from base to crossbar)
+    door_panel();
     
-    // Hinges
-    color("Silver")
-        translate([frame_width, frame_depth/4, 0]) {
-            hinge(door_height/6);
-            hinge(door_height/2);
-            hinge(5*door_height/6);
-        }
+    // Hinge attached to the left post
+    // Positioning the hinge on the left side, centered along Y and Z directions
+    translate([hinge_offset, post_depth/2, gate_height/2])
+        hinge();
 }
 
-// Create the complete door
-door_assembly();
+// Render the Gate
+gate();

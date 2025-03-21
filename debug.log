@@ -1,0 +1,31 @@
+2025-03-22 00:06:54,272 - __main__ - INFO - Starting 3D Model Generator
+2025-03-22 00:07:02,207 - __main__ - INFO - Initializing generator with provider: anthropic
+2025-03-22 00:07:02,279 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 00:07:04,891 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-03-22 00:07:26,632 - __main__ - INFO - Generating model for: I want a torch
+2025-03-22 00:07:30,147 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:08:02,976 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:08:14,899 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:08:19,917 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:08:24,704 - chromadb.segment.impl.vector.local_persistent_hnsw - WARNING - Add of existing embedding ID: modern_4c42c67f
+2025-03-22 00:08:24,704 - chromadb.segment.impl.vector.local_persistent_hnsw - WARNING - Number of requested results 10 is greater than number of elements in index 8, updating n_results = 8
+2025-03-22 00:08:31,602 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:09:21,743 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:09:26,477 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:09:43,270 - __main__ - INFO - User chose to quit
+2025-03-22 00:11:29,798 - __main__ - INFO - Starting 3D Model Generator
+2025-03-22 00:11:34,660 - __main__ - INFO - Initializing generator with provider: openai
+2025-03-22 00:11:34,674 - __main__ - INFO - [Initialization] 50.0% - Initializing generator
+2025-03-22 00:11:34,806 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 00:11:38,148 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-03-22 00:11:41,263 - __main__ - INFO - [Initialization] 100.0% - Generator initialized
+2025-03-22 00:11:52,132 - __main__ - INFO - Generating model for: I want a gate
+2025-03-22 00:11:52,133 - __main__ - INFO - [Code Generation] 0.0% - Generation attempt 1
+2025-03-22 00:11:54,155 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:12:05,916 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:12:19,637 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:12:23,355 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:12:27,692 - chromadb.segment.impl.vector.local_persistent_hnsw - WARNING - Add of existing embedding ID: modern_4c42c67f
+2025-03-22 00:12:34,675 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 00:13:11,713 - __main__ - INFO - [Code Generation] 100.0% - Generation complete
+2025-03-22 00:13:19,968 - __main__ - INFO - User chose to quit

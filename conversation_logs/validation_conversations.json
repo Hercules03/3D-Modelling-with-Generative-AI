@@ -238,5 +238,37 @@
     "example_object": "I want a coffee cup",
     "decision": "UNUSEFUL",
     "timestamp": "2025-03-21T19:07:19.969692"
+  },
+  {
+    "desired_object": "I want a modern minimalist mug",
+    "example_object": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T22:25:22.529493"
+  },
+  {
+    "desired_object": "I want a modern minimalist mug",
+    "example_object": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T22:28:21.809609"
+  },
+  {
+    "desired_object": "I want a modern minimalist mug",
+    "example_object": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+    "decision": "USEFUL",
+    "timestamp": "2025-03-21T22:30:32.598276"
+  },
+  {
+    "desired_object": "I want a modern coffee mug",
+    "example_object": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+    "decision": "USEFUL",
+    "similarity_score": 0.4253664414317413,
+    "timestamp": "2025-03-21T22:41:12.563307"
+  },
+  {
+    "desired_object": "I want a modern coffee mug",
+    "example_object": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+    "decision": "USEFUL",
+    "similarity_score": 0.4253664414317413,
+    "timestamp": "2025-03-21T22:41:35.784641"
   }
 ]

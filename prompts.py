@@ -60,8 +60,10 @@ KEYWORD_EXTRACTOR_SYSTEM_PROMPT = """You are a keyword extraction expert. Your t
 Return only the single most relevant keyword, with no additional text or explanation."""
 
 # Keyword extractor prompt template
-KEYWORD_EXTRACTOR_PROMPT = """Extract the main object or concept from this description as a single word:
-{description}"""
+KEYWORD_EXTRACTOR_PROMPT = """Extract the main object type from this description:
+{description}
+
+Return only the object type as a single word, nothing else."""
 
 # Step-back prompt template
 STEP_BACK_PROMPT_TEMPLATE = """Let's analyze the technical requirements and geometric principles for creating a 3D model based on this request: "{query}"
@@ -122,21 +124,50 @@ Your response should ONLY contain the OpenSCAD code, properly wrapped in tags. D
 
 OpenSCAD code:"""
         
-VALIDATION_PROMPT = """You are a 3D modeling expert. Your task is to determine if this example would be helpful for creating the requested 3D object.
+METADATA_EXTRACTION_PROMPT = """You are an expert in 3D modeling and OpenSCAD. Analyze this 3D model description and extract key metadata.
 
-User wants to create: {query}
-
-Retrieved example:
 Description: {description}
-Object type: {object_type}
 
-Consider:
-1. Is this example about the same type of object? (e.g., a cup example for creating a cup)
-2. Is this example about a variant of the same object? (e.g., a coffee cup example for creating a cup)
-3. Does it have similar structural components that would be useful? (e.g., a mug example for creating a cup)
+Extract the following metadata and format it as a valid JSON object with these fields:
+1. "object_type": Main category/type of the object (e.g., "mug", "chair", "box")
+2. "dimensions": Dictionary of any mentioned measurements or proportions
+3. "features": List of key characteristics or components
+4. "materials": List of any specified or implied materials
+5. "complexity": One of ["SIMPLE", "MEDIUM", "COMPLEX"] based on features and structure
+6. "style": Design style (e.g., "Modern", "Traditional", "Industrial", "Minimalist")
+7. "use_case": Primary intended use or purpose
+8. "geometric_properties": List of key geometric characteristics (e.g., "symmetrical", "curved", "angular")
+9. "technical_requirements": List of specific technical considerations
 
-Answer with ONLY ONE WORD:
-- 'useful' - if the example is about the same object type OR a variant OR has similar components
-- 'unuseful' - if the example is completely unrelated with no useful components
+Only include fields where information can be confidently extracted from the description.
+Format numbers consistently (use metric units when possible).
+If a field cannot be determined, omit it from the JSON rather than using placeholder values.
 
-Answer: """
+Return ONLY the JSON object, no additional text or explanation."""
+
+CATEGORY_ANALYSIS_PROMPT = """Analyze the following 3D object and categorize it using our standardized categories and properties.
+
+Object Type: {object_type}
+Description: {description}
+
+Available Categories:
+{categories_info}
+
+Available Properties:
+{properties_info}
+
+Instructions:
+1. Select the most appropriate categories from the list above (you can select multiple if applicable)
+2. For each selected property type, choose the most appropriate value from its predefined options
+3. Suggest similar objects from the examples in our standard categories
+
+Respond in JSON format:
+{{
+    "categories": ["list of categories from standard categories only"],
+    "properties": {{
+        "property_name": "value from predefined options only"
+    }},
+    "similar_objects": ["list of similar objects from our standard examples only"]
+}}
+
+Ensure all categories and property values exactly match the provided standard options."""

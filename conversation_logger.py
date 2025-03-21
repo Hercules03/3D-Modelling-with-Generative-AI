@@ -64,7 +64,6 @@ class ConversationLogger:
         conversation = {
             'prompt': full_prompt,
             'scad_code': scad_code,
-            'timestamp': datetime.now().isoformat()
         }
         self._append_to_json(self.scad_gen_file, conversation)
     

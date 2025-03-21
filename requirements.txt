@@ -8,6 +8,5 @@ langchain-openai
 langchain-community
 langchain-ollama
 
-
-
-
+chromadb>=0.4.22
+sentence-transformers>=2.2.2 
