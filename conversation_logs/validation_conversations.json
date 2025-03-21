@@ -47,12 +47,12 @@
   {
     "desired_object": "I want a cup",
     "example_object": "I want a coffee cup",
-    "decision": "UNUSEFUL"
+    "decision": "USEFUL"
   },
   {
     "desired_object": "I want a cup",
     "example_object": "Create a simple cup with a handle",
-    "decision": "UNUSEFUL"
+    "decision": "USEFUL"
   },
   {
     "desired_object": "I want a cup",
@@ -103,5 +103,20 @@
     "desired_object": "I want a mug",
     "example_object": "I want a desk",
     "decision": "UNUSEFUL"
+  },
+  {
+    "desired_object": " I want a cup",
+    "example_object": "I want a take away coffee cup please",
+    "decision": "UNUSEFUL"
+  },
+  {
+    "desired_object": " I want a cup",
+    "example_object": "I want a coffee cup",
+    "decision": "USEFUL"
+  },
+  {
+    "desired_object": " I want a cup",
+    "example_object": "Create a simple cup with a handle",
+    "decision": "USEFUL"
   }
 ]

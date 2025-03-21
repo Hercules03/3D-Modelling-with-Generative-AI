@@ -54,5 +54,13 @@
       "abstractions": "- Main cylinder (outer shell)\n- Inner cylinder (negative space)\n- Typical dimensions: 90-100mm height, 60-70mm diameter\n- Wall thickness: 3-4mm\n- Curved path (quarter ellipse or bezier)\n- Circular or oval profile (8-12mm diameter)\n- Attachment points offset 15-20mm from main body\n- Vertical span covering 60-70% of mug height",
       "approach": "1. Base Setup\n2. Core Construction\n3. Handle Creation\n4. Final Details"
     }
+  },
+  {
+    "query": " I want a cup",
+    "step_back_analysis": {
+      "principles": "- Cylindrical geometry and circular profiles\n- Radial symmetry around vertical axis\n- Golden ratio (1:1.618) for height-to-width proportions\n- Wall thickness typically 3-4mm for ceramic simulation",
+      "abstractions": "- Primary cylinder for main body (height ~90mm, diameter ~75mm)\n- Secondary smaller cylinder for interior hollow\n- Curved path for handle (quarter-ellipse or bezier curve)\n- Circular or oval profile for handle cross-section\n- Slight taper at base (2-3\u00b0 draft angle)\n- Rounded lip at top edge (2-3mm fillet)",
+      "approach": "1. Base Setup\n2. Interior Hollowing\n3. Handle Creation\n4. Final Details"
+    }
   }
 ]

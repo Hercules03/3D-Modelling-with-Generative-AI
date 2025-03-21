@@ -1,17 +1,17 @@
 === SCAD GENERATION START ===
-Description: I want a mug
+Description:  I want a cup
 Provider: anthropic
 Model: claude-3-5-sonnet-20240620
 ==================================================
 
 
 === STEP-BACK ANALYSIS ===
-Query: I want a mug
+Query:  I want a cup
 Provider: anthropic
 Model: claude-3-5-sonnet-20240620
 
 === FULL PROMPT ===
-Human: Let's analyze the technical requirements and geometric principles for creating a 3D model based on this request: "I want a mug"
+Human: Let's analyze the technical requirements and geometric principles for creating a 3D model based on this request: " I want a cup"
 
 Please provide a structured technical analysis in this format:
 
@@ -46,78 +46,70 @@ Please maintain the XML-style tags and structured format shown above.
 === LLM RESPONSE ===
 <think>
 Consider:
-- Cylindrical form requires circular profiles and height extrusion
-- Handle needs curved path and circular/oval profile sweep
-- Wall thickness and interior hollow requirements
-- Proportion relationships between height, diameter, and handle size
+- Cup requires cylindrical main body with hollow interior
+- Need boolean operations for wall thickness
+- Handle requires curved path and profile sweep
+- Must account for ergonomic proportions and drinking lip
 </think>
 
 <analysis>
 CORE PRINCIPLES:
-- Cylindrical geometry with circular cross-sections
-- Swept curves for handle creation
-- Boolean operations for hollowing
-- Proportional ratios (height ≈ 1.5 × diameter)
+- Cylindrical geometry and circular profiles
+- Radial symmetry around vertical axis
+- Golden ratio (1:1.618) for height-to-width proportions
+- Wall thickness typically 3-4mm for ceramic simulation
 
 SHAPE COMPONENTS:
-Primary Body:
-- Main cylinder (outer shell)
-- Inner cylinder (negative space)
-- Typical dimensions: 90-100mm height, 60-70mm diameter
-- Wall thickness: 3-4mm
-
-Handle:
-- Curved path (quarter ellipse or bezier)
-- Circular or oval profile (8-12mm diameter)
-- Attachment points offset 15-20mm from main body
-- Vertical span covering 60-70% of mug height
+- Primary cylinder for main body (height ~90mm, diameter ~75mm)
+- Secondary smaller cylinder for interior hollow
+- Curved path for handle (quarter-ellipse or bezier curve)
+- Circular or oval profile for handle cross-section
+- Slight taper at base (2-3° draft angle)
+- Rounded lip at top edge (2-3mm fillet)
 
 IMPLEMENTATION STEPS:
 1. Base Setup
-   - Create primary cylinder for outer shell
-   - Define wall thickness parameters
-   - Set up reference planes for handle placement
+   - Create outer cylinder with proportional dimensions
+   - Add draft angle for tapered form
+   - Create bottom face with thickness
 
-2. Core Construction
-   - Generate main cylinder
-   - Create hollow interior using boolean subtraction
-   - Add bottom thickness (4-6mm)
-   - Apply edge fillets (1-2mm radius)
+2. Interior Hollowing
+   - Create offset cylinder for interior
+   - Boolean subtract from main body
+   - Add rim thickness at top
 
 3. Handle Creation
-   - Draw handle path curve
-   - Create profile for sweep
-   - Generate swept surface
-   - Connect to main body with smooth transitions
+   - Draw curved path for handle
+   - Create profile circle/oval (diameter ~10mm)
+   - Sweep profile along path
+   - Position relative to main body
 
 4. Final Details
-   - Add rim thickness detail
-   - Verify wall consistency
-   - Check handle clearance (25-30mm from body)
-   - Optimize geometry for manufacturing
+   - Add fillets to all sharp edges
+   - Create lip curvature for drinking
+   - Verify wall thickness uniformity
+   - Check overall balance and proportions
 </analysis>
 
 === PARSED COMPONENTS ===
 
 CORE PRINCIPLES:
-- Cylindrical geometry with circular cross-sections
-- Swept curves for handle creation
-- Boolean operations for hollowing
-- Proportional ratios (height ≈ 1.5 × diameter)
+- Cylindrical geometry and circular profiles
+- Radial symmetry around vertical axis
+- Golden ratio (1:1.618) for height-to-width proportions
+- Wall thickness typically 3-4mm for ceramic simulation
 
 SHAPE COMPONENTS:
-- Main cylinder (outer shell)
-- Inner cylinder (negative space)
-- Typical dimensions: 90-100mm height, 60-70mm diameter
-- Wall thickness: 3-4mm
-- Curved path (quarter ellipse or bezier)
-- Circular or oval profile (8-12mm diameter)
-- Attachment points offset 15-20mm from main body
-- Vertical span covering 60-70% of mug height
+- Primary cylinder for main body (height ~90mm, diameter ~75mm)
+- Secondary smaller cylinder for interior hollow
+- Curved path for handle (quarter-ellipse or bezier curve)
+- Circular or oval profile for handle cross-section
+- Slight taper at base (2-3° draft angle)
+- Rounded lip at top edge (2-3mm fillet)
 
 IMPLEMENTATION STEPS:
 1. Base Setup
-2. Core Construction
+2. Interior Hollowing
 3. Handle Creation
 4. Final Details
 
@@ -125,6 +117,140 @@ IMPLEMENTATION STEPS:
 Valid: y
 
 === RETRIEVED EXAMPLES ===
+
+Relevant examples:
+
+Description: I want a coffee cup
+Code:
+// Coffee Cup Implementation
+// Author: Assistant
+// Description: Parametric coffee cup design with handle
+
+// Global Parameters
+$fn = 100; // Smoothness of curves
+
+// Cup Dimensions
+cup_height = 95;
+cup_outer_diameter = 78;
+cup_inner_diameter = 70;
+wall_thickness = 4;
+base_thickness = 5;
+rim_radius = 2;
+
+// Handle Parameters
+handle_thickness = 8;
+handle_width = 15;
+handle_clearance = 28;
+handle_angle = 260; // Degrees of handle arc
+
+// Modules for cup components
+module cup_body() {
+    difference() {
+        // Outer shell with slight taper
+        cylinder(h=cup_height, 
+                r1=cup_outer_diameter/2, 
+                r2=cup_outer_diameter/2-2, 
+                center=false);
+        
+        // Inner hollow with taper
+        translate([0, 0, base_thickness])
+            cylinder(h=cup_height, 
+                    r1=cup_inner_diameter/2, 
+                    r2=cup_inner_diameter/2-2, 
+                    center=false);
+        
+        // Rim fillet
+        translate([0, 0, cup_height-rim_radius])
+            rotate_extrude()
+                translate([cup_outer_diameter/2-rim_radius, 0, 0])
+                    circle(r=rim_radius);
+    }
+}
+
+module handle() {
+    // Handle creation using toroidal segment
+    rotate([0, 0, -45])
+        translate([cup_outer_diameter/2 + handle_clearance/2, 0, cup_height*0.6])
+            rotate([90, 0, 0])
+                rotate_extrude(angle=handle_angle)
+                    translate([handle_clearance/2, 0, 0])
+                        scale([1, 0.8])
+                            circle(d=handle_thickness);
+}
+
+module base_concave() {
+    translate([0, 0, base_thickness/2])
+        difference() {
+            cylinder(h=base_thickness, 
+                    r=cup_outer_diameter/2, 
+                    center=true);
+            translate([0, 0, -1])
+                scale([1, 1, 0.2])
+                    sphere(r=cup_outer_diameter/1.5);
+        }
+}
+
+// Final Assembly
+union() {
+    cup_body();
+    handle();
+    base_concave();
+}
+
+Description: Create a simple cup with a handle
+Code:
+// Simple Cup with Handle in OpenSCAD
+// All measurements in millimeters
+
+// Cup dimensions
+cup_height = 90;
+cup_top_radius = 40;
+cup_bottom_radius = 35;
+wall_thickness = 3;
+bottom_thickness = 5;
+
+// Handle dimensions
+handle_thickness = 8;
+handle_width = 15;
+handle_height = 50;
+handle_offset_from_top = 20;
+handle_curve_radius = 20;
+
+// Create the cup with handle
+module cup_with_handle() {
+    difference() {
+        union() {
+            // Outer cup shell (slightly tapered cylinder)
+            cylinder(h=cup_height, r1=cup_bottom_radius, r2=cup_top_radius);
+            
+            // Handle
+            translate([0, cup_top_radius - wall_thickness/2, cup_height - handle_offset_from_top - handle_height/2]) {
+                // Main handle curve
+                rotate([0, 0, 0])
+                difference() {
+                    // Outer curve
+                    translate([handle_curve_radius, 0, 0])
+                    rotate_extrude(angle=180, convexity=10)
+                    translate([handle_curve_radius, 0, 0])
+                    square([handle_thickness, handle_height], center=true);
+                    
+                    // Inner curve (to make the handle hollow)
+                    translate([handle_curve_radius, 0, 0])
+                    rotate_extrude(angle=180, convexity=10)
+                    translate([handle_curve_radius - handle_thickness/3, 0, 0])
+                    square([handle_thickness*0.6, handle_height*0.6], center=true);
+                }
+            }
+        }
+        
+        // Hollow out the cup interior
+        translate([0, 0, bottom_thickness])
+        cylinder(h=cup_height, r1=cup_bottom_radius-wall_thickness, r2=cup_top_radius-wall_thickness);
+    }
+}
+
+// Render the cup with handle
+cup_with_handle();
 
 ==================================================
 
@@ -178,31 +304,163 @@ Basic Syntax:
 
 
 Project Requirements:
-I want a mug
+ I want a cup
 
 Reference Examples:
+
+Relevant examples:
+
+Description: I want a coffee cup
+Code:
+// Coffee Cup Implementation
+// Author: Assistant
+// Description: Parametric coffee cup design with handle
+
+// Global Parameters
+$fn = 100; // Smoothness of curves
+
+// Cup Dimensions
+cup_height = 95;
+cup_outer_diameter = 78;
+cup_inner_diameter = 70;
+wall_thickness = 4;
+base_thickness = 5;
+rim_radius = 2;
+
+// Handle Parameters
+handle_thickness = 8;
+handle_width = 15;
+handle_clearance = 28;
+handle_angle = 260; // Degrees of handle arc
+
+// Modules for cup components
+module cup_body() {
+    difference() {
+        // Outer shell with slight taper
+        cylinder(h=cup_height, 
+                r1=cup_outer_diameter/2, 
+                r2=cup_outer_diameter/2-2, 
+                center=false);
+        
+        // Inner hollow with taper
+        translate([0, 0, base_thickness])
+            cylinder(h=cup_height, 
+                    r1=cup_inner_diameter/2, 
+                    r2=cup_inner_diameter/2-2, 
+                    center=false);
+        
+        // Rim fillet
+        translate([0, 0, cup_height-rim_radius])
+            rotate_extrude()
+                translate([cup_outer_diameter/2-rim_radius, 0, 0])
+                    circle(r=rim_radius);
+    }
+}
+
+module handle() {
+    // Handle creation using toroidal segment
+    rotate([0, 0, -45])
+        translate([cup_outer_diameter/2 + handle_clearance/2, 0, cup_height*0.6])
+            rotate([90, 0, 0])
+                rotate_extrude(angle=handle_angle)
+                    translate([handle_clearance/2, 0, 0])
+                        scale([1, 0.8])
+                            circle(d=handle_thickness);
+}
+
+module base_concave() {
+    translate([0, 0, base_thickness/2])
+        difference() {
+            cylinder(h=base_thickness, 
+                    r=cup_outer_diameter/2, 
+                    center=true);
+            translate([0, 0, -1])
+                scale([1, 1, 0.2])
+                    sphere(r=cup_outer_diameter/1.5);
+        }
+}
+
+// Final Assembly
+union() {
+    cup_body();
+    handle();
+    base_concave();
+}
+
+Description: Create a simple cup with a handle
+Code:
+// Simple Cup with Handle in OpenSCAD
+// All measurements in millimeters
+
+// Cup dimensions
+cup_height = 90;
+cup_top_radius = 40;
+cup_bottom_radius = 35;
+wall_thickness = 3;
+bottom_thickness = 5;
+
+// Handle dimensions
+handle_thickness = 8;
+handle_width = 15;
+handle_height = 50;
+handle_offset_from_top = 20;
+handle_curve_radius = 20;
+
+// Create the cup with handle
+module cup_with_handle() {
+    difference() {
+        union() {
+            // Outer cup shell (slightly tapered cylinder)
+            cylinder(h=cup_height, r1=cup_bottom_radius, r2=cup_top_radius);
+            
+            // Handle
+            translate([0, cup_top_radius - wall_thickness/2, cup_height - handle_offset_from_top - handle_height/2]) {
+                // Main handle curve
+                rotate([0, 0, 0])
+                difference() {
+                    // Outer curve
+                    translate([handle_curve_radius, 0, 0])
+                    rotate_extrude(angle=180, convexity=10)
+                    translate([handle_curve_radius, 0, 0])
+                    square([handle_thickness, handle_height], center=true);
+                    
+                    // Inner curve (to make the handle hollow)
+                    translate([handle_curve_radius, 0, 0])
+                    rotate_extrude(angle=180, convexity=10)
+                    translate([handle_curve_radius - handle_thickness/3, 0, 0])
+                    square([handle_thickness*0.6, handle_height*0.6], center=true);
+                }
+            }
+        }
+        
+        // Hollow out the cup interior
+        translate([0, 0, bottom_thickness])
+        cylinder(h=cup_height, r1=cup_bottom_radius-wall_thickness, r2=cup_top_radius-wall_thickness);
+    }
+}
+
+// Render the cup with handle
+cup_with_handle();
 
 
 Technical Analysis:
 CORE PRINCIPLES:
-                - Cylindrical geometry with circular cross-sections
-- Swept curves for handle creation
-- Boolean operations for hollowing
-- Proportional ratios (height ≈ 1.5 × diameter)
+                - Cylindrical geometry and circular profiles
+- Radial symmetry around vertical axis
+- Golden ratio (1:1.618) for height-to-width proportions
+- Wall thickness typically 3-4mm for ceramic simulation
                 
                 SHAPE COMPONENTS:
-                - Main cylinder (outer shell)
-- Inner cylinder (negative space)
-- Typical dimensions: 90-100mm height, 60-70mm diameter
-- Wall thickness: 3-4mm
-- Curved path (quarter ellipse or bezier)
-- Circular or oval profile (8-12mm diameter)
-- Attachment points offset 15-20mm from main body
-- Vertical span covering 60-70% of mug height
+                - Primary cylinder for main body (height ~90mm, diameter ~75mm)
+- Secondary smaller cylinder for interior hollow
+- Curved path for handle (quarter-ellipse or bezier curve)
+- Circular or oval profile for handle cross-section
+- Slight taper at base (2-3° draft angle)
+- Rounded lip at top edge (2-3mm fillet)
                 
                 IMPLEMENTATION STEPS:
                 1. Base Setup
-2. Core Construction
+2. Interior Hollowing
 3. Handle Creation
 4. Final Details
 
@@ -227,169 +485,223 @@ Implementation Guidelines:
 4. Maintain code readability
 
 === LLM RESPONSE ===
-I'll help create a parametric mug design in OpenSCAD. Let me break this down systematically.
+I'll help create a well-structured implementation of a cup in OpenSCAD.
 
 <think>
 Technical Considerations:
-- Main body needs wall thickness consideration for practical use
-- Handle requires smooth curves and proper attachment points
-- Bottom thickness should be sufficient for stability
-- All dimensions should be parameterized for easy modification
-- Handle creation will use hull() operations for smooth curves
+- Main body needs wall thickness for realistic representation
+- Handle should be ergonomically positioned and sized
+- Base needs slight taper for stability
+- Top rim should be rounded for comfort
+- Parameters should be easily adjustable
+- Use modules for component organization
 </think>
 
 <code>
-// Parametric Coffee Mug Design
-// Core dimensions
-mug_height = 95;
-mug_diameter = 65;
+// Parametric Cup Implementation
+// Author: Assistant
+// Description: Modular cup design with ergonomic handle
+
+// Quality Settings
+$fn = 100;  // Smoothness factor for curved surfaces
+
+// Main Cup Parameters
+cup_height = 95;
+cup_diameter = 75;
 wall_thickness = 3.5;
-bottom_thickness = 5;
+base_thickness = 4;
+taper_angle = 2;  // Degrees of taper for stability
 
-// Handle parameters
+// Handle Parameters
 handle_thickness = 8;
-handle_width = 12;
-handle_clearance = 10;
-handle_vertical_span = 0.7; // Percentage of mug height
+handle_width = 15;
+handle_height = 60;
+handle_offset = cup_height * 0.3;  // Position from top
+handle_curve_radius = 20;
 
-module mug_body() {
+// Calculated Values
+cup_top_radius = cup_diameter / 2;
+cup_bottom_radius = cup_top_radius - (cup_height * tan(taper_angle));
+rim_fillet = 2;
+
+module cup_body() {
     difference() {
-        // Outer shell
-        cylinder(h=mug_height, d=mug_diameter, $fn=100);
+        // Outer shell with taper
+        cylinder(
+            h = cup_height,
+            r1 = cup_bottom_radius,
+            r2 = cup_top_radius
+        );
         
-        // Inner cavity
-        translate([0, 0, bottom_thickness])
-            cylinder(h=mug_height, 
-                    d=mug_diameter - (wall_thickness * 2), 
-                    $fn=100);
+        // Interior hollow
+        translate([0, 0, base_thickness])
+            cylinder(
+                h = cup_height,
+                r1 = cup_bottom_radius - wall_thickness,
+                r2 = cup_top_radius - wall_thickness
+            );
+            
+        // Rim fillet
+        translate([0, 0, cup_height - rim_fillet])
+            rotate_extrude()
+                translate([cup_top_radius - rim_fillet, 0, 0])
+                    circle(r = rim_fillet);
     }
 }
 
 module handle() {
-    // Handle attachment points
-    handle_height = mug_height * handle_vertical_span;
-    handle_offset = mug_diameter/2 + handle_clearance;
-    
-    // Create smooth handle using hull() between spheres
-    translate([mug_diameter/2, 0, mug_height * 0.8])
-    hull() {
-        // Top connection point
-        sphere(d=handle_thickness, $fn=30);
-        
-        // Outer curve points
-        translate([handle_offset-mug_diameter/2, 0, -handle_height/3])
-            sphere(d=handle_thickness, $fn=30);
-        
-        translate([handle_offset-mug_diameter/2, 0, -handle_height*2/3])
-            sphere(d=handle_thickness, $fn=30);
+    translate([0, cup_top_radius - wall_thickness/2, cup_height - handle_offset]) {
+        difference() {
+            // Outer handle curve
+            rotate([0, 0, 0])
+                rotate_extrude(angle = 180)
+                    translate([handle_curve_radius, 0, 0])
+                        scale([1, 0.8])  // Slight vertical compression
+                            circle(d = handle_thickness);
             
-        // Bottom connection point
-        translate([0, 0, -handle_height])
-            sphere(d=handle_thickness, $fn=30);
+            // Inner cutout for grip
+            rotate([0, 0, 0])
+                rotate_extrude(angle = 180)
+                    translate([handle_curve_radius, 0, 0])
+                        scale([1, 0.8])
+                            circle(d = handle_thickness * 0.6);
+        }
     }
 }
 
-// Final assembly
-module complete_mug() {
-    union() {
-        mug_body();
-        handle();
+module base_reinforcement() {
+    difference() {
+        cylinder(
+            h = base_thickness,
+            r1 = cup_bottom_radius + 1,
+            r2 = cup_bottom_radius
+        );
+        
+        // Concave bottom for stability
+        translate([0, 0, base_thickness/2])
+            scale([1, 1, 0.3])
+                sphere(r = cup_bottom_radius * 0.8);
     }
 }
 
-// Render mug
-complete_mug();
+// Final Assembly
+union() {
+    cup_body();
+    handle();
+    base_reinforcement();
+}
 </code>
 
-This implementation provides:
+This implementation features:
+1. Modular design with separate components
+2. Parametric construction for easy modifications
+3. Ergonomic handle design
+4. Reinforced base with concave bottom
+5. Rounded rim for comfort
+6. Proper wall thickness for manufacturability
 
-1. Parameterized Design:
-- All key dimensions are variables for easy modification
-- Proportional relationships maintained
+The code uses:
+- Descriptive variable names
+- Logical component organization
+- Efficient use of OpenSCAD operations
+- Clear commenting for maintenance
+- Mathematical relationships for proportions
 
-2. Structural Components:
-- Hollow cylindrical body with appropriate wall thickness
-- Ergonomic handle with smooth curves
-- Solid bottom for stability
-
-3. Technical Features:
-- Uses $fn parameter for smooth curves
-- Efficient use of hull() for handle creation
-- Boolean operations for cavity creation
-
-4. Optimization:
-- Modular design with separate components
-- Minimal complex calculations
-- Efficient use of primitive shapes
-
-To modify the mug, simply adjust the parameters at the top of the code. Common modifications might include:
-- Changing mug_height and mug_diameter for different sizes
-- Adjusting wall_thickness for different strength requirements
-- Modifying handle parameters for different grip styles
-
-The design follows best practices for OpenSCAD, maintaining readability and efficiency while providing a practical, printable result.
+You can adjust the parameters at the top to modify the cup's dimensions while maintaining proper proportions and functionality.
 
 === GENERATED SCAD CODE ===
-// Parametric Coffee Mug Design
-// Core dimensions
-mug_height = 95;
-mug_diameter = 65;
+// Parametric Cup Implementation
+// Author: Assistant
+// Description: Modular cup design with ergonomic handle
+
+// Quality Settings
+$fn = 100;  // Smoothness factor for curved surfaces
+
+// Main Cup Parameters
+cup_height = 95;
+cup_diameter = 75;
 wall_thickness = 3.5;
-bottom_thickness = 5;
+base_thickness = 4;
+taper_angle = 2;  // Degrees of taper for stability
 
-// Handle parameters
+// Handle Parameters
 handle_thickness = 8;
-handle_width = 12;
-handle_clearance = 10;
-handle_vertical_span = 0.7; // Percentage of mug height
+handle_width = 15;
+handle_height = 60;
+handle_offset = cup_height * 0.3;  // Position from top
+handle_curve_radius = 20;
 
-module mug_body() {
+// Calculated Values
+cup_top_radius = cup_diameter / 2;
+cup_bottom_radius = cup_top_radius - (cup_height * tan(taper_angle));
+rim_fillet = 2;
+
+module cup_body() {
     difference() {
-        // Outer shell
-        cylinder(h=mug_height, d=mug_diameter, $fn=100);
+        // Outer shell with taper
+        cylinder(
+            h = cup_height,
+            r1 = cup_bottom_radius,
+            r2 = cup_top_radius
+        );
         
-        // Inner cavity
-        translate([0, 0, bottom_thickness])
-            cylinder(h=mug_height, 
-                    d=mug_diameter - (wall_thickness * 2), 
-                    $fn=100);
+        // Interior hollow
+        translate([0, 0, base_thickness])
+            cylinder(
+                h = cup_height,
+                r1 = cup_bottom_radius - wall_thickness,
+                r2 = cup_top_radius - wall_thickness
+            );
+            
+        // Rim fillet
+        translate([0, 0, cup_height - rim_fillet])
+            rotate_extrude()
+                translate([cup_top_radius - rim_fillet, 0, 0])
+                    circle(r = rim_fillet);
     }
 }
 
 module handle() {
-    // Handle attachment points
-    handle_height = mug_height * handle_vertical_span;
-    handle_offset = mug_diameter/2 + handle_clearance;
-    
-    // Create smooth handle using hull() between spheres
-    translate([mug_diameter/2, 0, mug_height * 0.8])
-    hull() {
-        // Top connection point
-        sphere(d=handle_thickness, $fn=30);
-        
-        // Outer curve points
-        translate([handle_offset-mug_diameter/2, 0, -handle_height/3])
-            sphere(d=handle_thickness, $fn=30);
-        
-        translate([handle_offset-mug_diameter/2, 0, -handle_height*2/3])
-            sphere(d=handle_thickness, $fn=30);
+    translate([0, cup_top_radius - wall_thickness/2, cup_height - handle_offset]) {
+        difference() {
+            // Outer handle curve
+            rotate([0, 0, 0])
+                rotate_extrude(angle = 180)
+                    translate([handle_curve_radius, 0, 0])
+                        scale([1, 0.8])  // Slight vertical compression
+                            circle(d = handle_thickness);
             
-        // Bottom connection point
-        translate([0, 0, -handle_height])
-            sphere(d=handle_thickness, $fn=30);
+            // Inner cutout for grip
+            rotate([0, 0, 0])
+                rotate_extrude(angle = 180)
+                    translate([handle_curve_radius, 0, 0])
+                        scale([1, 0.8])
+                            circle(d = handle_thickness * 0.6);
+        }
     }
 }
 
-// Final assembly
-module complete_mug() {
-    union() {
-        mug_body();
-        handle();
+module base_reinforcement() {
+    difference() {
+        cylinder(
+            h = base_thickness,
+            r1 = cup_bottom_radius + 1,
+            r2 = cup_bottom_radius
+        );
+        
+        // Concave bottom for stability
+        translate([0, 0, base_thickness/2])
+            scale([1, 1, 0.3])
+                sphere(r = cup_bottom_radius * 0.8);
     }
 }
 
-// Render mug
-complete_mug();
+// Final Assembly
+union() {
+    cup_body();
+    handle();
+    base_reinforcement();
+}
 ==================================================
 
 === USER DECISION ===

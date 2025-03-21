@@ -106,25 +106,39 @@ class KnowledgeBase:
         query_object = self.keyword_extractor.extract_keyword(query)
         print(f"Searching for examples related to: {query_object}")
         
-        # First, try to find examples that mention the same object
-        candidates = []
+        # Score and rank all examples based on relevance
+        scored_examples = []
         for ex in self.examples:
-            desc_words = ex['description'].lower().split()
-            # Check if the example mentions the requested object type
+            score = 0
+            desc_words = set(ex['description'].lower().split())
+            query_words = set(query.lower().split())
+            
+            # Check for exact object match
             if query_object in desc_words:
-                candidates.append(ex)
+                score += 3
+            
+            # Check for compound matches (e.g., "coffee cup" for "cup")
+            if any(query_object in ' '.join(pair) 
+                  for pair in zip(desc_words, list(desc_words)[1:])):
+                score += 2
+            
+            # Check for word overlap (excluding common words)
+            common_words = {'i', 'want', 'a', 'an', 'to', 'create', 'make', 'build', 
+                          'simple', 'basic', 'new', 'the', 'that', 'this', 'it'}
+            meaningful_query_words = query_words - common_words
+            meaningful_desc_words = desc_words - common_words
+            word_overlap = len(meaningful_query_words & meaningful_desc_words)
+            score += word_overlap
+            
+            if score > 0:  # Only include examples with some relevance
+                scored_examples.append((score, ex))
         
-        # If we don't have enough candidates, add other recent examples
-        if len(candidates) < n:
-            other_examples = [ex for ex in self.examples 
-                            if ex not in candidates][-n + len(candidates):]
-            candidates.extend(other_examples)
-        
-        # Take the most recent n candidates
-        candidates = candidates[-n:]
+        # Sort by score (highest first) and take top n
+        scored_examples.sort(reverse=True, key=lambda x: x[0])
+        candidates = [ex for score, ex in scored_examples[:n] if score > 0]
         
         if not candidates:
-            print("No candidate examples found.")
+            print("No relevant examples found.")
             return ""
             
         # Validate usefulness using Gemma3

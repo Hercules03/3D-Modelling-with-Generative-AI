@@ -1,60 +1,92 @@
-// Parametric Coffee Mug Design
-// Core dimensions
-mug_height = 95;
-mug_diameter = 65;
+// Parametric Cup Implementation
+// Author: Assistant
+// Description: Modular cup design with ergonomic handle
+
+// Quality Settings
+$fn = 100;  // Smoothness factor for curved surfaces
+
+// Main Cup Parameters
+cup_height = 95;
+cup_diameter = 75;
 wall_thickness = 3.5;
-bottom_thickness = 5;
+base_thickness = 4;
+taper_angle = 2;  // Degrees of taper for stability
 
-// Handle parameters
+// Handle Parameters
 handle_thickness = 8;
-handle_width = 12;
-handle_clearance = 10;
-handle_vertical_span = 0.7; // Percentage of mug height
+handle_width = 15;
+handle_height = 60;
+handle_offset = cup_height * 0.3;  // Position from top
+handle_curve_radius = 20;
 
-module mug_body() {
+// Calculated Values
+cup_top_radius = cup_diameter / 2;
+cup_bottom_radius = cup_top_radius - (cup_height * tan(taper_angle));
+rim_fillet = 2;
+
+module cup_body() {
     difference() {
-        // Outer shell
-        cylinder(h=mug_height, d=mug_diameter, $fn=100);
+        // Outer shell with taper
+        cylinder(
+            h = cup_height,
+            r1 = cup_bottom_radius,
+            r2 = cup_top_radius
+        );
         
-        // Inner cavity
-        translate([0, 0, bottom_thickness])
-            cylinder(h=mug_height, 
-                    d=mug_diameter - (wall_thickness * 2), 
-                    $fn=100);
+        // Interior hollow
+        translate([0, 0, base_thickness])
+            cylinder(
+                h = cup_height,
+                r1 = cup_bottom_radius - wall_thickness,
+                r2 = cup_top_radius - wall_thickness
+            );
+            
+        // Rim fillet
+        translate([0, 0, cup_height - rim_fillet])
+            rotate_extrude()
+                translate([cup_top_radius - rim_fillet, 0, 0])
+                    circle(r = rim_fillet);
     }
 }
 
 module handle() {
-    // Handle attachment points
-    handle_height = mug_height * handle_vertical_span;
-    handle_offset = mug_diameter/2 + handle_clearance;
-    
-    // Create smooth handle using hull() between spheres
-    translate([mug_diameter/2, 0, mug_height * 0.8])
-    hull() {
-        // Top connection point
-        sphere(d=handle_thickness, $fn=30);
-        
-        // Outer curve points
-        translate([handle_offset-mug_diameter/2, 0, -handle_height/3])
-            sphere(d=handle_thickness, $fn=30);
-        
-        translate([handle_offset-mug_diameter/2, 0, -handle_height*2/3])
-            sphere(d=handle_thickness, $fn=30);
+    translate([0, cup_top_radius - wall_thickness/2, cup_height - handle_offset]) {
+        difference() {
+            // Outer handle curve
+            rotate([0, 0, 0])
+                rotate_extrude(angle = 180)
+                    translate([handle_curve_radius, 0, 0])
+                        scale([1, 0.8])  // Slight vertical compression
+                            circle(d = handle_thickness);
             
-        // Bottom connection point
-        translate([0, 0, -handle_height])
-            sphere(d=handle_thickness, $fn=30);
+            // Inner cutout for grip
+            rotate([0, 0, 0])
+                rotate_extrude(angle = 180)
+                    translate([handle_curve_radius, 0, 0])
+                        scale([1, 0.8])
+                            circle(d = handle_thickness * 0.6);
+        }
     }
 }
 
-// Final assembly
-module complete_mug() {
-    union() {
-        mug_body();
-        handle();
+module base_reinforcement() {
+    difference() {
+        cylinder(
+            h = base_thickness,
+            r1 = cup_bottom_radius + 1,
+            r2 = cup_bottom_radius
+        );
+        
+        // Concave bottom for stability
+        translate([0, 0, base_thickness/2])
+            scale([1, 1, 0.3])
+                sphere(r = cup_bottom_radius * 0.8);
     }
 }
 
-// Render mug
-complete_mug();
+// Final Assembly
+union() {
+    cup_body();
+    handle();
+    base_reinforcement();
+}
