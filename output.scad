@@ -1,68 +1,121 @@
-// Gate Parameters
-gate_width = 200;            // Total width of the gate
-gate_height = 300;           // Total height of the gate
-post_thickness = 20;         // Thickness of the vertical posts
-post_depth = 10;             // Depth of posts and frame
-crossbar_thickness = 15;     // Thickness of the horizontal crossbar
-crossbar_z = 180;            // Height at which the crossbar is positioned
-hinge_radius = 3;            // Radius of the hinge cylinder
-hinge_height = 25;           // Height (length) of the hinge cylinder
-hinge_offset = 5;            // Offset from the left edge for the hinge
-door_panel_depth = post_depth - 2; // Slightly inset door panel
+// Mailbox Model in OpenSCAD
+// Units are in mm
 
-// Module for a Vertical Post
-module vertical_post() {
-    // Creates a vertical post with base at [0,0,0]
-    cube([post_thickness, post_depth, gate_height], center = false);
-}
+// Main dimensions
+mailbox_length = 180;
+mailbox_width = 80;
+mailbox_base_height = 60;
+mailbox_top_radius = 40;
+wall_thickness = 3;
 
-// Module for the Horizontal Crossbar
-module crossbar() {
-    // Creates the crossbar between the posts.
-    // Its length spans the gap between the two posts.
-    bar_length = gate_width - 2 * post_thickness;
-    cube([bar_length, post_depth, crossbar_thickness], center = false);
-}
+// Door dimensions
+door_thickness = 2;
+door_clearance = 1;
 
-// Module for the Door Panel
-module door_panel() {
-    // Creates an inset door panel occupying the space left by the posts and crossbar.
-    // It is inset slightly along the depth for a neat fit.
-    panel_width = gate_width - 2 * post_thickness;
-    panel_height = crossbar_z; // Panel fills from base up to the crossbar height
-    translate([post_thickness, 1, 0])
-        cube([panel_width, door_panel_depth, panel_height], center = false);
-}
+// Flag dimensions
+flag_width = 30;
+flag_height = 50;
+flag_thickness = 2;
+flag_pole_radius = 3;
+flag_offset = 15;
 
-// Module for a Hinge
-module hinge() {
-    // Creates a simple cylindrical hinge.
-    // The hinge is centered along its height.
-    cylinder(h = hinge_height, r = hinge_radius, center = true);
-}
+// Post dimensions
+post_width = 40;
+post_height = 480;
 
-// Module to assemble the entire Gate
-module gate() {
-    // Left Vertical Post
-    translate([0, 0, 0])
-        vertical_post();
-    
-    // Right Vertical Post
-    translate([gate_width - post_thickness, 0, 0])
-        vertical_post();
+// Main mailbox body module
+module mailbox_body() {
+    difference() {
+        union() {
+            // Base rectangular part
+            cube([mailbox_length, mailbox_width, mailbox_base_height]);
+            
+            // Semi-cylindrical top
+            translate([0, mailbox_width/2, mailbox_base_height])
+                rotate([0, 90, 0])
+                    cylinder(h=mailbox_length, r=mailbox_width/2);
+        }
         
-    // Horizontal Crossbar positioned at crossbar_z
-    translate([post_thickness, 0, crossbar_z])
-        crossbar();
-    
-    // Door Panel (between posts, from base to crossbar)
-    door_panel();
-    
-    // Hinge attached to the left post
-    // Positioning the hinge on the left side, centered along Y and Z directions
-    translate([hinge_offset, post_depth/2, gate_height/2])
-        hinge();
+        // Hollow out the inside, leaving walls with thickness
+        translate([wall_thickness, wall_thickness, wall_thickness])
+            union() {
+                cube([mailbox_length - 2*wall_thickness, 
+                      mailbox_width - 2*wall_thickness, 
+                      mailbox_base_height - wall_thickness]);
+                
+                translate([0, (mailbox_width - 2*wall_thickness)/2, mailbox_base_height - wall_thickness])
+                    rotate([0, 90, 0])
+                        cylinder(h=mailbox_length - 2*wall_thickness, 
+                                r=(mailbox_width - 2*wall_thickness)/2);
+            }
+        
+        // Door opening
+        translate([-1, wall_thickness + door_clearance, wall_thickness + door_clearance])
+            cube([wall_thickness + 2, 
+                  mailbox_width - 2*wall_thickness - 2*door_clearance, 
+                  mailbox_base_height - 2*wall_thickness - door_clearance]);
+    }
 }
 
-// Render the Gate
-gate();
+// Door module
+module door() {
+    door_width = mailbox_width - 2*wall_thickness - 2*door_clearance;
+    door_height = mailbox_base_height - 2*wall_thickness - door_clearance;
+    
+    difference() {
+        union() {
+            // Door panel
+            cube([door_thickness, door_width, door_height]);
+            
+            // Door handle
+            translate([door_thickness/2, door_width/2, door_height*0.7])
+                rotate([0, 90, 0])
+                    cylinder(h=10, r=5, center=true);
+        }
+        
+        // Holes for hinges
+        translate([-1, door_clearance, door_height*0.2])
+            rotate([0, 90, 0])
+                cylinder(h=door_thickness+2, r=2);
+                
+        translate([-1, door_clearance, door_height*0.8])
+            rotate([0, 90, 0])
+                cylinder(h=door_thickness+2, r=2);
+    }
+}
+
+// Flag module
+module flag() {
+    // Flag pole
+    cylinder(h=mailbox_base_height*0.6, r=flag_pole_radius);
+    
+    // Flag
+    translate([0, flag_offset, mailbox_base_height*0.4])
+        cube([flag_thickness, flag_width, flag_height]);
+}
+
+// Post module
+module post() {
+    translate([(mailbox_length - post_width)/2, (mailbox_width - post_width)/2, -post_height])
+        cube([post_width, post_width, post_height]);
+}
+
+// Assemble the mailbox
+module assembled_mailbox() {
+    // Main body
+    mailbox_body();
+    
+    // Door
+    translate([wall_thickness, wall_thickness + door_clearance, wall_thickness + door_clearance])
+        door();
+    
+    // Flag
+    translate([mailbox_length*0.75, -flag_offset, mailbox_base_height*0.3])
+        flag();
+        
+    // Post (optional - comment out if not needed)
+    post();
+}
+
+// Render the mailbox
+assembled_mailbox();

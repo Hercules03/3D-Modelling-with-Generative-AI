@@ -6,6 +6,9 @@ import json
 from pathlib import Path
 from dataclasses import dataclass
 from enum import Enum
+import traceback
+import datetime
+import time
 
 from myAPI import *
 from langchain_community.vectorstores import Chroma
@@ -17,14 +20,30 @@ from LLMmodel import *
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('debug.log'),
-        logging.StreamHandler()
+        logging.FileHandler('debug.log', mode='w')  # Only file handler, no StreamHandler
     ]
 )
+
+# Add file handler for detailed debug info
+debug_handler = logging.FileHandler('detailed_debug.log', mode='w')
+debug_handler.setLevel(logging.DEBUG)
+debug_handler.setFormatter(logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s\n'
+    'Function: %(funcName)s\n'
+    'Message: %(message)s\n'
+    '-------------------\n'
+))
 logger = logging.getLogger(__name__)
+logger.addHandler(debug_handler)
+
+def clear_logs():
+    """Clear both debug log files"""
+    open('debug.log', 'w').close()
+    open('detailed_debug.log', 'w').close()
+    logger.info("Logs cleared for new generation")
 
 class GenerationStage(Enum):
     """Enum for different stages of the generation process"""
@@ -65,21 +84,42 @@ class ErrorHandler:
         error_type = type(error).__name__
         error_msg = str(error)
         
-        logger.error(f"Generation attempt {attempt}/{max_attempts} failed: [{error_type}] {error_msg}")
+        # Detailed error logging (to file only)
+        logger.error(
+            f"\nError Details:"
+            f"\n  Type: {error_type}"
+            f"\n  Message: {error_msg}"
+            f"\n  Attempt: {attempt}/{max_attempts}"
+            f"\n  Stack Trace: {traceback.format_exc()}"
+        )
         
         # Provide user-friendly error messages
         user_message = {
             "ValueError": "Invalid input parameters",
             "ConnectionError": "Network connection issue",
             "TimeoutError": "Request timed out",
+            "RuntimeError": "Execution error",
+            "KeyError": "Missing required data",
+            "AttributeError": "Invalid operation",
         }.get(error_type, "An unexpected error occurred")
         
-        return {
+        error_info = {
             "success": False,
             "error": f"{user_message}: {error_msg}",
             "attempt": attempt,
             "max_attempts": max_attempts,
-            "error_type": error_type
+            "error_type": error_type,
+            "timestamp": datetime.datetime.now().isoformat(),
+            "stack_trace": traceback.format_exc()
+        }
+        
+        # Log error details to debug file
+        logger.debug(f"Error Info: {json.dumps(error_info, indent=2)}")
+        
+        # Return simplified error info for terminal display
+        return {
+            "success": False,
+            "error": user_message  # Only show the user-friendly message without technical details
         }
 
 class ProgressManager:
@@ -95,14 +135,45 @@ class ProgressManager:
             GenerationStage.VALIDATION: 0.1,
             GenerationStage.KNOWLEDGE_UPDATE: 0.1
         }
+        self._stage_start_times = {}
+        self._stage_durations = {}
 
     def update_stage(self, stage: GenerationStage, progress: float, message: str):
         """Update progress for the current stage"""
+        # Record stage transition
+        if stage != self._current_stage:
+            if self._current_stage:
+                duration = time.time() - self._stage_start_times[self._current_stage]
+                self._stage_durations[self._current_stage] = duration
+                logger.debug(
+                    f"Stage Complete: {self._current_stage.value}"
+                    f"\n  Duration: {duration:.2f}s"
+                    f"\n  Final Progress: {self._progress:.1f}%"
+                )
+            
+            self._stage_start_times[stage] = time.time()
+            logger.debug(
+                f"Stage Start: {stage.value}"
+                f"\n  Time: {datetime.datetime.now().isoformat()}"
+                f"\n  Initial Message: {message}"
+            )
+        
         self._current_stage = stage
         self._progress = progress
         total_progress = self._calculate_total_progress()
-        logger.info(f"[{stage.value}] {progress:.1f}% - {message}")
-        print(f"\rProgress: [{self._create_progress_bar(total_progress)}] {total_progress:.1f}%", end="")
+        
+        # Log detailed progress information to file only
+        logger.debug(
+            f"Progress Update:"
+            f"\n  Stage: {stage.value}"
+            f"\n  Stage Progress: {progress:.1f}%"
+            f"\n  Total Progress: {total_progress:.1f}%"
+            f"\n  Message: {message}"
+            f"\n  Time: {datetime.datetime.now().isoformat()}"
+        )
+        
+        # Only show progress bar in terminal
+        print(f"\r[{self._create_progress_bar(total_progress)}] {total_progress:.1f}%", end="")
 
     def _calculate_total_progress(self) -> float:
         """Calculate total progress across all stages"""
@@ -114,13 +185,49 @@ class ProgressManager:
             if stage.value < self._current_stage.value
         )
         current_weight = self._stage_weights[self._current_stage] * (self._progress / 100)
-        return (completed_weight + current_weight) * 100
+        total_progress = (completed_weight + current_weight) * 100
+        
+        # Log calculation details
+        logger.debug(
+            f"Progress Calculation:"
+            f"\n  Completed Weight: {completed_weight}"
+            f"\n  Current Stage Weight: {self._stage_weights[self._current_stage]}"
+            f"\n  Current Progress: {self._progress:.1f}%"
+            f"\n  Total Progress: {total_progress:.1f}%"
+        )
+        
+        return total_progress
+
+    def get_stage_summary(self) -> str:
+        """Get a summary of all stage durations"""
+        summary = ["Stage Duration Summary:"]
+        total_duration = 0
+        
+        for stage, duration in self._stage_durations.items():
+            total_duration += duration
+            summary.append(f"  {stage.value}: {duration:.2f}s")
+        
+        if total_duration > 0:
+            summary.append(f"\nTotal Duration: {total_duration:.2f}s")
+            
+        return "\n".join(summary)
 
     @staticmethod
     def _create_progress_bar(progress: float, width: int = 30) -> str:
         """Create a text-based progress bar"""
         filled = int(width * progress / 100)
-        return f"{'='*filled}{'-'*(width-filled)}"
+        bar = f"{'='*filled}{'-'*(width-filled)}"
+        
+        # Log progress bar creation
+        logger.debug(
+            f"Progress Bar:"
+            f"\n  Progress: {progress:.1f}%"
+            f"\n  Width: {width}"
+            f"\n  Filled: {filled}"
+            f"\n  Bar: {bar}"
+        )
+        
+        return bar
 
 class OllamaManager:
     """Manager class for Ollama-related operations"""
@@ -152,7 +259,7 @@ class OllamaManager:
             
         except Exception as e:
             logger.error(f"Error checking Ollama: {str(e)}")
-            return False
+        return False
 
 class KnowledgeManager:
     """Manager class for knowledge base operations"""
@@ -161,6 +268,7 @@ class KnowledgeManager:
     def input_manual_knowledge() -> bool:
         """Handle manual input of knowledge"""
         logger.info("Starting manual knowledge input")
+        logger.debug("Initializing manual knowledge input process")
         print("\nManual Knowledge Input Mode")
         print("---------------------------")
         
@@ -170,8 +278,9 @@ class KnowledgeManager:
             logger.warning("Empty description provided")
             print("Description cannot be empty.")
             return False
-        
+            
         # Get metadata
+        logger.debug("Starting metadata input")
         print("\nMetadata Input (optional):")
         print("------------------------")
         metadata = {}
@@ -191,6 +300,7 @@ class KnowledgeManager:
                 "4": "INTRICATE"
             }
             metadata["complexity"] = complexity_map.get(complexity)
+            logger.debug("Complexity selected: %s", metadata["complexity"])
         
         # Style
         print("\nSelect style:")
@@ -207,6 +317,9 @@ class KnowledgeManager:
                 "4": "Decorative"
             }
             metadata["style"] = style_map.get(style)
+            logger.debug("Style selected: %s", metadata["style"])
+        
+        logger.debug("Metadata collected: %s", json.dumps(metadata, indent=2))
         
         # Get OpenSCAD code
         print("\nEnter the OpenSCAD code (press Enter twice to finish):")
@@ -226,16 +339,26 @@ class KnowledgeManager:
             print("OpenSCAD code cannot be empty.")
             return False
         
+        logger.debug("OpenSCAD code length: %d characters", len(scad_code))
+        
         try:
             # Validate OpenSCAD code
+            logger.debug("Starting OpenSCAD code validation")
             if not KnowledgeManager._validate_scad_code(scad_code):
+                logger.warning("OpenSCAD code validation failed")
                 return False
             
             # Initialize knowledge base
+            logger.debug("Initializing knowledge base")
             kb = EnhancedSCADKnowledgeBase()
             
             # Add example with metadata
-            if kb.add_example(description, scad_code):
+            logger.debug("Adding example to knowledge base")
+            logger.debug("Description: %s", description)
+            logger.debug("Metadata: %s", json.dumps(metadata, indent=2))
+            logger.debug("Code length: %d characters", len(scad_code))
+            
+            if kb.add_example(description, scad_code, metadata):
                 logger.info("Knowledge successfully saved")
                 print("\nKnowledge has been successfully saved!")
                 return True
@@ -245,10 +368,11 @@ class KnowledgeManager:
                 return False
             
         except Exception as e:
-            logger.error(f"Error saving knowledge: {str(e)}")
+            logger.error("Error saving knowledge: %s", str(e))
+            logger.error("Stack trace: %s", traceback.format_exc())
             print(f"\nError saving knowledge: {str(e)}")
             return False
-    
+
     @staticmethod
     def delete_knowledge() -> bool:
         """Handle knowledge deletion"""
@@ -257,13 +381,19 @@ class KnowledgeManager:
         print("----------------------")
         
         try:
+            logger.debug("Initializing knowledge base for deletion")
             kb = EnhancedSCADKnowledgeBase()
             
             # Get all examples
+            logger.debug("Retrieving all examples")
             results = kb.collection.get()
             if not results or not results['ids']:
+                logger.info("No examples found in knowledge base")
                 print("\nNo examples found in the knowledge base.")
                 return False
+            
+            # Log retrieved examples
+            logger.debug("Found %d examples", len(results['ids']))
             
             # Display examples
             print("\nAvailable examples:")
@@ -271,74 +401,107 @@ class KnowledgeManager:
             for i, (id, doc) in enumerate(zip(results['ids'], results['documents']), 1):
                 print(f"\n{i}. ID: {id}")
                 print(f"   Description: {doc[:100]}...")
+                logger.debug("Example %d: ID=%s, Description=%s", i, id, doc[:100])
             
             # Get user selection
             while True:
                 choice = input("\nEnter the number of the example to delete (or 'q' to quit): ").strip()
                 if choice.lower() == 'q':
+                    logger.info("User cancelled deletion")
                     return False
                 
                 try:
                     index = int(choice) - 1
                     if 0 <= index < len(results['ids']):
                         example_id = results['ids'][index]
+                        logger.debug("Selected example %d with ID: %s", index + 1, example_id)
                         break
                     else:
+                        logger.warning("Invalid selection index: %d", index + 1)
                         print("Invalid selection. Please try again.")
                 except ValueError:
+                    logger.warning("Invalid input: %s", choice)
                     print("Invalid input. Please enter a number or 'q' to quit.")
             
             # Confirm deletion
             confirm = input(f"\nAre you sure you want to delete example {example_id}? (y/n): ").strip().lower()
             if confirm != 'y':
+                logger.info("Deletion cancelled by user")
                 print("Deletion cancelled.")
                 return False
             
             # Delete the example
+            logger.debug("Deleting example with ID: %s", example_id)
             kb.collection.delete(ids=[example_id])
-            logger.info(f"Deleted example {example_id}")
+            logger.info("Successfully deleted example %s", example_id)
             print(f"\nExample {example_id} has been deleted successfully!")
             return True
             
         except Exception as e:
-            logger.error(f"Error deleting knowledge: {str(e)}")
+            logger.error("Error deleting knowledge: %s", str(e))
+            logger.error("Stack trace: %s", traceback.format_exc())
             print(f"\nError deleting knowledge: {str(e)}")
             return False
     
     @staticmethod
     def _validate_scad_code(code: str) -> bool:
         """Validate OpenSCAD code for basic syntax and structure"""
+        logger.debug("Validating OpenSCAD code")
+        logger.debug("Code length: %d characters", len(code))
+        
         if not code or len(code) < GenerationSettings.min_code_length:
-            logger.warning("Code too short")
+            logger.warning("Code too short: %d characters (minimum: %d)", 
+                         len(code), GenerationSettings.min_code_length)
             print("Error: OpenSCAD code is too short")
             return False
         
         if len(code) > GenerationSettings.max_code_length:
-            logger.warning("Code too long")
+            logger.warning("Code too long: %d characters (maximum: %d)", 
+                         len(code), GenerationSettings.max_code_length)
             print("Error: OpenSCAD code exceeds maximum length")
             return False
         
         required_elements = ['(', ')', '{', '}']
+        missing_elements = []
         for element in required_elements:
             if element not in code:
+                missing_elements.append(element)
                 logger.warning(f"Missing {element} in OpenSCAD code")
                 print(f"Error: OpenSCAD code is missing {element}")
-                return False
+        
+        if missing_elements:
+            logger.warning("Missing required elements: %s", ", ".join(missing_elements))
+            return False
         
         # Check for basic OpenSCAD elements
         basic_keywords = ['module', 'function', 'cube', 'sphere', 'cylinder']
-        if not any(keyword in code for keyword in basic_keywords):
+        found_keywords = [keyword for keyword in basic_keywords if keyword in code]
+        
+        if not found_keywords:
             logger.warning("No basic OpenSCAD elements found")
             print("Error: Code doesn't contain any basic OpenSCAD elements")
             return False
         
+        logger.debug("Found OpenSCAD keywords: %s", ", ".join(found_keywords))
+        logger.info("OpenSCAD code validation successful")
         return True
 
 def main():
     """Main function for the 3D Model Generator"""
     config = ModelGeneratorConfig()
     progress_manager = ProgressManager()
+    
+    # Clear and initialize logging for this session
+    clear_logs()
+    logger.info("=" * 50)
     logger.info("Starting 3D Model Generator")
+    logger.info("Time: %s", datetime.datetime.now().isoformat())
+    logger.info("Configuration:")
+    logger.info("  - Max Generation Attempts: %d", config.settings.max_generation_attempts)
+    logger.info("  - Similarity Threshold: %.2f", config.settings.similarity_threshold)
+    logger.info("  - Output Directory: %s", config.output_dir)
+    logger.info("=" * 50)
+    
     print("Welcome to the 3D Model Generator!")
     
     while True:
@@ -351,16 +514,25 @@ def main():
         choice = input("\nEnter your choice (1-4): ").strip()
         
         if choice == "4" or choice.lower() in config.quit_words:
-            logger.info("User chose to quit")
+            # Log final summary before exiting
+            logger.info("\nSession Summary:")
+            logger.info(progress_manager.get_stage_summary())
+            logger.info("Session ended at: %s", datetime.datetime.now().isoformat())
+            logger.info("=" * 50)
+            
             print("\nGoodbye!")
             break
             
         elif choice == "2":
-            KnowledgeManager.input_manual_knowledge()
+            logger.info("Starting manual knowledge input")
+            result = KnowledgeManager.input_manual_knowledge()
+            logger.info("Manual knowledge input result: %s", "Success" if result else "Failed")
             continue
             
         elif choice == "3":
-            KnowledgeManager.delete_knowledge()
+            logger.info("Starting knowledge deletion")
+            result = KnowledgeManager.delete_knowledge()
+            logger.info("Knowledge deletion result: %s", "Success" if result else "Failed")
             continue
             
         elif choice == "1":
@@ -393,6 +565,7 @@ def main():
                 except Exception as e:
                     error_info = ErrorHandler.handle_generation_error(e, 1, 1)
                     print(f"Error: {error_info['error']}")
+                    logger.error("Provider initialization failed: %s", error_info)
                     print("Please check your environment variables and try again.")
                     return
             
@@ -416,6 +589,13 @@ def main():
                         result = generator.generate_model(description)
                         if result['success']:
                             progress_manager.update_stage(GenerationStage.CODE_GENERATION, 100, "Generation complete")
+                            # Log successful generation details (to file only)
+                            logger.info("\nGeneration Summary:")
+                            logger.info("  Description: %s", description)
+                            logger.info("  Provider: %s", provider)
+                            logger.info("  Attempts: %d", attempt)
+                            logger.info("  Stage Summary:\n%s", progress_manager.get_stage_summary())
+                            print("\nGeneration complete!")  # Simple success message for terminal
                             break
                             
                         error_info = ErrorHandler.handle_generation_error(
@@ -423,10 +603,11 @@ def main():
                             attempt, 
                             config.settings.max_generation_attempts
                         )
-                        print(f"\nAttempt {attempt} failed: {error_info['error']}")
+                        print(f"\rAttempt {attempt} failed. Retrying..." if attempt < config.settings.max_generation_attempts else "\nFailed to generate model.")
                         
                         if attempt == config.settings.max_generation_attempts:
-                            print("\nFailed to generate after maximum attempts.")
+                            logger.error("Failed to generate after maximum attempts")
+                            logger.error("Stage Summary:\n%s", progress_manager.get_stage_summary())
                             
                 except Exception as e:
                     error_info = ErrorHandler.handle_generation_error(
@@ -434,7 +615,9 @@ def main():
                         config.settings.max_generation_attempts, 
                         config.settings.max_generation_attempts
                     )
-                    print(f"\nError: {error_info['error']}")
+                    print("\nAn error occurred. Please check the debug logs for details.")
+                    logger.error("Unexpected error during generation: %s", error_info)
+                    logger.error("Stage Summary:\n%s", progress_manager.get_stage_summary())
         
         else:
             logger.warning(f"Invalid choice: {choice}")
