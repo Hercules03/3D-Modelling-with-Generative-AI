@@ -261,8 +261,84 @@ class OllamaManager:
             logger.error(f"Error checking Ollama: {str(e)}")
         return False
 
+class LLMPromptLogger:
+    """Logger for LLM prompt-response pairs"""
+    def __init__(self):
+        self.log_dir = "conversation_logs"
+        self.metadata_file = os.path.join(self.log_dir, "metadata_extraction.json")
+        self.category_file = os.path.join(self.log_dir, "category_analysis.json")
+        self._init_log_files()
+
+    def _init_log_files(self):
+        """Initialize log files if they don't exist"""
+        os.makedirs(self.log_dir, exist_ok=True)
+        
+        # Initialize each file with empty array if it doesn't exist
+        for file_path in [self.metadata_file, self.category_file]:
+            if not os.path.exists(file_path):
+                with open(file_path, 'w') as f:
+                    json.dump([], f, indent=2)
+
+    def log_metadata_extraction(self, query: str, code: str, response: dict, timestamp: str = None):
+        """Log metadata extraction prompt-response pair"""
+        if timestamp is None:
+            timestamp = datetime.datetime.now().isoformat()
+            
+        entry = {
+            "timestamp": timestamp,
+            "input": {
+                "description": query,
+                "code": code
+            },
+            "output": response,
+            "tokens": {
+                "input_tokens": len(query.split()) + len(code.split()),
+                "output_tokens": sum(len(str(v).split()) for v in response.values())
+            }
+        }
+        
+        self._append_to_json(self.metadata_file, entry)
+        logger.debug("Logged metadata extraction: %s", json.dumps(entry, indent=2))
+
+    def log_category_analysis(self, query: str, code: str, response: dict, timestamp: str = None):
+        """Log category analysis prompt-response pair"""
+        if timestamp is None:
+            timestamp = datetime.datetime.now().isoformat()
+            
+        entry = {
+            "timestamp": timestamp,
+            "input": {
+                "description": query,
+                "code": code
+            },
+            "output": response,
+            "tokens": {
+                "input_tokens": len(query.split()) + len(code.split()),
+                "output_tokens": sum(len(str(v).split()) for v in response.values())
+            }
+        }
+        
+        self._append_to_json(self.category_file, entry)
+        logger.debug("Logged category analysis: %s", json.dumps(entry, indent=2))
+
+    def _append_to_json(self, file_path: str, new_data: dict):
+        """Append new data to existing JSON file"""
+        try:
+            with open(file_path, 'r') as f:
+                data = json.load(f)
+            
+            data.append(new_data)
+            
+            with open(file_path, 'w') as f:
+                json.dump(data, f, indent=2)
+                
+        except Exception as e:
+            logger.error("Error logging to %s: %s", os.path.basename(file_path), str(e))
+
 class KnowledgeManager:
     """Manager class for knowledge base operations"""
+    
+    _prompt_logger = LLMPromptLogger()  # Class-level instance for prompt logging
     
     @staticmethod
     def input_manual_knowledge() -> bool:
@@ -279,48 +355,6 @@ class KnowledgeManager:
             print("Description cannot be empty.")
             return False
             
-        # Get metadata
-        logger.debug("Starting metadata input")
-        print("\nMetadata Input (optional):")
-        print("------------------------")
-        metadata = {}
-        
-        # Complexity
-        print("\nSelect complexity level:")
-        print("1. Simple")
-        print("2. Moderate")
-        print("3. Complex")
-        print("4. Intricate")
-        complexity = input("Enter choice (1-4) or press Enter to skip: ").strip()
-        if complexity:
-            complexity_map = {
-                "1": "SIMPLE",
-                "2": "MODERATE",
-                "3": "COMPLEX",
-                "4": "INTRICATE"
-            }
-            metadata["complexity"] = complexity_map.get(complexity)
-            logger.debug("Complexity selected: %s", metadata["complexity"])
-        
-        # Style
-        print("\nSelect style:")
-        print("1. Modern")
-        print("2. Traditional")
-        print("3. Minimalist")
-        print("4. Decorative")
-        style = input("Enter choice (1-4) or press Enter to skip: ").strip()
-        if style:
-            style_map = {
-                "1": "Modern",
-                "2": "Traditional",
-                "3": "Minimalist",
-                "4": "Decorative"
-            }
-            metadata["style"] = style_map.get(style)
-            logger.debug("Style selected: %s", metadata["style"])
-        
-        logger.debug("Metadata collected: %s", json.dumps(metadata, indent=2))
-        
         # Get OpenSCAD code
         print("\nEnter the OpenSCAD code (press Enter twice to finish):")
         print("----------------------------------------------------")
@@ -339,8 +373,6 @@ class KnowledgeManager:
             print("OpenSCAD code cannot be empty.")
             return False
         
-        logger.debug("OpenSCAD code length: %d characters", len(scad_code))
-        
         try:
             # Validate OpenSCAD code
             logger.debug("Starting OpenSCAD code validation")
@@ -352,13 +384,30 @@ class KnowledgeManager:
             logger.debug("Initializing knowledge base")
             kb = EnhancedSCADKnowledgeBase()
             
+            # Extract metadata and log the prompt-response pair
+            metadata_result = kb.extract_metadata(description, scad_code)
+            KnowledgeManager._prompt_logger.log_metadata_extraction(
+                query=description,
+                code=scad_code,
+                response=metadata_result
+            )
+            
+            # Perform category analysis and log the prompt-response pair
+            category_result = kb.analyze_categories(description, scad_code)
+            KnowledgeManager._prompt_logger.log_category_analysis(
+                query=description,
+                code=scad_code,
+                response=category_result
+            )
+            
             # Add example with metadata
             logger.debug("Adding example to knowledge base")
             logger.debug("Description: %s", description)
-            logger.debug("Metadata: %s", json.dumps(metadata, indent=2))
+            logger.debug("Metadata: %s", json.dumps(metadata_result, indent=2))
+            logger.debug("Categories: %s", json.dumps(category_result, indent=2))
             logger.debug("Code length: %d characters", len(scad_code))
             
-            if kb.add_example(description, scad_code, metadata):
+            if kb.add_example(description, scad_code, metadata_result, category_result):
                 logger.info("Knowledge successfully saved")
                 print("\nKnowledge has been successfully saved!")
                 return True
@@ -442,7 +491,7 @@ class KnowledgeManager:
             logger.error("Stack trace: %s", traceback.format_exc())
             print(f"\nError deleting knowledge: {str(e)}")
             return False
-    
+
     @staticmethod
     def _validate_scad_code(code: str) -> bool:
         """Validate OpenSCAD code for basic syntax and structure"""

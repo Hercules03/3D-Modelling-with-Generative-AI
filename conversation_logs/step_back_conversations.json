@@ -270,5 +270,45 @@
       "abstractions": "- Primary hollow cylinder or truncated cone for main container body\n- Secondary cylinder or dome for removable lid component\n- Optional rectangular prism for foot pedal mechanism\n- Filleted edges (0.5-2cm radius) for realistic appearance and safety\n- Hollow interior with uniform wall thickness (2-5mm)",
       "approach": "1. Create base cylinder (30-40cm height, 20-30cm diameter) and apply shell modifier (3mm thickness)\n2. Generate lid component using cylinder or dome (0.5-1\u00d7 diameter of base, 2-5cm height)\n3. Apply edge fillets to all components (0.5-1cm radius for exterior edges)\n4. Position lid component on top of main body with appropriate offset\n5. Add optional features: handles, foot pedal mechanism, or interior bag hooks\n6. Apply material properties (plastic, metal) and optimize mesh for 3D printing or rendering"
     }
+  },
+  {
+    "query": "I want a basket",
+    "step_back_analysis": {
+      "principles": "- Cylindrical/conical topology with appropriate aspect ratio (height to width)\n- Interlacing geometry for weave pattern following alternating over-under patterns\n- Surface normal consistency for proper rendering and material application\n- Material thickness consideration for realistic appearance of woven elements\n- Structural integrity ensuring the basket appears capable of containing objects",
+      "abstractions": "- Base circular or elliptical shape for bottom foundation\n- Vertical or slightly angled side elements forming the basket wall\n- Horizontal weaving elements that interlace with vertical elements\n- Optional rim reinforcement at the top edge\n- Possible handle attachment points and curved handle structure",
+      "approach": "1. Create parametric base shape (circle/ellipse) and establish overall proportions\n2. Generate vertical structural elements (struts) arranged radially around base\n3. Create horizontal weaving elements and apply boolean operations for interlacing effect\n4. Apply appropriate curvature to all elements to achieve natural basket appearance\n5. Add finishing details like rim reinforcement and handles if required"
+    }
+  },
+  {
+    "query": "I want a water bottle",
+    "step_back_analysis": {
+      "principles": "- Cylindrical coordinate systems for body revolution surfaces\n- Boolean operations for cap threading and internal/external feature creation\n- Continuity constraints (G0, G1, G2) for smooth transitions between surfaces\n- Material volume conservation for realistic wall thickness\n- Ergonomic constraints for grip sections and mouth opening",
+      "abstractions": "- Primary cylinder/ellipsoid for main bottle body\n- Tapered neck section using lofting or sweep operations\n- Threaded cap requiring helical paths and boolean cuts\n- Optional ergonomic indentations using deformation or boolean operations\n- Base section with stability considerations (flat or concave)",
+      "approach": "1. Create base profile curve for revolution or extrusion of main body\n2. Generate neck transition using loft/blend between body and mouth profiles\n3. Develop cap with internal threading and appropriate clearance tolerances\n4. Apply appropriate fillets and chamfers to edges for realism\n5. Implement texture mapping coordinates for material application"
+    }
+  },
+  {
+    "query": "I want a water bottle",
+    "step_back_analysis": {
+      "principles": "- Cylindrical geometry with axial symmetry as the foundational mathematical concept\n- Surface continuity (G1/G2) for smooth transitions between components\n- Volume calculation for accurate liquid capacity representation\n- Material thickness constraints to ensure physical manufacturability\n- Watertight mesh topology to prevent rendering artifacts",
+      "abstractions": "- Primary cylinder or curved surface for main bottle body\n- Threaded neck with precise helical geometry\n- Cap with matching internal thread pattern\n- Optional ergonomic contours for grip areas\n- Base with slight concavity for stability\n- Potential inner wall offset for double-walled insulated bottles",
+      "approach": "1. Create base cylindrical form with appropriate radius and height parameters\n2. Model neck with narrowing diameter and thread profile using helical patterns\n3. Develop cap with matching thread pattern and optional sealing mechanism\n4. Add ergonomic details (grip textures, indentations) through boolean operations or deformation\n5. Ensure all components maintain proper clearances and connections"
+    }
+  },
+  {
+    "query": "I want a water bottle",
+    "step_back_analysis": {
+      "principles": "- Rotational symmetry for the bottle body (cylindrical or tapered cylindrical form)\n- Thickness mapping for realistic material representation (shell modifier concept)\n- Parametric relationships between components (cap must fit bottle mouth precisely)\n- Volume preservation for functional accuracy (capacity should match real-world equivalent)\n- Surface continuity for proper light interaction and realistic appearance",
+      "abstractions": "- Primary cylinder/tapered cylinder for bottle body\n- Secondary cylinder/cone for bottle neck\n- Threaded connection system between cap and bottle\n- Optional: ergonomic indentations for grip\n- Optional: decorative elements (label area, logo indentation)",
+      "approach": "1. Create base cylindrical form with appropriate height-to-width ratio\n2. Model neck with transition to main body (using lofting or boolean operations)\n3. Develop cap with internal threading that matches external threading on bottle neck\n4. Apply appropriate shell thickness to maintain realistic material properties\n5. Add surface details like grip texture, label area, or capacity markings"
+    }
+  },
+  {
+    "query": "I want a water bottle",
+    "step_back_analysis": {
+      "principles": "- Rotational symmetry around vertical axis for the bottle body\n- Surface continuity for smooth transitions between components\n- Volume preservation for accurate capacity representation\n- Material thickness considerations for realistic rendering\n- Balance between aesthetic design and functional ergonomics",
+      "abstractions": "- Primary cylinder/tapered cylinder for main bottle body\n- Threaded neck section with precise pitch and depth\n- Cap/lid with matching internal thread pattern\n- Optional components: grip indentations, texture patterns, label area\n- Potential internal volume representation for liquid visualization",
+      "approach": "1. Define bottle profile curve for revolution/extrusion (considering ergonomics and capacity)\n2. Create main body through revolution or extrusion with appropriate wall thickness\n3. Model threaded neck section with precise dimensions for cap interaction\n4. Design cap/lid with matching thread pattern and appropriate sealing mechanism\n5. Add secondary features like texture, grip indentations, and label area\n6. Apply appropriate fillets and chamfers for realism"
+    }
   }
 ]

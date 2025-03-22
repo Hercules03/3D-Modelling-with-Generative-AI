@@ -894,4 +894,157 @@ class EnhancedSCADKnowledgeBase:
         
         # Sort by final score
         ranked_results.sort(key=lambda x: x['scores']['final'], reverse=True)
-        return ranked_results 
+        return ranked_results
+
+    def extract_metadata(self, description: str, code: str) -> dict:
+        """Extract metadata from a description and code using LLM"""
+        try:
+            # Use MetadataExtractor for initial metadata
+            metadata = self.metadata_extractor.extract_metadata(description)
+            
+            # Add code-based metadata
+            code_metadata = self._analyze_code_metadata(code)
+            metadata.update(code_metadata)
+            
+            # Log the extraction process
+            print("\nMetadata Extraction Results:")
+            print("- From description:", json.dumps(metadata, indent=2))
+            print("- From code analysis:", json.dumps(code_metadata, indent=2))
+            
+            return metadata
+            
+        except Exception as e:
+            print(f"Error extracting metadata: {str(e)}")
+            return {}
+    
+    def analyze_categories(self, description: str, code: str) -> dict:
+        """Analyze and categorize the object using standardized categories"""
+        try:
+            # First get the object type from metadata
+            metadata = self.metadata_extractor.extract_metadata(description)
+            object_type = metadata.get('object_type', 'unknown')
+            
+            # Format the categories and properties info
+            categories_info = "\n".join(
+                f"- {cat}: {info['description']} (e.g., {', '.join(info['examples'])})"
+                for cat, info in self.STANDARD_CATEGORIES.items()
+            )
+            
+            properties_info = "\n".join(
+                f"- {prop}: {', '.join(values)}"
+                for prop, values in self.STANDARD_PROPERTIES.items()
+            )
+            
+            # Use the category analysis prompt
+            prompt = CATEGORY_ANALYSIS_PROMPT.format(
+                object_type=object_type,
+                description=description,
+                categories_info=categories_info,
+                properties_info=properties_info
+            )
+            
+            # Get response from LLM
+            response = self.llm.invoke(prompt)
+            
+            # Parse the JSON response
+            try:
+                # Clean up the response to ensure it's valid JSON
+                json_str = response.content.strip()
+                if json_str.startswith("```json"):
+                    json_str = json_str.split("```json")[1]
+                if json_str.endswith("```"):
+                    json_str = json_str.rsplit("```", 1)[0]
+                json_str = json_str.strip()
+                
+                result = json.loads(json_str)
+                
+                # Validate and clean the response
+                cleaned_result = {
+                    "categories": [
+                        cat for cat in result.get("categories", [])
+                        if cat in self.STANDARD_CATEGORIES
+                    ],
+                    "properties": {
+                        prop: value
+                        for prop, value in result.get("properties", {}).items()
+                        if prop in self.STANDARD_PROPERTIES
+                        and value in self.STANDARD_PROPERTIES[prop]
+                    },
+                    "similar_objects": [
+                        obj for obj in result.get("similar_objects", [])
+                        if any(obj in cat_info["examples"]
+                              for cat_info in self.STANDARD_CATEGORIES.values())
+                    ]
+                }
+                
+                # Ensure at least one category is assigned
+                if not cleaned_result["categories"]:
+                    cleaned_result["categories"] = ["other"]
+                
+                # Log the analysis results
+                print("\nCategory Analysis Results:")
+                print(json.dumps(cleaned_result, indent=2))
+                
+                return cleaned_result
+                
+            except json.JSONDecodeError as e:
+                print(f"Error parsing LLM response as JSON: {str(e)}")
+                print(f"Raw response: {json_str}")
+                return {
+                    "categories": ["other"],
+                    "properties": {},
+                    "similar_objects": []
+                }
+                
+        except Exception as e:
+            print(f"Error analyzing categories: {str(e)}")
+            return {
+                "categories": ["other"],
+                "properties": {},
+                "similar_objects": []
+            }
+    
+    def _analyze_code_metadata(self, code: str) -> dict:
+        """Analyze OpenSCAD code to extract additional metadata"""
+        metadata = {}
+        
+        try:
+            # Calculate complexity score
+            complexity_score = self._calculate_complexity_score(code, {})
+            if complexity_score < 30:
+                metadata["complexity"] = "SIMPLE"
+            elif complexity_score < 70:
+                metadata["complexity"] = "MEDIUM"
+            else:
+                metadata["complexity"] = "COMPLEX"
+            
+            # Analyze components
+            components = self._analyze_components(code)
+            metadata["components"] = components
+            
+            # Extract geometric properties
+            geometric_props = []
+            if any(c["name"] == "sphere" for c in components):
+                geometric_props.append("spherical")
+            if any(c["name"] == "cube" for c in components):
+                geometric_props.append("angular")
+            if any(c["name"] == "cylinder" for c in components):
+                geometric_props.append("cylindrical")
+            if any(c["type"] == "boolean" for c in components):
+                geometric_props.append("compound")
+            metadata["geometric_properties"] = geometric_props
+            
+            # Analyze technical requirements
+            tech_reqs = []
+            if len([c for c in components if c["type"] == "boolean"]) > 2:
+                tech_reqs.append("complex_boolean_operations")
+            if len([c for c in components if c["type"] == "transformation"]) > 3:
+                tech_reqs.append("multiple_transformations")
+            if any(c["type"] == "module" for c in components):
+                tech_reqs.append("modular_design")
+            metadata["technical_requirements"] = tech_reqs
+            
+        except Exception as e:
+            print(f"Error analyzing code metadata: {str(e)}")
+        
+        return metadata 

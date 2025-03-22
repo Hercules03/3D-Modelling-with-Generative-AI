@@ -66,34 +66,41 @@ KEYWORD_EXTRACTOR_PROMPT = """Extract the main object type from this description
 Return only the object type as a single word, nothing else."""
 
 # Step-back prompt template
-STEP_BACK_PROMPT_TEMPLATE = """Let's analyze the technical requirements and geometric principles for creating a 3D model based on this request: "{query}"
+STEP_BACK_PROMPT_TEMPLATE = """When creating a 3D model for "{query}", what are the fundamental principles and high-level concepts I should consider before implementation?
 
 Please provide a structured technical analysis in this format:
 
 <think>
 Consider:
-- Required geometric primitives
-- Spatial relationships
-- Key measurements and proportions
-- Technical implementation approach
+- Core geometric and mathematical principles
+- Essential spatial relationships
+- Fundamental design patterns in 3D modeling
+- Practical constraints and requirements
 </think>
 
 <analysis>
+Based on these principles, let me develop a structured implementation plan:
+
 CORE PRINCIPLES:
-- [List 3-5 key geometric and mathematical concepts]
-- [Focus on technical requirements]
-- [Include necessary measurements and proportions]
+- [List 3-5 key geometric and mathematical concepts that apply to this specific model]
+- [Include relevant physical or material properties]
+- [Note critical design constraints]
 
 SHAPE COMPONENTS:
 - [List primary geometric primitives needed]
 - [Describe spatial relationships]
-- [Note required transformations]
+- [Note required transformations and operations]
 
 IMPLEMENTATION STEPS:
 1. [Initial setup and base components]
 2. [Component creation and positioning]
 3. [Assembly and transformations]
 4. [Final adjustments and optimization]
+
+MEASUREMENT CONSIDERATIONS:
+- [Key proportions and ratios]
+- [Critical dimensions]
+- [Scale factors]
 </analysis>
 
 Please maintain the XML-style tags and structured format shown above."""
@@ -102,10 +109,10 @@ Please maintain the XML-style tags and structured format shown above."""
 OPENSCAD_GNERATOR_PROMPT_TEMPLATE = """You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user's description.
 
 BASIC KNOWLEDGE:
-{basic_knowledge}
+        {basic_knowledge}
 
 RELEVANT EXAMPLES:
-{examples}
+        {examples}
 
 Analysis to consider:
 {step_back_analysis}

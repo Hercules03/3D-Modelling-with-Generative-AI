@@ -190,7 +190,7 @@ class OpenSCADGenerator:
                 retry = input("Would you like to retry? (y/n): ").lower().strip()
                 if retry != 'y':
                     return None
-    
+        
     def generate_model(self, description):
         """Generate OpenSCAD code for the given description and save it to a file."""
         max_retries = 3
@@ -219,6 +219,7 @@ class OpenSCADGenerator:
                         self.write_debug(f"{msg}\n\n")
                 
                 # Step 2: Get relevant examples from knowledge base
+                examples = []
                 if retry_count == 0:  # Only get examples on first try
                     print("\nRetrieving relevant examples...")
                     # Get metadata from step-back analysis if available
@@ -349,7 +350,7 @@ class OpenSCADGenerator:
                     
                     # Save complete debug log
                     self.save_debug_log()
-                    
+            
                     return {
                         'success': True,
                         'code': scad_code
@@ -375,7 +376,7 @@ class OpenSCADGenerator:
                             'success': False,
                             'error': error_msg
                         }
-                    
+            
             except Exception as e:
                 error_msg = f"Error generating OpenSCAD code: {str(e)}"
                 print(f"\n{error_msg}")

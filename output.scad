@@ -1,80 +1,83 @@
-// Rubbish Bin Model
-// Units are in millimeters
-
+// Water Bottle with Cap
 // Parameters for customization
-bin_diameter = 250;    // Diameter of the main bin body
-bin_height = 350;      // Height of the main bin
-wall_thickness = 3;    // Thickness of the bin walls
-lid_height = 30;       // Height of the lid
-lid_overhang = 5;      // How much the lid extends beyond the bin
-fillet_radius = 5;     // Radius for edge fillets
-$fn = 100;             // Resolution for curved surfaces
+bottle_height = 200;       // Height of the bottle (mm)
+bottle_diameter = 70;      // Diameter of the bottle (mm)
+wall_thickness = 2;        // Thickness of the bottle wall (mm)
+neck_diameter = 30;        // Diameter of the bottle neck (mm)
+neck_height = 20;          // Height of the bottle neck (mm)
+cap_height = 15;           // Height of the cap (mm)
+cap_diameter = neck_diameter + 4; // Diameter of the cap (mm)
+thread_height = 10;        // Height of the thread section (mm)
+thread_depth = 2;          // Depth of the thread (mm)
+thread_rotations = 2;      // Number of thread rotations
 
-// Main module for the complete bin
-module rubbish_bin() {
-    color("LightGrey") bin_body();
-    color("DarkGrey") translate([0, 0, bin_height]) lid();
-}
-
-// Module for the main bin body
-module bin_body() {
+// Main module for the water bottle
+module water_bottle() {
     difference() {
-        // Outer shell
         union() {
-            cylinder(d=bin_diameter, h=bin_height);
+            // Main body of the bottle
+            cylinder(h=bottle_height - neck_height, d=bottle_diameter, $fn=100);
             
-            // Bottom fillet
-            translate([0, 0, fillet_radius])
-            rotate_extrude()
-            translate([bin_diameter/2 - fillet_radius, 0, 0])
-            circle(r=fillet_radius);
+            // Neck of the bottle
+            translate([0, 0, bottle_height - neck_height])
+                cylinder(h=neck_height, d1=bottle_diameter, d2=neck_diameter, $fn=100);
+            
+            // Thread for cap
+            translate([0, 0, bottle_height - thread_height])
+                thread(neck_diameter, thread_height, thread_depth, thread_rotations);
         }
         
-        // Inner hollow
+        // Hollow out the bottle
         translate([0, 0, wall_thickness])
-        cylinder(d=bin_diameter - 2*wall_thickness, h=bin_height);
-        
-        // Flat bottom with slight inset
-        translate([0, 0, -0.1])
-        cylinder(d=bin_diameter - 2*wall_thickness, h=wall_thickness + 0.2);
+            cylinder(h=bottle_height - wall_thickness, d=bottle_diameter - 2*wall_thickness, $fn=100);
+            
+        // Hollow out the neck
+        translate([0, 0, bottle_height - neck_height + wall_thickness])
+            cylinder(h=neck_height, d1=bottle_diameter - 2*wall_thickness, 
+                    d2=neck_diameter - 2*wall_thickness, $fn=100);
     }
+}
+
+// Module for the bottle cap
+module bottle_cap() {
+    difference() {
+        // Cap outer shape
+        union() {
+            cylinder(h=cap_height, d=cap_diameter, $fn=100);
+            
+            // Add grip pattern on top of cap
+            for(i = [0:30:359]) {
+                rotate([0, 0, i])
+                translate([cap_diameter/2 - 2, 0, cap_height - 1])
+                    cylinder(h=2, d=4, $fn=20);
+            }
+        }
+        
+        // Hollow inside of cap
+        translate([0, 0, wall_thickness])
+            cylinder(h=cap_height, d=neck_diameter, $fn=100);
+            
+        // Thread cutout
+        translate([0, 0, wall_thickness])
+            thread(neck_diameter + thread_depth, thread_height, thread_depth, thread_rotations);
+    }
+}
+
+// Module to create threads
+module thread(diameter, height, depth, rotations) {
+    pitch = height / rotations;
     
-    // Add a base rim for stability
-    difference() {
-        cylinder(d=bin_diameter, h=wall_thickness);
-        translate([0, 0, -0.1])
-        cylinder(d=bin_diameter - 20, h=wall_thickness + 0.2);
+    for (i = [0:5:359*rotations]) {
+        rotate([0, 0, i])
+            translate([diameter/2, 0, i * pitch / 360])
+                rotate([0, 90, 0])
+                    cylinder(h=depth, d=pitch*0.8, $fn=20);
     }
 }
 
-// Module for the bin lid
-module lid() {
-    difference() {
-        union() {
-            // Main lid body
-            cylinder(d=bin_diameter + 2*lid_overhang, h=lid_height);
-            
-            // Top dome
-            translate([0, 0, lid_height - 0.1])
-            scale([1, 1, 0.2])
-            sphere(d=bin_diameter + 2*lid_overhang);
-            
-            // Top fillet
-            translate([0, 0, lid_height - fillet_radius])
-            rotate_extrude()
-            translate([(bin_diameter + 2*lid_overhang)/2 - fillet_radius, 0, 0])
-            circle(r=fillet_radius);
-        }
-        
-        // Hollow out the inside
-        translate([0, 0, wall_thickness])
-        cylinder(d=bin_diameter + 2*lid_overhang - 2*wall_thickness, h=lid_height + 50);
-        
-        // Create lip to fit onto the bin
-        translate([0, 0, -0.1])
-        cylinder(d=bin_diameter - 1, h=wall_thickness*2 + 0.1);
-    }
-}
+// Render water bottle (comment/uncomment as needed)
+water_bottle();
 
-// Render the complete bin
-rubbish_bin();
+// Render cap (moved to display next to the bottle)
+translate([bottle_diameter + 20, 0, 0])
+    bottle_cap();
