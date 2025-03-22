@@ -216,3 +216,27 @@ Stage Duration Summary:
 Total Duration: 14.72s
 -------------------
 
+2025-03-22 12:10:56,304 - __main__ - INFO
+Function: main
+Message: 
+Session Summary:
+-------------------
+
+2025-03-22 12:10:56,311 - __main__ - INFO
+Function: main
+Message: Stage Duration Summary:
+  Initialization: 14.72s
+
+Total Duration: 14.72s
+-------------------
+
+2025-03-22 12:10:56,313 - __main__ - INFO
+Function: main
+Message: Session ended at: 2025-03-22T12:10:56.312897
+-------------------
+
+2025-03-22 12:10:56,319 - __main__ - INFO
+Function: main
+Message: ==================================================
+-------------------
+
