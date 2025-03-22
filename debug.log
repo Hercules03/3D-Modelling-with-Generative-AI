@@ -1,267 +1,216 @@
-2025-03-22 01:07:03,902 - __main__ - INFO - ==================================================
-2025-03-22 01:07:03,902 - __main__ - INFO - Starting 3D Model Generator
-2025-03-22 01:07:03,903 - __main__ - INFO - Time: 2025-03-22T01:07:03.903002
-2025-03-22 01:07:03,903 - __main__ - INFO - Configuration:
-2025-03-22 01:07:03,903 - __main__ - INFO -   - Max Generation Attempts: 3
-2025-03-22 01:07:03,903 - __main__ - INFO -   - Similarity Threshold: 0.70
-2025-03-22 01:07:03,903 - __main__ - INFO -   - Output Directory: output
-2025-03-22 01:07:03,903 - __main__ - INFO - ==================================================
-2025-03-22 01:07:13,770 - __main__ - INFO - Initializing generator with provider: anthropic
-2025-03-22 01:07:13,771 - __main__ - DEBUG - Stage Start: Initialization
-  Time: 2025-03-22T01:07:13.771630
+2025-03-22 11:30:02,796 - __main__ - INFO - Logs cleared for new generation
+2025-03-22 11:30:02,796 - __main__ - INFO - ==================================================
+2025-03-22 11:30:02,796 - __main__ - INFO - Starting 3D Model Generator
+2025-03-22 11:30:02,796 - __main__ - INFO - Time: 2025-03-22T11:30:02.796281
+2025-03-22 11:30:02,796 - __main__ - INFO - Configuration:
+2025-03-22 11:30:02,796 - __main__ - INFO -   - Max Generation Attempts: 3
+2025-03-22 11:30:02,796 - __main__ - INFO -   - Similarity Threshold: 0.70
+2025-03-22 11:30:02,796 - __main__ - INFO -   - Output Directory: output
+2025-03-22 11:30:02,796 - __main__ - INFO - ==================================================
+2025-03-22 11:30:06,048 - __main__ - INFO - Initializing generator with provider: anthropic
+2025-03-22 11:30:06,048 - __main__ - DEBUG - Stage Start: Initialization
+  Time: 2025-03-22T11:30:06.048495
   Initial Message: Initializing generator
-2025-03-22 01:07:13,771 - __main__ - DEBUG - Progress Calculation:
+2025-03-22 11:30:06,048 - __main__ - DEBUG - Progress Calculation:
   Completed Weight: 0.5
   Current Stage Weight: 0.1
   Current Progress: 50.0%
   Total Progress: 55.0%
-2025-03-22 01:07:13,772 - __main__ - DEBUG - Progress Update:
+2025-03-22 11:30:06,048 - __main__ - DEBUG - Progress Update:
   Stage: Initialization
   Stage Progress: 50.0%
   Total Progress: 55.0%
   Message: Initializing generator
-  Time: 2025-03-22T01:07:13.772016
-2025-03-22 01:07:13,772 - __main__ - DEBUG - Progress Bar:
+  Time: 2025-03-22T11:30:06.048792
+2025-03-22 11:30:06,048 - __main__ - DEBUG - Progress Bar:
   Progress: 55.0%
   Width: 30
   Filled: 16
   Bar: ================--------------
-2025-03-22 01:07:13,843 - urllib3.util.retry - DEBUG - Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
-2025-03-22 01:07:13,847 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
-2025-03-22 01:07:13,941 - chromadb.config - DEBUG - Starting component System
-2025-03-22 01:07:13,941 - chromadb.config - DEBUG - Starting component Posthog
-2025-03-22 01:07:13,941 - chromadb.config - DEBUG - Starting component OpenTelemetryClient
-2025-03-22 01:07:13,941 - chromadb.config - DEBUG - Starting component SqliteDB
-2025-03-22 01:07:13,947 - chromadb.config - DEBUG - Starting component SimpleQuotaEnforcer
-2025-03-22 01:07:13,947 - chromadb.config - DEBUG - Starting component SimpleRateLimitEnforcer
-2025-03-22 01:07:13,947 - chromadb.config - DEBUG - Starting component LocalSegmentManager
-2025-03-22 01:07:13,947 - chromadb.config - DEBUG - Starting component LocalExecutor
-2025-03-22 01:07:13,947 - chromadb.config - DEBUG - Starting component SegmentAPI
-2025-03-22 01:07:14,452 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): us.i.posthog.com:443
-2025-03-22 01:07:15,386 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-22 01:07:16,646 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
-2025-03-22 01:07:16,647 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
-2025-03-22 01:07:16,935 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
-2025-03-22 01:07:17,190 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json HTTP/1.1" 200 0
-2025-03-22 01:07:17,505 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md HTTP/1.1" 200 0
-2025-03-22 01:07:17,806 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
-2025-03-22 01:07:18,111 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json HTTP/1.1" 200 0
-2025-03-22 01:07:18,418 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json HTTP/1.1" 404 0
-2025-03-22 01:07:18,726 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json HTTP/1.1" 200 0
-2025-03-22 01:07:19,128 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
-2025-03-22 01:07:19,546 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2/revision/main HTTP/1.1" 200 6729
-2025-03-22 01:07:19,857 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2 HTTP/1.1" 200 6729
-2025-03-22 01:07:19,888 - __main__ - DEBUG - Progress Calculation:
+2025-03-22 11:30:06,124 - urllib3.util.retry - DEBUG - Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
+2025-03-22 11:30:06,128 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-03-22 11:30:06,235 - chromadb.config - DEBUG - Starting component System
+2025-03-22 11:30:06,235 - chromadb.config - DEBUG - Starting component Posthog
+2025-03-22 11:30:06,235 - chromadb.config - DEBUG - Starting component OpenTelemetryClient
+2025-03-22 11:30:06,235 - chromadb.config - DEBUG - Starting component SqliteDB
+2025-03-22 11:30:06,241 - chromadb.config - DEBUG - Starting component SimpleQuotaEnforcer
+2025-03-22 11:30:06,242 - chromadb.config - DEBUG - Starting component SimpleRateLimitEnforcer
+2025-03-22 11:30:06,242 - chromadb.config - DEBUG - Starting component LocalSegmentManager
+2025-03-22 11:30:06,242 - chromadb.config - DEBUG - Starting component LocalExecutor
+2025-03-22 11:30:06,242 - chromadb.config - DEBUG - Starting component SegmentAPI
+2025-03-22 11:30:06,749 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): us.i.posthog.com:443
+2025-03-22 11:30:07,552 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
+2025-03-22 11:30:09,771 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+2025-03-22 11:30:09,773 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
+2025-03-22 11:30:10,073 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
+2025-03-22 11:30:10,421 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json HTTP/1.1" 200 0
+2025-03-22 11:30:10,664 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md HTTP/1.1" 200 0
+2025-03-22 11:30:10,962 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
+2025-03-22 11:30:11,258 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json HTTP/1.1" 200 0
+2025-03-22 11:30:11,642 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json HTTP/1.1" 404 0
+2025-03-22 11:30:11,883 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json HTTP/1.1" 200 0
+2025-03-22 11:30:12,263 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+2025-03-22 11:30:13,100 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2/revision/main HTTP/1.1" 200 6729
+2025-03-22 11:30:13,495 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2 HTTP/1.1" 200 6729
+2025-03-22 11:30:13,522 - __main__ - DEBUG - Progress Calculation:
   Completed Weight: 0.5
   Current Stage Weight: 0.1
   Current Progress: 100.0%
   Total Progress: 60.0%
-2025-03-22 01:07:19,889 - __main__ - DEBUG - Progress Update:
+2025-03-22 11:30:13,522 - __main__ - DEBUG - Progress Update:
   Stage: Initialization
   Stage Progress: 100.0%
   Total Progress: 60.0%
   Message: Generator initialized
-  Time: 2025-03-22T01:07:19.889045
-2025-03-22 01:07:19,889 - __main__ - DEBUG - Progress Bar:
+  Time: 2025-03-22T11:30:13.522387
+2025-03-22 11:30:13,522 - __main__ - DEBUG - Progress Bar:
   Progress: 60.0%
   Width: 30
   Filled: 18
   Bar: ==================------------
-2025-03-22 01:07:34,019 - __main__ - INFO - Generating model for: I want a mailbox
-2025-03-22 01:07:34,021 - __main__ - DEBUG - Stage Complete: Initialization
-  Duration: 20.25s
+2025-03-22 11:30:20,768 - __main__ - INFO - Generating model for: I want a rubbish bin
+2025-03-22 11:30:20,769 - __main__ - DEBUG - Stage Complete: Initialization
+  Duration: 14.72s
   Final Progress: 100.0%
-2025-03-22 01:07:34,021 - __main__ - DEBUG - Stage Start: Code Generation
-  Time: 2025-03-22T01:07:34.021348
+2025-03-22 11:30:20,769 - __main__ - DEBUG - Stage Start: Code Generation
+  Time: 2025-03-22T11:30:20.769651
   Initial Message: Generation attempt 1
-2025-03-22 01:07:34,021 - __main__ - DEBUG - Progress Calculation:
+2025-03-22 11:30:20,769 - __main__ - DEBUG - Progress Calculation:
   Completed Weight: 0
   Current Stage Weight: 0.3
   Current Progress: 0.0%
   Total Progress: 0.0%
-2025-03-22 01:07:34,021 - __main__ - DEBUG - Progress Update:
+2025-03-22 11:30:20,769 - __main__ - DEBUG - Progress Update:
   Stage: Code Generation
   Stage Progress: 0.0%
   Total Progress: 0.0%
   Message: Generation attempt 1
-  Time: 2025-03-22T01:07:34.021618
-2025-03-22 01:07:34,021 - __main__ - DEBUG - Progress Bar:
+  Time: 2025-03-22T11:30:20.769876
+2025-03-22 11:30:20,769 - __main__ - DEBUG - Progress Bar:
   Progress: 0.0%
   Width: 30
   Filled: 0
   Bar: ------------------------------
-2025-03-22 01:07:34,033 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'Let\'s analyze the technical requirements and geometric principles for creating a 3D model based on this request: "I want a mailbox"\n\nPlease provide a structured technical analysis in this format:\n\n<think>\nConsider:\n- Required geometric primitives\n- Spatial relationships\n- Key measurements and proportions\n- Technical implementation approach\n</think>\n\n<analysis>\nCORE PRINCIPLES:\n- [List 3-5 key geometric and mathematical concepts]\n- [Focus on technical requirements]\n- [Include necessary measurements and proportions]\n\nSHAPE COMPONENTS:\n- [List primary geometric primitives needed]\n- [Describe spatial relationships]\n- [Note required transformations]\n\nIMPLEMENTATION STEPS:\n1. [Initial setup and base components]\n2. [Component creation and positioning]\n3. [Assembly and transformations]\n4. [Final adjustments and optimization]\n</analysis>\n\nPlease maintain the XML-style tags and structured format shown above.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-22 01:07:34,071 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-22 01:07:34,072 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-22 01:07:34,141 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1605e8830>
-2025-03-22 01:07:34,141 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x112dc7d10> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-22 01:07:34,155 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x16051ae90>
-2025-03-22 01:07:34,155 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-22 01:07:34,156 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-22 01:07:34,156 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-22 01:07:34,156 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-22 01:07:34,156 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-22 01:07:35,930 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Fri, 21 Mar 2025 17:07:35 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322010734181072859I0SstuAS'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-22 01:07:35,932 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-22 01:07:35,933 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Fri, 21 Mar 2025 17:07:35 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322010734181072859I0SstuAS', 'strict-transport-security': 'max-age=31536000'})
-2025-03-22 01:07:35,933 - openai._base_client - DEBUG - request_id: None
-2025-03-22 01:07:35,934 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-22 01:07:55,547 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-22 01:07:55,547 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-22 01:07:55,547 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-22 01:08:26,239 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'Let\'s analyze the technical requirements and geometric principles for creating a 3D model based on this request: "I want a mailbox"\n\nPlease provide a structured technical analysis in this format:\n\n<think>\nConsider:\n- Required geometric primitives\n- Spatial relationships\n- Key measurements and proportions\n- Technical implementation approach\n</think>\n\n<analysis>\nCORE PRINCIPLES:\n- [List 3-5 key geometric and mathematical concepts]\n- [Focus on technical requirements]\n- [Include necessary measurements and proportions]\n\nSHAPE COMPONENTS:\n- [List primary geometric primitives needed]\n- [Describe spatial relationships]\n- [Note required transformations]\n\nIMPLEMENTATION STEPS:\n1. [Initial setup and base components]\n2. [Component creation and positioning]\n3. [Assembly and transformations]\n4. [Final adjustments and optimization]\n</analysis>\n\nPlease maintain the XML-style tags and structured format shown above.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-22 01:08:26,244 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-22 01:08:26,246 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-22 01:08:26,267 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x16092c050>
-2025-03-22 01:08:26,267 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x112dc7c80> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-22 01:08:26,284 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1604e6d70>
-2025-03-22 01:08:26,284 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-22 01:08:26,285 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-22 01:08:26,285 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-22 01:08:26,285 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-22 01:08:26,285 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-22 01:09:23,795 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Fri, 21 Mar 2025 17:09:23 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322010826309464554iFsJIDNk'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-22 01:09:23,797 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-22 01:09:23,798 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Fri, 21 Mar 2025 17:09:23 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322010826309464554iFsJIDNk', 'strict-transport-security': 'max-age=31536000'})
-2025-03-22 01:09:23,798 - openai._base_client - DEBUG - request_id: None
-2025-03-22 01:09:23,801 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-22 01:09:32,048 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-22 01:09:32,048 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-22 01:09:32,048 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-22 01:09:32,058 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are an expert in 3D modeling and OpenSCAD. Analyze this 3D model description and extract key metadata.\n\nDescription: I want a mailbox\n\nExtract the following metadata and format it as a valid JSON object with these fields:\n1. "object_type": Main category/type of the object (e.g., "mug", "chair", "box")\n2. "dimensions": Dictionary of any mentioned measurements or proportions\n3. "features": List of key characteristics or components\n4. "materials": List of any specified or implied materials\n5. "complexity": One of ["SIMPLE", "MEDIUM", "COMPLEX"] based on features and structure\n6. "style": Design style (e.g., "Modern", "Traditional", "Industrial", "Minimalist")\n7. "use_case": Primary intended use or purpose\n8. "geometric_properties": List of key geometric characteristics (e.g., "symmetrical", "curved", "angular")\n9. "technical_requirements": List of specific technical considerations\n\nOnly include fields where information can be confidently extracted from the description.\nFormat numbers consistently (use metric units when possible).\nIf a field cannot be determined, omit it from the JSON rather than using placeholder values.\n\nReturn ONLY the JSON object, no additional text or explanation.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-22 01:09:32,058 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-22 01:09:32,059 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-22 01:09:32,074 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1604e7a80>
-2025-03-22 01:09:32,074 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x112dc7ad0> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-22 01:09:32,089 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x16052dd90>
-2025-03-22 01:09:32,089 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-22 01:09:32,089 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-22 01:09:32,089 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-22 01:09:32,089 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-22 01:09:32,090 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-22 01:09:33,588 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Fri, 21 Mar 2025 17:09:33 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322010932113256662e5ZgkjSl'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-22 01:09:33,589 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-22 01:09:33,589 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Fri, 21 Mar 2025 17:09:33 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322010932113256662e5ZgkjSl', 'strict-transport-security': 'max-age=31536000'})
-2025-03-22 01:09:33,589 - openai._base_client - DEBUG - request_id: None
-2025-03-22 01:09:33,589 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-22 01:09:34,713 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-22 01:09:34,713 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-22 01:09:34,713 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-22 01:09:34,717 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'Analyze the following request and identify the key OpenSCAD components needed:\n            I want a mailbox\n            \nFor a mailbox 3D model, I need to consider:\n- The basic mailbox consists of a box-like structure (rectangular prism) with a curved/domed top\n- It needs a door/flap for mail insertion and retrieval\n- It requires a flag mechanism that can be positioned up or down\n- Should have mounting elements (post or wall attachments)\n- Standard proportions are important for realism\n- The model will require boolean operations for the door opening\n- Will need proper pivoting mechanisms for movable parts\n</think>\n\n<analysis>\nCORE PRINCIPLES:\n- Primitive composition: Combining rectangular prisms and cylinders to create a functional structure\n- Boolean operations: Creating openings and cutouts for the mail slot and door\n- Pivot mechanics: Implementing rotational constraints for the door and flag components\n- Proportion standards: Following typical mailbox dimensions (approximately 19"L × 6.5"W × 8.5"H for standard USPS)\n- Parametric design: Allowing for size adjustments while maintaining functional proportions\n\nSHAPE COMPONENTS:\n- Primary rectangular prism for the main body (box portion)\n- Curved top section (half-cylinder or curved rectangular prism)\n- Smaller rectangular prism for the mail door/flap with hinge mechanism\n- Thin rectangular flag component with pivot point\n- Cylindrical or rectangular post mount (optional)\n- Small cylindrical or cuboid elements for hinges and latch\n\nIMPLEMENTATION STEPS:\n1. Create the main body rectangular prism with proper proportions (length ≈ 2-3× the height, width ≈ 0.75× height)\n2. Generate the curved top section by either:\n   a. Creating a half-cylinder and positioning it on top\n   b. Using a loft/sweep operation on the top face of the main box\n3. Model the door component with appropriate thickness (≈1-2% of box dimensions) and position it on the front or side\n4. Implement hinge mechanics by creating pivot points and parent-child relationships\n5. Add the flag component on the side (typically right) with pivot constraints\n6. Create boolean operations for the mail slot if separate from the door\n7. Add detailed elements like a latch mechanism, rivets, and mounting hardware\n8. Apply appropriate materials and finishes (typically metal or plastic textures)\n</analysis>\n            \n            List only the core components needed (modules, primitives, transformations, boolean operations).\n            Respond with a valid JSON array of objects, each with \'type\' and \'name\' fields.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-22 01:09:34,717 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-22 01:09:34,718 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-22 01:09:34,718 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-22 01:09:34,718 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-22 01:09:34,718 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-22 01:09:34,718 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-22 01:10:37,735 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Fri, 21 Mar 2025 17:10:37 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322010934742511640zohpjvDc'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-22 01:10:37,739 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-22 01:10:37,739 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Fri, 21 Mar 2025 17:10:37 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322010934742511640zohpjvDc', 'strict-transport-security': 'max-age=31536000'})
-2025-03-22 01:10:37,739 - openai._base_client - DEBUG - request_id: None
-2025-03-22 01:10:37,741 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-22 01:10:39,497 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-22 01:10:39,498 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-22 01:10:39,498 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-22 01:10:39,645 - chromadb.config - DEBUG - Starting component PersistentLocalHnswSegment
-2025-03-22 01:10:39,649 - chromadb.segment.impl.vector.local_persistent_hnsw - WARNING - Add of existing embedding ID: modern_4c42c67f
-2025-03-22 01:10:39,657 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user\'s description.\n\nBASIC KNOWLEDGE:\n\nOpenSCAD is a 3D modeling tool that uses a scripting language to create 3D objects. Here are some basic concepts:\n\nBasic shapes (3D):\n1. cube(size = [x,y,z], center = true/false); - Creates a rectangular prism\n2. sphere(r=radius); - Creates a sphere\n3. cylinder(h = height, r1 = BottomRadius, r2 = TopRadius, center = true/false); - Creates a cylinder\n4. polyhedron( points = [ [X0, Y0, Z0], [X1, Y1, Z1], ... ], faces = [ [P0, P1, P2, P3, ...], ... ], convexity = N); - Creates complex shapes\n\nTransformations:\n1. translate([x,y,z]) - Moves object\n2. rotate(a = deg_a, v = [x, y, z]) - Rotates object (degrees)\n3. scale([x,y,z]) - Scales object\n4. resize([x,y,z],auto,convexity) - Modifies the size of the child object to match the given x,y,z.\n5. mirror([x,y,z]) - Creates a mirror image of a child element across a specified plane\n6. multmatrix(m) - Multiplies the geometry of all child elements with the given affine transformation matrix\n7. offset(r|delta,chamfer) - generates a new 2d interior or exterior outline from an existing outline\n8. hull() - Displays the convex hull of child nodes.\n9. minkowski(convexity) - Creates a minkowski sum of child nodes.\n\nBoolean operations:\n1. union() - Combines objects\n2. difference() - Subtracts second object from first\n3. intersection() - Shows overlap between objects\n\nBasic Syntax:\n1. Variables: var = value; (e.g., radius = 10;)\n2. Comments: // Single line comment, /* Multi-line comment */\n3. Mathematical Operators: +, -, *, /, %, ^\n4. Comparison Operators: ==, !=, <, <=, >, >=\n5. Logical Operators: &&, ||, !\n6. Conditional Statement: if (condition) { ... } else { ... }\n7. Loops:\n- for (i = [start:step:end]) { ... }\n- for (i = [value1, value2, ...]) { ... }\n8. Modules:\n- Define: module name(parameters) { ... }\n- Call: name(parameters);\n9. Functions:\n- Define: function name(parameters) = expression;\n- Call: name(parameters)\n10. Echo Command: echo("text", variable);\n11. Children: Using $children and children() for module composition\n\n\nRELEVANT EXAMPLES:\n[]\n\nAnalysis to consider:\nCORE PRINCIPLES:\n                    - Cylindrical-rectangular hybrid geometry combining a rectangular prism with a semi-cylindrical top\n- Mechanical pivot systems for functional components (door hinge and flag rotation)\n- Proportional scaling following standard mailbox dimensions (approximately 7:3:4 length-width-height ratio)\n- Boolean operations for creating hollow interior and door cutout\n- Hierarchical parent-child relationships between components (main body, door, flag)\n                    \n                    SHAPE COMPONENTS:\n                    - Rectangular prism for main body base (can be modified with boolean operations)\n- Semi-cylinder for curved top portion\n- Thin rectangular prism for door/flap with beveled edges\n- Small rectangular prism and cylinder for flag assembly\n- Optional rectangular prism for mounting post\n- Cylinders for hinge mechanisms at door and flag pivot points\n                    \n                    IMPLEMENTATION STEPS:\n                    1. Create rectangular prism base (18" x 8" x 6") with hollow interior using boolean operations or shell modifier\n2. Add semi-cylindrical top (18" length, 4" radius) and union with base\n3. Model door component (6" x 8") with slight bevel on edges and position with 1-2mm clearance\n4. Create cylindrical hinge mechanism (0.5" diameter) connecting door to main body\n5. Model flag assembly with rectangular flag (3" x 5") and cylindrical pivot point on side\n6. Apply appropriate materials (typically metal with matte finish)\n7. Implement proper pivot constraints for animated door and flag if required\n8. Add optional post mount (4" x 4" x 48") for standalone installation\n\nUSER REQUEST:\nI want a mailbox\n\nPlease generate OpenSCAD code that satisfies the user\'s request. Follow these guidelines:\n1. Use clear variable names and comments\n2. Break down complex shapes into modules\n3. Use proper indentation and formatting\n4. Include helpful comments explaining the code\n5. Wrap the code in <code> tags or ```scad code blocks\n\nYour response should ONLY contain the OpenSCAD code, properly wrapped in tags. Do not include any explanations or additional text.\n\nOpenSCAD code:', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-22 01:10:39,657 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-22 01:10:39,658 - httpcore.connection - DEBUG - close.started
-2025-03-22 01:10:39,658 - httpcore.connection - DEBUG - close.complete
-2025-03-22 01:10:39,658 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-22 01:10:39,673 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x160944050>
-2025-03-22 01:10:39,673 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x112dc7d10> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-22 01:10:39,688 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x160944160>
-2025-03-22 01:10:39,688 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-22 01:10:39,688 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-22 01:10:39,688 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-22 01:10:39,688 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-22 01:10:39,688 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-22 01:10:40,025 - urllib3.connectionpool - DEBUG - Resetting dropped connection: us.i.posthog.com
-2025-03-22 01:10:40,912 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-22 01:10:45,474 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Fri, 21 Mar 2025 17:10:45 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322011039712150810cHQvUGXR'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-22 01:10:45,475 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-22 01:10:45,475 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Fri, 21 Mar 2025 17:10:45 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322011039712150810cHQvUGXR', 'strict-transport-security': 'max-age=31536000'})
-2025-03-22 01:10:45,475 - openai._base_client - DEBUG - request_id: None
-2025-03-22 01:10:45,476 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-22 01:11:05,898 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-22 01:11:05,898 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-22 01:11:05,898 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-22 01:11:34,637 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are an expert in 3D modeling and OpenSCAD. Analyze this 3D model description and extract key metadata.\n\nDescription: I want a mailbox\n\nExtract the following metadata and format it as a valid JSON object with these fields:\n1. "object_type": Main category/type of the object (e.g., "mug", "chair", "box")\n2. "dimensions": Dictionary of any mentioned measurements or proportions\n3. "features": List of key characteristics or components\n4. "materials": List of any specified or implied materials\n5. "complexity": One of ["SIMPLE", "MEDIUM", "COMPLEX"] based on features and structure\n6. "style": Design style (e.g., "Modern", "Traditional", "Industrial", "Minimalist")\n7. "use_case": Primary intended use or purpose\n8. "geometric_properties": List of key geometric characteristics (e.g., "symmetrical", "curved", "angular")\n9. "technical_requirements": List of specific technical considerations\n\nOnly include fields where information can be confidently extracted from the description.\nFormat numbers consistently (use metric units when possible).\nIf a field cannot be determined, omit it from the JSON rather than using placeholder values.\n\nReturn ONLY the JSON object, no additional text or explanation.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-22 01:11:34,639 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-22 01:11:34,640 - httpcore.connection - DEBUG - close.started
-2025-03-22 01:11:34,640 - httpcore.connection - DEBUG - close.complete
-2025-03-22 01:11:34,640 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-22 01:11:34,654 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1605fc150>
-2025-03-22 01:11:34,654 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x112dc7ad0> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-22 01:11:34,668 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1605fc550>
-2025-03-22 01:11:34,668 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-22 01:11:34,668 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-22 01:11:34,668 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-22 01:11:34,669 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-22 01:11:34,669 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-22 01:11:35,109 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-22 01:11:36,883 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Fri, 21 Mar 2025 17:11:36 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322011134694203546P2VSt8EQ'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-22 01:11:36,884 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-22 01:11:36,884 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Fri, 21 Mar 2025 17:11:36 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322011134694203546P2VSt8EQ', 'strict-transport-security': 'max-age=31536000'})
-2025-03-22 01:11:36,885 - openai._base_client - DEBUG - request_id: None
-2025-03-22 01:11:36,885 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-22 01:11:37,073 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-22 01:11:37,073 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-22 01:11:37,073 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-22 01:11:37,078 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'Analyze the following 3D object and categorize it using our standardized categories and properties.\n\nObject Type: mailbox\nDescription: I want a mailbox\n\nAvailable Categories:\n- container: Objects that can hold or contain other items (e.g., cup, mug, bowl, vase, bottle, box, jar, tray, basket, planter, container)\n- furniture: Objects used for living or working spaces (e.g., table, chair, desk, shelf, cabinet, bench, stand, organizer, rack, holder)\n- decorative: Objects primarily for aesthetic purposes (e.g., sculpture, ornament, statue, figurine, vase, frame, display, art, decoration)\n- functional: Utility objects with specific practical purposes (e.g., holder, stand, bracket, hook, hanger, clip, mount, support, organizer, adapter)\n- geometric: Basic or complex geometric shapes and mathematical objects (e.g., cube, sphere, cylinder, cone, polyhedron, torus, prism, pyramid, helix)\n- mechanical: Parts or components of mechanical systems (e.g., gear, bolt, nut, bearing, lever, hinge, joint, wheel, pulley, spring)\n- enclosure: Objects designed to enclose or protect other items (e.g., case, box, housing, cover, shell, enclosure, protection, sleeve, cap)\n- modular: Objects designed to be combined or connected with others (e.g., connector, adapter, joint, mount, tile, block, module, segment, piece)\n- other: Objects that don\'t fit in other categories (e.g., )\n\nAvailable Properties:\n- size: tiny, small, medium, large, huge\n- wall_thickness: thin, medium, thick, solid\n- hollow: yes, no, partial\n- style: modern, traditional, minimalist, decorative, industrial, organic, geometric, artistic\n- complexity: simple, moderate, complex, intricate\n- symmetry: radial, bilateral, asymmetric, periodic\n- printability: easy, moderate, challenging, requires_support\n- orientation: flat, vertical, angled, any\n- support_needed: none, minimal, moderate, extensive\n- infill_requirement: low, medium, high, solid\n- assembly: single_piece, multi_part, snap_fit, threaded, interlocking\n- stability: self_standing, needs_support, wall_mounted, hanging\n- adjustability: fixed, adjustable, modular, customizable\n- material_compatibility: any, pla, abs, petg, resin, multi_material\n- surface_finish: smooth, textured, patterned, functional\n- post_processing: none, minimal, required, optional\n- durability: light_duty, medium_duty, heavy_duty\n- water_resistance: none, splash_proof, water_tight\n- heat_resistance: low, medium, high\n- customization: fixed, parametric, highly_customizable\n- purpose: practical, decorative, educational, prototype\n\nInstructions:\n1. Select the most appropriate categories from the list above (you can select multiple if applicable)\n2. For each selected property type, choose the most appropriate value from its predefined options\n3. Suggest similar objects from the examples in our standard categories\n\nRespond in JSON format:\n{\n    "categories": ["list of categories from standard categories only"],\n    "properties": {\n        "property_name": "value from predefined options only"\n    },\n    "similar_objects": ["list of similar objects from our standard examples only"]\n}\n\nEnsure all categories and property values exactly match the provided standard options.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-22 01:11:37,079 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-22 01:11:37,079 - httpcore.connection - DEBUG - close.started
-2025-03-22 01:11:37,080 - httpcore.connection - DEBUG - close.complete
-2025-03-22 01:11:37,080 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-22 01:11:37,093 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1605f87d0>
-2025-03-22 01:11:37,093 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x112dc7c80> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-22 01:11:37,107 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1605f85f0>
-2025-03-22 01:11:37,107 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-22 01:11:37,108 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-22 01:11:37,108 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-22 01:11:37,108 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-22 01:11:37,108 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-22 01:11:38,109 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Fri, 21 Mar 2025 17:11:38 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322011137132620669YASUYJuS'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-22 01:11:38,110 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-22 01:11:38,111 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Fri, 21 Mar 2025 17:11:38 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322011137132620669YASUYJuS', 'strict-transport-security': 'max-age=31536000'})
-2025-03-22 01:11:38,111 - openai._base_client - DEBUG - request_id: None
-2025-03-22 01:11:38,111 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-22 01:11:43,085 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-22 01:11:43,085 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-22 01:11:43,085 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-22 01:11:43,122 - __main__ - DEBUG - Progress Calculation:
+2025-03-22 11:30:20,794 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'Let\'s analyze the technical requirements and geometric principles for creating a 3D model based on this request: "I want a rubbish bin"\n\nPlease provide a structured technical analysis in this format:\n\n<think>\nConsider:\n- Required geometric primitives\n- Spatial relationships\n- Key measurements and proportions\n- Technical implementation approach\n</think>\n\n<analysis>\nCORE PRINCIPLES:\n- [List 3-5 key geometric and mathematical concepts]\n- [Focus on technical requirements]\n- [Include necessary measurements and proportions]\n\nSHAPE COMPONENTS:\n- [List primary geometric primitives needed]\n- [Describe spatial relationships]\n- [Note required transformations]\n\nIMPLEMENTATION STEPS:\n1. [Initial setup and base components]\n2. [Component creation and positioning]\n3. [Assembly and transformations]\n4. [Final adjustments and optimization]\n</analysis>\n\nPlease maintain the XML-style tags and structured format shown above.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+2025-03-22 11:30:20,822 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+2025-03-22 11:30:20,822 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
+2025-03-22 11:30:21,215 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f5e86e0>
+2025-03-22 11:30:21,216 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x114843d10> server_hostname='api2.qyfxw.cn' timeout=None
+2025-03-22 11:30:21,249 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f51e850>
+2025-03-22 11:30:21,250 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-22 11:30:21,252 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-22 11:30:21,252 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-22 11:30:21,252 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-22 11:30:21,252 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-22 11:30:22,603 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sat, 22 Mar 2025 03:30:22 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322113021325167756RezP2rhX'), (b'Strict-Transport-Security', b'max-age=31536000')])
+2025-03-22 11:30:22,606 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 11:30:22,606 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sat, 22 Mar 2025 03:30:22 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322113021325167756RezP2rhX', 'strict-transport-security': 'max-age=31536000'})
+2025-03-22 11:30:22,606 - openai._base_client - DEBUG - request_id: None
+2025-03-22 11:30:22,607 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-22 11:30:42,472 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-22 11:30:42,472 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-22 11:30:42,473 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-22 11:30:53,953 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'Let\'s analyze the technical requirements and geometric principles for creating a 3D model based on this request: "I want a rubbish bin"\n\nPlease provide a structured technical analysis in this format:\n\n<think>\nConsider:\n- Required geometric primitives\n- Spatial relationships\n- Key measurements and proportions\n- Technical implementation approach\n</think>\n\n<analysis>\nCORE PRINCIPLES:\n- [List 3-5 key geometric and mathematical concepts]\n- [Focus on technical requirements]\n- [Include necessary measurements and proportions]\n\nSHAPE COMPONENTS:\n- [List primary geometric primitives needed]\n- [Describe spatial relationships]\n- [Note required transformations]\n\nIMPLEMENTATION STEPS:\n1. [Initial setup and base components]\n2. [Component creation and positioning]\n3. [Assembly and transformations]\n4. [Final adjustments and optimization]\n</analysis>\n\nPlease maintain the XML-style tags and structured format shown above.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+2025-03-22 11:30:53,954 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+2025-03-22 11:30:53,955 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
+2025-03-22 11:30:53,976 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f51fed0>
+2025-03-22 11:30:53,976 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x114843c80> server_hostname='api2.qyfxw.cn' timeout=None
+2025-03-22 11:30:53,998 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f4eac40>
+2025-03-22 11:30:53,998 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-22 11:30:53,998 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-22 11:30:53,998 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-22 11:30:53,998 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-22 11:30:53,998 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-22 11:30:55,457 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sat, 22 Mar 2025 03:30:55 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'2025032211305423449892f6B2Nbfz'), (b'Strict-Transport-Security', b'max-age=31536000')])
+2025-03-22 11:30:55,459 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 11:30:55,459 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sat, 22 Mar 2025 03:30:55 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '2025032211305423449892f6B2Nbfz', 'strict-transport-security': 'max-age=31536000'})
+2025-03-22 11:30:55,459 - openai._base_client - DEBUG - request_id: None
+2025-03-22 11:30:55,460 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-22 11:31:15,447 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-22 11:31:15,449 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-22 11:31:15,449 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-22 11:31:15,458 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are an expert in 3D modeling and OpenSCAD. Analyze this 3D model description and extract key metadata.\n\nDescription: I want a rubbish bin\n\nExtract the following metadata and format it as a valid JSON object with these fields:\n1. "object_type": Main category/type of the object (e.g., "mug", "chair", "box")\n2. "dimensions": Dictionary of any mentioned measurements or proportions\n3. "features": List of key characteristics or components\n4. "materials": List of any specified or implied materials\n5. "complexity": One of ["SIMPLE", "MEDIUM", "COMPLEX"] based on features and structure\n6. "style": Design style (e.g., "Modern", "Traditional", "Industrial", "Minimalist")\n7. "use_case": Primary intended use or purpose\n8. "geometric_properties": List of key geometric characteristics (e.g., "symmetrical", "curved", "angular")\n9. "technical_requirements": List of specific technical considerations\n\nOnly include fields where information can be confidently extracted from the description.\nFormat numbers consistently (use metric units when possible).\nIf a field cannot be determined, omit it from the JSON rather than using placeholder values.\n\nReturn ONLY the JSON object, no additional text or explanation.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+2025-03-22 11:31:15,459 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+2025-03-22 11:31:15,459 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
+2025-03-22 11:31:15,479 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f4eb820>
+2025-03-22 11:31:15,479 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x114843ad0> server_hostname='api2.qyfxw.cn' timeout=None
+2025-03-22 11:31:15,501 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f531d90>
+2025-03-22 11:31:15,501 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-22 11:31:15,501 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-22 11:31:15,501 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-22 11:31:15,501 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-22 11:31:15,501 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-22 11:31:16,363 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sat, 22 Mar 2025 03:31:16 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322113115525749661q9dBfU2C'), (b'Strict-Transport-Security', b'max-age=31536000')])
+2025-03-22 11:31:16,364 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 11:31:16,364 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sat, 22 Mar 2025 03:31:16 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322113115525749661q9dBfU2C', 'strict-transport-security': 'max-age=31536000'})
+2025-03-22 11:31:16,364 - openai._base_client - DEBUG - request_id: None
+2025-03-22 11:31:16,365 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-22 11:31:17,037 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-22 11:31:17,037 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-22 11:31:17,037 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-22 11:31:17,044 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': "Analyze the following request and identify the key OpenSCAD components needed:\n            I want a rubbish bin\n            <think>\nA rubbish bin (trash can) is a relatively simple 3D object that can be modeled using basic geometric primitives. The standard design typically consists of a cylindrical or rectangular container with an optional lid.\n\nFor geometric primitives, we'll need:\n- Cylinder or rectangular prism for the main body\n- Optional cylinder or rectangular prism for the lid\n- Possibly some additional details like a foot pedal mechanism or handles\n\nThe spatial relationships involve:\n- Main container positioned upright\n- Lid positioned at the top of the container\n- Any additional elements properly aligned with the main body\n\nKey measurements and proportions:\n- Height to width ratio typically around 2:1 for standard bins\n- Wall thickness appropriate for rigid structure (thin but not paper thin)\n- Appropriate clearance between lid and container for opening mechanism\n\nTechnical implementation would involve:\n- Boolean operations for any cut-outs or holes\n- Proper edge treatment for realism\n- Consideration of material properties for rendering\n</think>\n\n<analysis>\nCORE PRINCIPLES:\n- Cylindrical or prismatic volume calculation for capacity determination\n- Proportional scaling relationships (height:width ratio typically 2:1)\n- Rotational symmetry around vertical axis for standard bin designs\n- Clearance tolerances for moving parts (lid mechanism)\n\nSHAPE COMPONENTS:\n- Primary container: Cylinder or rectangular prism (open at top)\n  - Height: ~45-60cm for standard household bin\n  - Diameter/Width: ~30-40cm for standard capacity\n  - Wall thickness: ~3-5mm for structural integrity\n- Lid component: Matching cylinder/prism section or dome\n  - Slightly larger diameter than container for overlap\n  - Height: ~5-10cm depending on design\n- Optional components:\n  - Hinge mechanism (connecting lid to container)\n  - Foot pedal and internal linkage system\n  - Handles or gripping surfaces\n\nIMPLEMENTATION STEPS:\n1. Create base container using cylinder/box primitive with appropriate dimensions\n   - Remove top face to create hollow container\n   - Apply appropriate wall thickness using shell/offset operation\n2. Model lid component with matching profile to container\n   - Add any required lip or overhang for secure closure\n   - Position at appropriate height above container\n3. Add functional elements:\n   - Create hinge connection between lid and container\n   - Model any handles, pedal mechanisms, or reinforcement features\n4. Apply appropriate fillets/chamfers to edges for realism\n   - Rounded edges for safety and manufacturing feasibility\n   - Apply material properties appropriate for plastic/metal simulation\n</analysis>\n            \n            List only the core components needed (modules, primitives, transformations, boolean operations).\n            Respond with a valid JSON array of objects, each with 'type' and 'name' fields.", 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+2025-03-22 11:31:17,045 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+2025-03-22 11:31:17,045 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-22 11:31:17,045 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-22 11:31:17,045 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-22 11:31:17,046 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-22 11:31:17,046 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-22 11:31:18,410 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sat, 22 Mar 2025 03:31:18 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'2025032211311770337503XHu0tbyi'), (b'Strict-Transport-Security', b'max-age=31536000')])
+2025-03-22 11:31:18,411 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 11:31:18,412 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sat, 22 Mar 2025 03:31:18 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '2025032211311770337503XHu0tbyi', 'strict-transport-security': 'max-age=31536000'})
+2025-03-22 11:31:18,412 - openai._base_client - DEBUG - request_id: None
+2025-03-22 11:31:18,412 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-22 11:31:22,063 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-22 11:31:22,063 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-22 11:31:22,063 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-22 11:31:22,216 - chromadb.config - DEBUG - Starting component PersistentLocalHnswSegment
+2025-03-22 11:31:22,220 - chromadb.segment.impl.vector.local_persistent_hnsw - WARNING - Add of existing embedding ID: modern_4c42c67f
+2025-03-22 11:31:22,230 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user\'s description.\n\nBASIC KNOWLEDGE:\n\nOpenSCAD is a 3D modeling tool that uses a scripting language to create 3D objects. Here are some basic concepts:\n\nBasic shapes (3D):\n1. cube(size = [x,y,z], center = true/false); - Creates a rectangular prism\n2. sphere(r=radius); - Creates a sphere\n3. cylinder(h = height, r1 = BottomRadius, r2 = TopRadius, center = true/false); - Creates a cylinder\n4. polyhedron( points = [ [X0, Y0, Z0], [X1, Y1, Z1], ... ], faces = [ [P0, P1, P2, P3, ...], ... ], convexity = N); - Creates complex shapes\n\nTransformations:\n1. translate([x,y,z]) - Moves object\n2. rotate(a = deg_a, v = [x, y, z]) - Rotates object (degrees)\n3. scale([x,y,z]) - Scales object\n4. resize([x,y,z],auto,convexity) - Modifies the size of the child object to match the given x,y,z.\n5. mirror([x,y,z]) - Creates a mirror image of a child element across a specified plane\n6. multmatrix(m) - Multiplies the geometry of all child elements with the given affine transformation matrix\n7. offset(r|delta,chamfer) - generates a new 2d interior or exterior outline from an existing outline\n8. hull() - Displays the convex hull of child nodes.\n9. minkowski(convexity) - Creates a minkowski sum of child nodes.\n\nBoolean operations:\n1. union() - Combines objects\n2. difference() - Subtracts second object from first\n3. intersection() - Shows overlap between objects\n\nBasic Syntax:\n1. Variables: var = value; (e.g., radius = 10;)\n2. Comments: // Single line comment, /* Multi-line comment */\n3. Mathematical Operators: +, -, *, /, %, ^\n4. Comparison Operators: ==, !=, <, <=, >, >=\n5. Logical Operators: &&, ||, !\n6. Conditional Statement: if (condition) { ... } else { ... }\n7. Loops:\n- for (i = [start:step:end]) { ... }\n- for (i = [value1, value2, ...]) { ... }\n8. Modules:\n- Define: module name(parameters) { ... }\n- Call: name(parameters);\n9. Functions:\n- Define: function name(parameters) = expression;\n- Call: name(parameters)\n10. Echo Command: echo("text", variable);\n11. Children: Using $children and children() for module composition\n\n\nRELEVANT EXAMPLES:\n[]\n\nAnalysis to consider:\nCORE PRINCIPLES:\n                    - Cylindrical volume calculation (πr²h) for determining capacity\n- Shell thickness modeling for structural integrity (typically 2-5mm)\n- Circular symmetry with vertical axis orientation\n- Proportional scaling (height typically 2-3× the diameter)\n- Boolean operations for creating hollow interiors and edge treatments\n                    \n                    SHAPE COMPONENTS:\n                    - Primary hollow cylinder or truncated cone for main container body\n- Secondary cylinder or dome for removable lid component\n- Optional rectangular prism for foot pedal mechanism\n- Filleted edges (0.5-2cm radius) for realistic appearance and safety\n- Hollow interior with uniform wall thickness (2-5mm)\n                    \n                    IMPLEMENTATION STEPS:\n                    1. Create base cylinder (30-40cm height, 20-30cm diameter) and apply shell modifier (3mm thickness)\n2. Generate lid component using cylinder or dome (0.5-1× diameter of base, 2-5cm height)\n3. Apply edge fillets to all components (0.5-1cm radius for exterior edges)\n4. Position lid component on top of main body with appropriate offset\n5. Add optional features: handles, foot pedal mechanism, or interior bag hooks\n6. Apply material properties (plastic, metal) and optimize mesh for 3D printing or rendering\n\nUSER REQUEST:\nI want a rubbish bin\n\nPlease generate OpenSCAD code that satisfies the user\'s request. Follow these guidelines:\n1. Use clear variable names and comments\n2. Break down complex shapes into modules\n3. Use proper indentation and formatting\n4. Include helpful comments explaining the code\n5. Wrap the code in <code> tags or ```scad code blocks\n\nYour response should ONLY contain the OpenSCAD code, properly wrapped in tags. Do not include any explanations or additional text.\n\nOpenSCAD code:', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+2025-03-22 11:31:22,230 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+2025-03-22 11:31:22,230 - httpcore.connection - DEBUG - close.started
+2025-03-22 11:31:22,230 - httpcore.connection - DEBUG - close.complete
+2025-03-22 11:31:22,230 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
+2025-03-22 11:31:22,249 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f3ca7a0>
+2025-03-22 11:31:22,249 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x114843d10> server_hostname='api2.qyfxw.cn' timeout=None
+2025-03-22 11:31:22,270 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14f840050>
+2025-03-22 11:31:22,270 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-22 11:31:22,270 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-22 11:31:22,270 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-22 11:31:22,270 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-22 11:31:22,270 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-22 11:31:22,401 - urllib3.connectionpool - DEBUG - Resetting dropped connection: us.i.posthog.com
+2025-03-22 11:31:23,353 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
+2025-03-22 11:31:23,601 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sat, 22 Mar 2025 03:31:23 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250322113122296721604tvT0QQrP'), (b'Strict-Transport-Security', b'max-age=31536000')])
+2025-03-22 11:31:23,602 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+2025-03-22 11:31:23,602 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sat, 22 Mar 2025 03:31:23 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250322113122296721604tvT0QQrP', 'strict-transport-security': 'max-age=31536000'})
+2025-03-22 11:31:23,602 - openai._base_client - DEBUG - request_id: None
+2025-03-22 11:31:23,603 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-22 11:31:39,104 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-22 11:31:39,105 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-22 11:31:39,105 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-22 11:32:18,758 - __main__ - DEBUG - Progress Calculation:
   Completed Weight: 0
   Current Stage Weight: 0.3
   Current Progress: 100.0%
   Total Progress: 30.0%
-2025-03-22 01:11:43,122 - __main__ - DEBUG - Progress Update:
+2025-03-22 11:32:18,762 - __main__ - DEBUG - Progress Update:
   Stage: Code Generation
   Stage Progress: 100.0%
   Total Progress: 30.0%
   Message: Generation complete
-  Time: 2025-03-22T01:11:43.122847
-2025-03-22 01:11:43,122 - __main__ - DEBUG - Progress Bar:
+  Time: 2025-03-22T11:32:18.762248
+2025-03-22 11:32:18,762 - __main__ - DEBUG - Progress Bar:
   Progress: 30.0%
   Width: 30
   Filled: 9
   Bar: =========---------------------
-2025-03-22 01:11:43,122 - __main__ - INFO - 
+2025-03-22 11:32:18,762 - __main__ - INFO - 
 Generation Summary:
-2025-03-22 01:11:43,123 - __main__ - INFO -   Description: I want a mailbox
-2025-03-22 01:11:43,123 - __main__ - INFO -   Provider: anthropic
-2025-03-22 01:11:43,123 - __main__ - INFO -   Attempts: 1
-2025-03-22 01:11:43,123 - __main__ - INFO -   Stage Summary:
+2025-03-22 11:32:18,763 - __main__ - INFO -   Description: I want a rubbish bin
+2025-03-22 11:32:18,763 - __main__ - INFO -   Provider: anthropic
+2025-03-22 11:32:18,763 - __main__ - INFO -   Attempts: 1
+2025-03-22 11:32:18,769 - __main__ - INFO -   Stage Summary:
 Stage Duration Summary:
-  Initialization: 20.25s
+  Initialization: 14.72s
 
-Total Duration: 20.25s
-2025-03-22 01:11:43,430 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-22 01:11:50,743 - __main__ - INFO - 
-Session Summary:
-2025-03-22 01:11:50,746 - __main__ - INFO - Stage Duration Summary:
-  Initialization: 20.25s
-
-Total Duration: 20.25s
-2025-03-22 01:11:50,746 - __main__ - INFO - Session ended at: 2025-03-22T01:11:50.746156
-2025-03-22 01:11:50,746 - __main__ - INFO - ==================================================
+Total Duration: 14.72s

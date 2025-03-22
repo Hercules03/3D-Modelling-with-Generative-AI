@@ -1,121 +1,80 @@
-// Mailbox Model in OpenSCAD
-// Units are in mm
+// Rubbish Bin Model
+// Units are in millimeters
 
-// Main dimensions
-mailbox_length = 180;
-mailbox_width = 80;
-mailbox_base_height = 60;
-mailbox_top_radius = 40;
-wall_thickness = 3;
+// Parameters for customization
+bin_diameter = 250;    // Diameter of the main bin body
+bin_height = 350;      // Height of the main bin
+wall_thickness = 3;    // Thickness of the bin walls
+lid_height = 30;       // Height of the lid
+lid_overhang = 5;      // How much the lid extends beyond the bin
+fillet_radius = 5;     // Radius for edge fillets
+$fn = 100;             // Resolution for curved surfaces
 
-// Door dimensions
-door_thickness = 2;
-door_clearance = 1;
+// Main module for the complete bin
+module rubbish_bin() {
+    color("LightGrey") bin_body();
+    color("DarkGrey") translate([0, 0, bin_height]) lid();
+}
 
-// Flag dimensions
-flag_width = 30;
-flag_height = 50;
-flag_thickness = 2;
-flag_pole_radius = 3;
-flag_offset = 15;
-
-// Post dimensions
-post_width = 40;
-post_height = 480;
-
-// Main mailbox body module
-module mailbox_body() {
+// Module for the main bin body
+module bin_body() {
     difference() {
+        // Outer shell
         union() {
-            // Base rectangular part
-            cube([mailbox_length, mailbox_width, mailbox_base_height]);
+            cylinder(d=bin_diameter, h=bin_height);
             
-            // Semi-cylindrical top
-            translate([0, mailbox_width/2, mailbox_base_height])
-                rotate([0, 90, 0])
-                    cylinder(h=mailbox_length, r=mailbox_width/2);
+            // Bottom fillet
+            translate([0, 0, fillet_radius])
+            rotate_extrude()
+            translate([bin_diameter/2 - fillet_radius, 0, 0])
+            circle(r=fillet_radius);
         }
         
-        // Hollow out the inside, leaving walls with thickness
-        translate([wall_thickness, wall_thickness, wall_thickness])
-            union() {
-                cube([mailbox_length - 2*wall_thickness, 
-                      mailbox_width - 2*wall_thickness, 
-                      mailbox_base_height - wall_thickness]);
-                
-                translate([0, (mailbox_width - 2*wall_thickness)/2, mailbox_base_height - wall_thickness])
-                    rotate([0, 90, 0])
-                        cylinder(h=mailbox_length - 2*wall_thickness, 
-                                r=(mailbox_width - 2*wall_thickness)/2);
-            }
+        // Inner hollow
+        translate([0, 0, wall_thickness])
+        cylinder(d=bin_diameter - 2*wall_thickness, h=bin_height);
         
-        // Door opening
-        translate([-1, wall_thickness + door_clearance, wall_thickness + door_clearance])
-            cube([wall_thickness + 2, 
-                  mailbox_width - 2*wall_thickness - 2*door_clearance, 
-                  mailbox_base_height - 2*wall_thickness - door_clearance]);
+        // Flat bottom with slight inset
+        translate([0, 0, -0.1])
+        cylinder(d=bin_diameter - 2*wall_thickness, h=wall_thickness + 0.2);
+    }
+    
+    // Add a base rim for stability
+    difference() {
+        cylinder(d=bin_diameter, h=wall_thickness);
+        translate([0, 0, -0.1])
+        cylinder(d=bin_diameter - 20, h=wall_thickness + 0.2);
     }
 }
 
-// Door module
-module door() {
-    door_width = mailbox_width - 2*wall_thickness - 2*door_clearance;
-    door_height = mailbox_base_height - 2*wall_thickness - door_clearance;
-    
+// Module for the bin lid
+module lid() {
     difference() {
         union() {
-            // Door panel
-            cube([door_thickness, door_width, door_height]);
+            // Main lid body
+            cylinder(d=bin_diameter + 2*lid_overhang, h=lid_height);
             
-            // Door handle
-            translate([door_thickness/2, door_width/2, door_height*0.7])
-                rotate([0, 90, 0])
-                    cylinder(h=10, r=5, center=true);
+            // Top dome
+            translate([0, 0, lid_height - 0.1])
+            scale([1, 1, 0.2])
+            sphere(d=bin_diameter + 2*lid_overhang);
+            
+            // Top fillet
+            translate([0, 0, lid_height - fillet_radius])
+            rotate_extrude()
+            translate([(bin_diameter + 2*lid_overhang)/2 - fillet_radius, 0, 0])
+            circle(r=fillet_radius);
         }
         
-        // Holes for hinges
-        translate([-1, door_clearance, door_height*0.2])
-            rotate([0, 90, 0])
-                cylinder(h=door_thickness+2, r=2);
-                
-        translate([-1, door_clearance, door_height*0.8])
-            rotate([0, 90, 0])
-                cylinder(h=door_thickness+2, r=2);
+        // Hollow out the inside
+        translate([0, 0, wall_thickness])
+        cylinder(d=bin_diameter + 2*lid_overhang - 2*wall_thickness, h=lid_height + 50);
+        
+        // Create lip to fit onto the bin
+        translate([0, 0, -0.1])
+        cylinder(d=bin_diameter - 1, h=wall_thickness*2 + 0.1);
     }
 }
 
-// Flag module
-module flag() {
-    // Flag pole
-    cylinder(h=mailbox_base_height*0.6, r=flag_pole_radius);
-    
-    // Flag
-    translate([0, flag_offset, mailbox_base_height*0.4])
-        cube([flag_thickness, flag_width, flag_height]);
-}
-
-// Post module
-module post() {
-    translate([(mailbox_length - post_width)/2, (mailbox_width - post_width)/2, -post_height])
-        cube([post_width, post_width, post_height]);
-}
-
-// Assemble the mailbox
-module assembled_mailbox() {
-    // Main body
-    mailbox_body();
-    
-    // Door
-    translate([wall_thickness, wall_thickness + door_clearance, wall_thickness + door_clearance])
-        door();
-    
-    // Flag
-    translate([mailbox_length*0.75, -flag_offset, mailbox_base_height*0.3])
-        flag();
-        
-    // Post (optional - comment out if not needed)
-    post();
-}
-
-// Render the mailbox
-assembled_mailbox();
+// Render the complete bin
+rubbish_bin();
