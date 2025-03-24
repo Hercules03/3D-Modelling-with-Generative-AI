@@ -598,13 +598,109 @@ class EnhancedSCADKnowledgeBase:
             return []
             
     def _extract_object_type(self, description):
-        """Extract the main object type from a description"""
+        """Extract the main object type and modifiers from a description.
+        
+        Args:
+            description (str): The input description to analyze
+            
+        Returns:
+            str: The extracted object type (either compound or core type)
+        """
+        print("\n=== Starting Keyword Extraction ===")
+        print(f"Input description: {description}")
+        
         try:
+            # Create timestamp for the query
+            timestamp = datetime.now().isoformat()
+            print(f"Created timestamp: {timestamp}")
+            
+            # Get the response from LLM
+            print("Calling LLM with keyword prompt...")
             response = self.llm.invoke(self.keyword_prompt.format(description=description))
-            return response.content.strip().lower()
+            response_content = response.content.strip()
+            print(f"LLM Response: {response_content}")
+            
+            try:
+                # Parse the JSON response
+                print("Attempting to parse JSON response...")
+                parsed_response = json.loads(response_content)
+                print(f"Parsed response: {json.dumps(parsed_response, indent=2)}")
+                
+                # Create the full analysis object
+                analysis = {
+                    "query": {
+                        "input": description,
+                        "timestamp": timestamp
+                    },
+                    "response": {
+                        "core_type": parsed_response.get("core_type", ""),
+                        "modifiers": parsed_response.get("modifiers", []),
+                        "compound_type": parsed_response.get("compound_type", "")
+                    },
+                    "metadata": {
+                        "success": True,
+                        "error": None
+                    }
+                }
+                print(f"Created analysis object: {json.dumps(analysis, indent=2)}")
+                
+            except json.JSONDecodeError:
+                print("Failed to parse JSON response")
+                # Handle case where response is not valid JSON
+                analysis = {
+                    "query": {
+                        "input": description,
+                        "timestamp": timestamp
+                    },
+                    "response": {
+                        "raw_content": response_content
+                    },
+                    "metadata": {
+                        "success": False,
+                        "error": "Failed to parse JSON response"
+                    }
+                }
+            
+            # Store the analysis for reference
+            self.last_object_analysis = analysis
+            print("Stored analysis in last_object_analysis")
+            
+            # Log the query-response pair
+            print("Attempting to log query-response pair...")
+            self.logger.log_keyword_extraction(analysis)
+            print("Successfully logged query-response pair")
+            
+            # Return the appropriate type (compound if available, otherwise core)
+            if analysis["metadata"]["success"]:
+                result = (analysis["response"]["compound_type"] 
+                       if analysis["response"]["compound_type"] 
+                       else analysis["response"]["core_type"])
+                print(f"Returning result: {result}")
+                return result
+            else:
+                print(f"Returning raw response: {response_content.strip()}")
+                return response_content.strip()
+                
         except Exception as e:
-            print(f"Error extracting object type: {str(e)}")
-            return "unknown"
+            print(f"Error in keyword extraction: {str(e)}")
+            error_analysis = {
+                "query": {
+                    "input": description,
+                    "timestamp": datetime.now().isoformat()
+                },
+                "response": {
+                    "raw_content": str(e)
+                },
+                "metadata": {
+                    "success": False,
+                    "error": f"Exception during extraction: {str(e)}"
+                }
+            }
+            self.last_object_analysis = error_analysis
+            print("Attempting to log error analysis...")
+            self.logger.log_keyword_extraction(error_analysis)
+            print("Successfully logged error analysis")
+            return description.strip()
     
     def _generate_base_name(self, description):
         """Generate a base name for the example"""
@@ -879,7 +975,6 @@ class EnhancedSCADKnowledgeBase:
                             ec_name = ec['name'] if isinstance(ec, dict) else ec
                             if qc_name.lower() == ec_name.lower():
                                 matching_components += 1
-                                break
                 
                     component_match = matching_components / total_components if total_components > 0 else 0
                     print(f"Component match score: {component_match:.3f} ({matching_components}/{total_components} components)")

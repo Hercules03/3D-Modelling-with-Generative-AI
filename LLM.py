@@ -11,13 +11,14 @@ class LLMProvider:
     """Class to manage different LLM providers"""
     
     @staticmethod
-    def get_llm(provider="anthropic", temperature=0.7, max_retries=3):
+    def get_llm(provider="anthropic", temperature=0.7, max_retries=3, model=None):
         """
         Get LLM instance based on provider
         Args:
             provider (str): 'anthropic', 'openai', 'gemma', 'deepseek'
             temperature (float): Temperature for generation
             max_retries (int): Maximum number of retries on failure
+            model (str): Optional specific model to use (overrides default)
         Returns:
             LLM instance
         """
@@ -32,7 +33,7 @@ class LLMProvider:
             try:
                 if provider == "anthropic":
                     anthropic_base_url = "https://api2.qyfxw.cn/v1"   
-                    model=anthropic_model
+                    model = model or anthropic_model
                     print(f"Using anthropic model: {model}")
                     print(f"Using base url: {anthropic_base_url}")
                     try:
@@ -48,7 +49,7 @@ class LLMProvider:
                     
                 elif provider == "openai":
                     openai_base_url = "https://api2.qyfxw.cn/v1" 
-                    model = openai_model
+                    model = model or openai_model
                     print(f"Using openai model: {model}")
                     print(f"Using base url: {openai_base_url}")
                     try:
@@ -63,9 +64,11 @@ class LLMProvider:
                         raise ValueError(f"Error initializing OpenAI model: {str(e)}")
                     
                 elif provider == "gemma":
-                    print(f"Using Gemma model: {gemma_model}")
+                    # Use provided model or fall back to default
+                    use_model = model or gemma_model
+                    print(f"Using Gemma model: {use_model}")
                     return ChatOllama(
-                        model=gemma_model,
+                        model=use_model,
                         temperature=temperature,
                         base_url="http://localhost:11434",
                         stop=None,
@@ -75,9 +78,10 @@ class LLMProvider:
                     )
                     
                 elif provider == "deepseek":
-                    print(f"Using Deepseek model: {deepseek_model}")
+                    model = model or deepseek_model
+                    print(f"Using Deepseek model: {model}")
                     return ChatOllama(
-                        model=deepseek_model,
+                        model=model,
                         temperature=temperature,
                         base_url="http://localhost:11434",
                         stop=None,
@@ -100,7 +104,7 @@ class LLMProvider:
                     print(f"\nFailed to connect to {provider} after {max_retries} attempts.")
                     print("Falling back to local Ollama model (Gemma)...")
                     return ChatOllama(
-                        model=gemma_model,
+                        model=model or gemma_model,
                         temperature=temperature,
                         base_url="http://localhost:11434",
                         stop=None,

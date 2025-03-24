@@ -60,10 +60,38 @@ KEYWORD_EXTRACTOR_SYSTEM_PROMPT = """You are a keyword extraction expert. Your t
 Return only the single most relevant keyword, with no additional text or explanation."""
 
 # Keyword extractor prompt template
-KEYWORD_EXTRACTOR_PROMPT = """Extract the main object type from this description:
-{description}
+KEYWORD_EXTRACTOR_PROMPT = """Analyze this description and extract the core object type and its key modifiers:
+<<INPUT>>
 
-Return only the object type as a single word, nothing else."""
+Instructions:
+1. Identify the main object type (e.g., sword, chair, box)
+2. Identify any important modifiers that significantly affect the object's nature (e.g., pirate, gaming, medieval)
+3. Consider compound objects (e.g., "gaming chair" should stay together)
+
+Return a JSON object in this format:
+{
+    "core_type": "main object type",
+    "modifiers": ["list of important modifiers"],
+    "compound_type": "full compound type if applicable"
+}
+
+Example 1:
+Input: "I want a pirate sword thankyou"
+Output: {
+    "core_type": "sword",
+    "modifiers": ["pirate"],
+    "compound_type": "pirate sword"
+}
+
+Example 2:
+Input: "Create a modern gaming chair"
+Output: {
+    "core_type": "chair",
+    "modifiers": ["modern", "gaming"],
+    "compound_type": "gaming chair"
+}
+
+Return ONLY the JSON object, no additional text."""
 
 # Step-back prompt template
 STEP_BACK_PROMPT_TEMPLATE = """When creating a 3D model for "{query}", what are the fundamental principles and high-level concepts I should consider before implementation?

@@ -1,114 +1,71 @@
-// Pirate Cutlass Sword Model
-// This model creates a classic pirate cutlass with curved blade, cross-guard, and handle
+// Propeller Model
+// Units are in mm
 
 // Parameters for customization
-blade_length = 120;
-blade_width = 15;
-blade_thickness = 3;
-blade_curve = 15;  // Amount of curvature in the blade
-handle_length = 30;
-handle_diameter = 10;
-guard_width = 30;
-guard_thickness = 4;
-pommel_diameter = 12;
-detail_resolution = 64;  // Smoothness of curved surfaces
+num_blades = 3;        // Number of propeller blades
+blade_length = 50;     // Length of each blade from hub center
+hub_diameter = 10;     // Diameter of the center hub
+hub_height = 8;        // Height/thickness of the hub
+blade_max_width = 15;  // Maximum width of the blade
+blade_thickness = 2;   // Maximum thickness of the blade
+blade_twist = 30;      // Twist angle from hub to tip (degrees)
+shaft_hole = 3;        // Diameter of the center mounting hole
+$fn = 80;              // Resolution for curved surfaces
 
-// Main sword module
-module pirate_sword() {
-    union() {
-        // Blade
-        blade();
+// Module for the hub
+module hub() {
+    difference() {
+        // Main hub cylinder
+        cylinder(d=hub_diameter, h=hub_height, center=true);
         
-        // Cross-guard
-        translate([0, 0, 0])
-            cross_guard();
-        
-        // Handle
-        translate([0, 0, -handle_length/2])
-            handle();
-        
-        // Pommel
-        translate([0, 0, -handle_length - 2])
-            pommel();
+        // Shaft hole through the center
+        cylinder(d=shaft_hole, h=hub_height+1, center=true);
     }
 }
 
-// Curved blade with beveled edge
+// Module for a single blade
 module blade() {
-    difference() {
-        // Main blade shape - curved along the Y axis
-        translate([0, blade_curve/2, blade_length/2])
-        rotate([0, 0, 0])
-        linear_extrude(height = blade_length, center = true, convexity = 10, twist = 0, scale = 0.6)
-            translate([0, -blade_curve/blade_length*100, 0])
-            resize([blade_width, blade_thickness])
-            circle(d=10, $fn=detail_resolution);
+    // Create the blade using a series of transformed cross-sections
+    for (i = [0:1:blade_length]) {
+        // Calculate position along blade length (0.0 to 1.0)
+        r_pos = i / blade_length;
         
-        // Bevel for the cutting edge
-        translate([0, blade_curve/2, blade_length/2])
-        rotate([0, 0, 0])
-        linear_extrude(height = blade_length*1.1, center = true, convexity = 10, twist = 0, scale = 0.5)
-            translate([0, -blade_curve/blade_length*100, 0])
-            resize([blade_width-1, blade_thickness-1])
-            circle(d=10, $fn=detail_resolution);
+        // Calculate width at this position (tapers toward tip)
+        width = blade_max_width * (1 - pow(r_pos, 0.7));
+        
+        // Calculate thickness at this position (thinner toward tip)
+        thick = blade_thickness * (1 - 0.7*pow(r_pos, 1.2));
+        
+        // Calculate twist angle at this position
+        angle = r_pos * blade_twist;
+        
+        // Position along blade axis
+        translate([i, 0, 0])
+            // Apply twist around the blade axis
+            rotate([0, 0, angle])
+                // Create airfoil cross-section
+                scale([thick, width, 1])
+                    // Slightly rotate to create pitch
+                    rotate([0, 90, 0])
+                        // Use a stretched ellipse for the airfoil shape
+                        resize([0, 1, 0.3])
+                            circle(d=1);
     }
 }
 
-// Cross-guard with slight curve
-module cross_guard() {
-    difference() {
-        union() {
-            // Main guard bar
-            translate([0, 0, 0])
-            rotate([0, 90, 0])
-            cylinder(h=guard_width, d=guard_thickness, center=true, $fn=detail_resolution);
-            
-            // Decorative center piece
-            translate([0, 0, 0])
-            sphere(d=guard_thickness*1.5, $fn=detail_resolution);
-            
-            // Curved guard ends
-            for(i = [-1, 1]) {
-                translate([i*guard_width/2, 0, 0])
-                rotate([0, i*20, 0])
-                rotate([0, 90, 0])
-                cylinder(h=guard_width/4, d=guard_thickness, center=false, $fn=detail_resolution);
-            }
-        }
-        
-        // Hole for blade
-        translate([0, 0, blade_length/6])
-        cube([blade_width/2, blade_thickness*2, blade_length/3], center=true);
+// Module for the complete propeller
+module propeller() {
+    // Add the hub
+    hub();
+    
+    // Add the blades
+    for (i = [0:num_blades-1]) {
+        angle = i * 360 / num_blades;
+        rotate([0, 0, angle])
+            translate([hub_diameter/2-0.5, 0, 0])
+                blade();
     }
 }
 
-// Handle with grip texture
-module handle() {
-    difference() {
-        // Main handle cylinder
-        cylinder(h=handle_length, d=handle_diameter, center=true, $fn=detail_resolution);
-        
-        // Grip texture
-        for(i = [0:15:360]) {
-            rotate([0, 0, i])
-            translate([handle_diameter/2, 0, 0])
-            rotate([90, 0, 0])
-            cylinder(h=handle_diameter*2, d=1, center=true, $fn=8);
-        }
-    }
-}
-
-// Decorative pommel at end of handle
-module pommel() {
-    union() {
-        sphere(d=pommel_diameter, $fn=detail_resolution);
-        
-        // Decorative cap
-        translate([0, 0, pommel_diameter/3])
-        rotate_extrude($fn=detail_resolution)
-        polygon(points=[[0,0],[pommel_diameter/4,0],[pommel_diameter/6,pommel_diameter/4],[0,pommel_diameter/3]]);
-    }
-}
-
-// Render the sword
-pirate_sword();
+// Render the propeller
+propeller();

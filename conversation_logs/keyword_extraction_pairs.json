@@ -1,0 +1,95 @@
+[
+  {
+    "query": {
+      "input": "I want a pirate sword",
+      "timestamp": "2025-03-24T19:14:59.250685",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "sword",
+      "modifiers": [
+        "pirate"
+      ],
+      "compound_type": "pirate sword"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern gaming chair",
+      "timestamp": "2025-03-24T19:15:21.975870",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "modern",
+        "gaming"
+      ],
+      "compound_type": "gaming chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Make me a decorative vase",
+      "timestamp": "2025-03-24T19:15:50.443642",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "vase",
+      "modifiers": [
+        "decorative",
+        "vase"
+      ],
+      "compound_type": "decorative vase"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a round chair please",
+      "timestamp": "2025-03-24T19:18:21.521963",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "round"
+      ],
+      "compound_type": "round chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller",
+      "timestamp": "2025-03-24T22:39:29.921752",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "modern",
+        "gaming"
+      ],
+      "compound_type": "gaming chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  }
+]

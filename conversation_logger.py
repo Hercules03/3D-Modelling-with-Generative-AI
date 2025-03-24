@@ -10,6 +10,7 @@ class ConversationLogger:
         self.step_back_file = os.path.join(self.log_dir, "step_back_conversations.json")
         self.scad_gen_file = os.path.join(self.log_dir, "scad_generation_conversations.json")
         self.validation_file = os.path.join(self.log_dir, "validation_conversations.json")
+        self.keyword_extraction_file = os.path.join(self.log_dir, "keyword_extraction_pairs.json")
         self._init_log_files()
         print("=== Conversation Logger Initialized ===\n")
     
@@ -20,7 +21,7 @@ class ConversationLogger:
         print(f"- Using log directory: {self.log_dir}")
         
         # Initialize each file with empty array if it doesn't exist
-        for file_path in [self.step_back_file, self.scad_gen_file, self.validation_file]:
+        for file_path in [self.step_back_file, self.scad_gen_file, self.validation_file, self.keyword_extraction_file]:
             if not os.path.exists(file_path):
                 with open(file_path, 'w') as f:
                     json.dump([], f)
@@ -30,20 +31,29 @@ class ConversationLogger:
     
     def _append_to_json(self, file_path, new_data):
         """Append new data to existing JSON file"""
+        print(f"\nAppending to file: {file_path}")
+        print(f"New data to append: {json.dumps(new_data, indent=2)}")
         try:
             # Read existing data
             with open(file_path, 'r') as f:
                 data = json.load(f)
+            print(f"Successfully read existing data. Current entries: {len(data)}")
             
             # Append new data
             data.append(new_data)
+            print(f"Appended new data. New total entries: {len(data)}")
             
             # Write back to file
             with open(file_path, 'w') as f:
                 json.dump(data, f, indent=2)
+            print("Successfully wrote updated data back to file")
                 
         except Exception as e:
-            print(f"Error logging to {os.path.basename(file_path)}: {e}")
+            print(f"Error in _append_to_json: {str(e)}")
+            print(f"File path: {file_path}")
+            print(f"Stack trace:")
+            import traceback
+            traceback.print_exc()
     
     def log_step_back(self, query, analysis):
         """Log step-back analysis conversation"""
@@ -74,6 +84,50 @@ class ConversationLogger:
         except Exception as e:
             print(f"Error logging validation: {str(e)}")
     
+    def log_keyword_extraction(self, query_response_pair):
+        """Log keyword extraction query-response pair for fine-tuning
+        
+        Args:
+            query_response_pair (dict): Dictionary containing:
+                - query: Dict with input and timestamp
+                - response: Dict with core_type, modifiers, compound_type
+                - metadata: Dict with success and error info
+        """
+        print("\n=== Logging Keyword Extraction ===")
+        print(f"Log directory: {self.log_dir}")
+        print(f"Log file path: {self.keyword_extraction_file}")
+        
+        try:
+            print(f"Received query-response pair: {json.dumps(query_response_pair, indent=2)}")
+            
+            # Read existing data
+            print("Reading existing data...")
+            with open(self.keyword_extraction_file, 'r') as f:
+                try:
+                    data = json.load(f)
+                    print(f"Successfully read existing data. Current entries: {len(data)}")
+                except json.JSONDecodeError:
+                    print("Error reading file - resetting to empty array")
+                    data = []
+            
+            # Append new data
+            data.append(query_response_pair)
+            print(f"Added new entry. New total entries: {len(data)}")
+            
+            # Write back to file
+            print("Writing updated data back to file...")
+            with open(self.keyword_extraction_file, 'w') as f:
+                json.dump(data, f, indent=2)
+            print("Successfully wrote data to file")
+            
+            print(f"Successfully logged keyword extraction for query: {query_response_pair['query']['input']}")
+        except Exception as e:
+            print(f"Error logging keyword extraction: {str(e)}")
+            print("Stack trace:")
+            import traceback
+            traceback.print_exc()
+        print("=== Keyword Extraction Logging Complete ===\n")
+    
     def get_scad_generation_logs(self):
         """Read and return all SCAD generation logs"""
         print("\n=== Reading SCAD Generation Logs ===")
@@ -93,4 +147,18 @@ class ConversationLogger:
         except (FileNotFoundError, json.JSONDecodeError) as e:
             print(f"Error reading SCAD generation logs: {e}")
             print("=== SCAD Generation Logs Read Failed ===\n")
+            return []
+    
+    def get_keyword_extraction_logs(self):
+        """Read and return all keyword extraction logs"""
+        print("\n=== Reading Keyword Extraction Logs ===")
+        try:
+            with open(self.keyword_extraction_file, 'r') as f:
+                logs = json.load(f)
+                print(f"- Successfully read {len(logs)} keyword extraction logs")
+                print("=== Keyword Extraction Logs Read Complete ===\n")
+                return logs
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error reading keyword extraction logs: {e}")
+            print("=== Keyword Extraction Logs Read Failed ===\n")
             return []

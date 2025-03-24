@@ -1,66 +1,61 @@
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: clear_logs
 Message: Logs cleared for new generation
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
 Message: Starting 3D Model Generator
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
-Message: Time: 2025-03-24T17:52:33.793683
+Message: Time: 2025-03-24T22:38:23.756279
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
 Message: Configuration:
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
 Message:   - Max Generation Attempts: 3
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
 Message:   - Similarity Threshold: 0.70
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
 Message:   - Output Directory: output
 -------------------
 
-2025-03-24 17:52:33,793 - __main__ - INFO
+2025-03-24 22:38:23,756 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-24 17:52:49,998 - __main__ - WARNING
-Function: main
-Message: Invalid choice: I want a pirate sword please
--------------------
-
-2025-03-24 17:52:53,140 - __main__ - INFO
+2025-03-24 22:38:26,890 - __main__ - INFO
 Function: main
 Message: Initializing generator with provider: anthropic
 -------------------
 
-2025-03-24 17:52:53,141 - __main__ - DEBUG
+2025-03-24 22:38:26,891 - __main__ - DEBUG
 Function: update_stage
 Message: Stage Start: Initialization
-  Time: 2025-03-24T17:52:53.141118
+  Time: 2025-03-24T22:38:26.891184
   Initial Message: Initializing generator
 -------------------
 
-2025-03-24 17:52:53,141 - __main__ - DEBUG
+2025-03-24 22:38:26,891 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0.5
@@ -69,17 +64,17 @@ Message: Progress Calculation:
   Total Progress: 55.0%
 -------------------
 
-2025-03-24 17:52:53,141 - __main__ - DEBUG
+2025-03-24 22:38:26,891 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Initialization
   Stage Progress: 50.0%
   Total Progress: 55.0%
   Message: Initializing generator
-  Time: 2025-03-24T17:52:53.141323
+  Time: 2025-03-24T22:38:26.891478
 -------------------
 
-2025-03-24 17:52:53,141 - __main__ - DEBUG
+2025-03-24 22:38:26,891 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 55.0%
@@ -88,7 +83,7 @@ Message: Progress Bar:
   Bar: ================--------------
 -------------------
 
-2025-03-24 17:53:00,671 - __main__ - DEBUG
+2025-03-24 22:38:32,890 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0.5
@@ -97,17 +92,17 @@ Message: Progress Calculation:
   Total Progress: 60.0%
 -------------------
 
-2025-03-24 17:53:00,672 - __main__ - DEBUG
+2025-03-24 22:38:32,890 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Initialization
   Stage Progress: 100.0%
   Total Progress: 60.0%
   Message: Generator initialized
-  Time: 2025-03-24T17:53:00.672172
+  Time: 2025-03-24T22:38:32.890867
 -------------------
 
-2025-03-24 17:53:00,672 - __main__ - DEBUG
+2025-03-24 22:38:32,890 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 60.0%
@@ -116,26 +111,26 @@ Message: Progress Bar:
   Bar: ==================------------
 -------------------
 
-2025-03-24 17:53:18,402 - __main__ - INFO
+2025-03-24 22:38:51,120 - __main__ - INFO
 Function: main
-Message: Generating model for: I want a pirate sword thankyou
+Message: Generating model for: I want a propeller
 -------------------
 
-2025-03-24 17:53:18,402 - __main__ - DEBUG
+2025-03-24 22:38:51,121 - __main__ - DEBUG
 Function: update_stage
 Message: Stage Complete: Initialization
-  Duration: 25.26s
+  Duration: 24.23s
   Final Progress: 100.0%
 -------------------
 
-2025-03-24 17:53:18,402 - __main__ - DEBUG
+2025-03-24 22:38:51,122 - __main__ - DEBUG
 Function: update_stage
 Message: Stage Start: Code Generation
-  Time: 2025-03-24T17:53:18.402863
+  Time: 2025-03-24T22:38:51.122135
   Initial Message: Generation attempt 1
 -------------------
 
-2025-03-24 17:53:18,402 - __main__ - DEBUG
+2025-03-24 22:38:51,122 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0
@@ -144,17 +139,17 @@ Message: Progress Calculation:
   Total Progress: 0.0%
 -------------------
 
-2025-03-24 17:53:18,403 - __main__ - DEBUG
+2025-03-24 22:38:51,122 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Code Generation
   Stage Progress: 0.0%
   Total Progress: 0.0%
   Message: Generation attempt 1
-  Time: 2025-03-24T17:53:18.403019
+  Time: 2025-03-24T22:38:51.122341
 -------------------
 
-2025-03-24 17:53:18,403 - __main__ - DEBUG
+2025-03-24 22:38:51,122 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 0.0%
@@ -163,7 +158,7 @@ Message: Progress Bar:
   Bar: ------------------------------
 -------------------
 
-2025-03-24 17:55:25,620 - __main__ - DEBUG
+2025-03-24 22:40:49,645 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0
@@ -172,17 +167,17 @@ Message: Progress Calculation:
   Total Progress: 30.0%
 -------------------
 
-2025-03-24 17:55:25,621 - __main__ - DEBUG
+2025-03-24 22:40:49,651 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Code Generation
   Stage Progress: 100.0%
   Total Progress: 30.0%
   Message: Generation complete
-  Time: 2025-03-24T17:55:25.621870
+  Time: 2025-03-24T22:40:49.651708
 -------------------
 
-2025-03-24 17:55:25,622 - __main__ - DEBUG
+2025-03-24 22:40:49,651 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 30.0%
@@ -191,56 +186,56 @@ Message: Progress Bar:
   Bar: =========---------------------
 -------------------
 
-2025-03-24 17:55:25,622 - __main__ - INFO
+2025-03-24 22:40:49,652 - __main__ - INFO
 Function: main
 Message: 
 Generation Summary:
 -------------------
 
-2025-03-24 17:55:25,622 - __main__ - INFO
+2025-03-24 22:40:49,652 - __main__ - INFO
 Function: main
-Message:   Description: I want a pirate sword thankyou
+Message:   Description: I want a propeller
 -------------------
 
-2025-03-24 17:55:25,622 - __main__ - INFO
+2025-03-24 22:40:49,652 - __main__ - INFO
 Function: main
 Message:   Provider: anthropic
 -------------------
 
-2025-03-24 17:55:25,622 - __main__ - INFO
+2025-03-24 22:40:49,652 - __main__ - INFO
 Function: main
 Message:   Attempts: 1
 -------------------
 
-2025-03-24 17:55:25,622 - __main__ - INFO
+2025-03-24 22:40:49,700 - __main__ - INFO
 Function: main
 Message:   Stage Summary:
 Stage Duration Summary:
-  Initialization: 25.26s
+  Initialization: 24.23s
 
-Total Duration: 25.26s
+Total Duration: 24.23s
 -------------------
 
-2025-03-24 17:55:29,133 - __main__ - INFO
+2025-03-24 22:45:10,072 - __main__ - INFO
 Function: main
 Message: 
 Session Summary:
 -------------------
 
-2025-03-24 17:55:29,134 - __main__ - INFO
+2025-03-24 22:45:10,075 - __main__ - INFO
 Function: main
 Message: Stage Duration Summary:
-  Initialization: 25.26s
+  Initialization: 24.23s
 
-Total Duration: 25.26s
+Total Duration: 24.23s
 -------------------
 
-2025-03-24 17:55:29,134 - __main__ - INFO
+2025-03-24 22:45:10,075 - __main__ - INFO
 Function: main
-Message: Session ended at: 2025-03-24T17:55:29.134147
+Message: Session ended at: 2025-03-24T22:45:10.075289
 -------------------
 
-2025-03-24 17:55:29,134 - __main__ - INFO
+2025-03-24 22:45:10,075 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
