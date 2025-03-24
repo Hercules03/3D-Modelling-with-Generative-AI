@@ -529,7 +529,39 @@ class EnhancedSCADKnowledgeBase:
             
             print("\nExtracted metadata and components:")
             for key, value in query_metadata.items():
-                print(f"  • {key}: {value}")
+                if key == 'step_back_analysis':
+                    print("\n  📋 Step-Back Analysis:")
+                    analysis = value
+                    
+                    print("\n    🎯 Core Principles:")
+                    for principle in analysis['principles']:
+                        print(f"      • {principle}")
+                    
+                    print("\n    🔷 Shape Abstractions:")
+                    for abstraction in analysis['abstractions']:
+                        print(f"      • {abstraction}")
+                    
+                    print("\n    🛠️  Implementation Approach:")
+                    for i, step in enumerate(analysis['approach'], 1):
+                        print(f"      {i}. {step}")
+                
+                elif key == 'components':
+                    print("\n  🧩 Components:")
+                    # Group components by type
+                    components_by_type = {}
+                    for comp in value:
+                        comp_type = comp['type']
+                        if comp_type not in components_by_type:
+                            components_by_type[comp_type] = []
+                        components_by_type[comp_type].append(comp['name'])
+                    
+                    # Print grouped components
+                    for comp_type, names in components_by_type.items():
+                        print(f"\n    {comp_type.title()}s:")
+                        for name in names:
+                            print(f"      • {name}")
+                else:
+                    print(f"  • {key}: {value}")
             
             # First try: Get results without any filtering
             results = self.collection.query(
@@ -711,11 +743,35 @@ class EnhancedSCADKnowledgeBase:
         ranked_results = []
         
         try:
-            print("\nDEBUG: Results structure:")
-            print(f"Keys in results: {results.keys()}")
-            print(f"First document: {results['documents'][0][0] if results['documents'][0] else 'None'}")
-            print(f"First metadata: {results['metadatas'][0][0] if results['metadatas'][0] else 'None'}")
-            print(f"First distance: {results['distances'][0][0] if results['distances'][0] else 'None'}")
+            print("\n📊 DEBUG: Results Structure")
+            print("=" * 50)
+            
+            # Print available keys
+            print("\n🔑 Available Keys:")
+            for key in results.keys():
+                print(f"  • {key}")
+            
+            # Print first document info
+            print("\n📄 First Document:")
+            print(f"  {results['documents'][0][0] if results['documents'][0] else 'None'}")
+            
+            # Print first metadata in a structured way
+            print("\n📋 First Metadata:")
+            if results['metadatas'][0]:
+                metadata = results['metadatas'][0][0]
+                for key, value in metadata.items():
+                    if isinstance(value, dict) or isinstance(value, list):
+                        print(f"\n  🔸 {key}:")
+                        print(f"    {json.dumps(value, indent=4).replace('{', '').replace('}', '')}")
+                    else:
+                        print(f"  🔸 {key}: {value}")
+            else:
+                print("  None")
+            
+            # Print first distance
+            print("\n📏 First Distance:")
+            print(f"  {results['distances'][0][0] if results['distances'][0] else 'None'}")
+            print("\n" + "=" * 50)
             
             for i, (desc, metadata, distance) in enumerate(zip(
                 results['documents'][0], 

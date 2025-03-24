@@ -310,5 +310,29 @@
       "abstractions": "- Primary cylinder/tapered cylinder for main bottle body\n- Threaded neck section with precise pitch and depth\n- Cap/lid with matching internal thread pattern\n- Optional components: grip indentations, texture patterns, label area\n- Potential internal volume representation for liquid visualization",
       "approach": "1. Define bottle profile curve for revolution/extrusion (considering ergonomics and capacity)\n2. Create main body through revolution or extrusion with appropriate wall thickness\n3. Model threaded neck section with precise dimensions for cap interaction\n4. Design cap/lid with matching thread pattern and appropriate sealing mechanism\n5. Add secondary features like texture, grip indentations, and label area\n6. Apply appropriate fillets and chamfers for realism"
     }
+  },
+  {
+    "query": "I want a katana",
+    "step_back_analysis": {
+      "principles": "- Curvature Mathematics: The katana blade follows a specific curve (sori) requiring precise bezier/spline mathematics\n- Edge Geometry: Differential geometry for proper shinogi-zukuri blade cross-section (diamond-shaped)\n- Symmetry Constraints: Blade maintains rotational symmetry along length while preserving curvature\n- Material Distinction: Visual and physical separation between metal, wood, and wrapping components\n- Historical Proportions: Adherence to traditional Japanese sword measurements and ratios",
+      "abstractions": "- Primary Blade: Curved spline-based surface with variable thickness profile\n- Tsuba (Guard): Typically flat disc with decorative negative space\n- Tsuka (Handle): Cylindrical base with elliptical cross-section and ray pattern\n- Fittings: Menuki (ornaments), Fuchi/Kashira (handle collar/cap), Habaki (blade collar)\n- Saya (Scabbard): Optional component with matching curvature to blade",
+      "approach": "1. Create blade profile curve as primary reference geometry, defining curvature and length\n2. Extrude and bevel blade profile with proper shinogi line (ridge) and yokote (tip geometry)\n3. Model tsuba and tsuka components separately with appropriate materials\n4. Assemble components with proper spatial relationships and connections\n5. Apply textures and materials (steel damascus pattern, ray skin handle, silk wrapping)"
+    }
+  },
+  {
+    "query": "I want the handle of a katana",
+    "step_back_analysis": {
+      "principles": "- Cylindrical geometry with elliptical cross-sections varying along the length axis\n- Non-uniform rational B-spline (NURBS) surface modeling for organic curved forms\n- Procedural texture mapping for wrapping patterns following helical paths\n- Ergonomic constraints based on hand anthropometrics (1.5-2 hand lengths)\n- Material layering system (core, wrap, decorative elements)",
+      "abstractions": "- Elongated octagonal prism core (tsuka-maki) with subtle tapering\n- Menuki ornaments as low-relief geometry for palm positioning\n- Fuchi and kashira end caps as cylindrical/dome terminal elements\n- Same-gawa (ray skin) underlayer with nodular displacement mapping\n- Ito wrapping following diamond pattern with consistent spacing",
+      "approach": "1. Create base handle core with proper tapering and octagonal cross-section\n2. Model end caps (fuchi/kashira) with appropriate socket joints\n3. Generate ray skin underlayer with procedural texture displacement\n4. Simulate ito wrapping using either geometry or texture-based approach\n5. Add menuki ornaments and position them properly between wrapping"
+    }
+  },
+  {
+    "query": "I want a pirate sword thankyou",
+    "step_back_analysis": {
+      "principles": "- Bilateral symmetry along the longitudinal axis for balanced weapon design\n- Proper weight distribution principles (center of mass considerations)\n- Surface curvature continuity for realistic blade edges and bevels\n- Material-specific geometric properties (metal reflectivity, handle wrapping texture)\n- Historical accuracy balanced with pirate-specific stylistic elements",
+      "abstractions": "- Primary blade: Elongated curved or straight triangular prism with beveled edges\n- Cross-guard: Perpendicular component with characteristic curvature (often S-shaped for pirate cutlasses)\n- Handle/grip: Cylindrical form with ergonomic tapering and texture mapping\n- Pommel: Counterweight element with period-appropriate detailing\n- Optional basket hilt or knuckle bow for cutlass variants",
+      "approach": "1. Create base blade profile using spline curves; extrude with appropriate thickness and taper\n2. Model cross-guard with proper intersection to blade; ensure clean topology at junction\n3. Develop handle with appropriate grip diameter and length; apply wrapping pattern\n4. Add pommel and decorative elements; ensure proper weight appearance\n5. Apply edge bevels, weathering details, and surface imperfections for realism"
+    }
   }
 ]

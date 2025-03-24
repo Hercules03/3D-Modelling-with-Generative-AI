@@ -1,83 +1,114 @@
-// Water Bottle with Cap
-// Parameters for customization
-bottle_height = 200;       // Height of the bottle (mm)
-bottle_diameter = 70;      // Diameter of the bottle (mm)
-wall_thickness = 2;        // Thickness of the bottle wall (mm)
-neck_diameter = 30;        // Diameter of the bottle neck (mm)
-neck_height = 20;          // Height of the bottle neck (mm)
-cap_height = 15;           // Height of the cap (mm)
-cap_diameter = neck_diameter + 4; // Diameter of the cap (mm)
-thread_height = 10;        // Height of the thread section (mm)
-thread_depth = 2;          // Depth of the thread (mm)
-thread_rotations = 2;      // Number of thread rotations
+// Pirate Cutlass Sword Model
+// This model creates a classic pirate cutlass with curved blade, cross-guard, and handle
 
-// Main module for the water bottle
-module water_bottle() {
-    difference() {
-        union() {
-            // Main body of the bottle
-            cylinder(h=bottle_height - neck_height, d=bottle_diameter, $fn=100);
-            
-            // Neck of the bottle
-            translate([0, 0, bottle_height - neck_height])
-                cylinder(h=neck_height, d1=bottle_diameter, d2=neck_diameter, $fn=100);
-            
-            // Thread for cap
-            translate([0, 0, bottle_height - thread_height])
-                thread(neck_diameter, thread_height, thread_depth, thread_rotations);
-        }
+// Parameters for customization
+blade_length = 120;
+blade_width = 15;
+blade_thickness = 3;
+blade_curve = 15;  // Amount of curvature in the blade
+handle_length = 30;
+handle_diameter = 10;
+guard_width = 30;
+guard_thickness = 4;
+pommel_diameter = 12;
+detail_resolution = 64;  // Smoothness of curved surfaces
+
+// Main sword module
+module pirate_sword() {
+    union() {
+        // Blade
+        blade();
         
-        // Hollow out the bottle
-        translate([0, 0, wall_thickness])
-            cylinder(h=bottle_height - wall_thickness, d=bottle_diameter - 2*wall_thickness, $fn=100);
-            
-        // Hollow out the neck
-        translate([0, 0, bottle_height - neck_height + wall_thickness])
-            cylinder(h=neck_height, d1=bottle_diameter - 2*wall_thickness, 
-                    d2=neck_diameter - 2*wall_thickness, $fn=100);
+        // Cross-guard
+        translate([0, 0, 0])
+            cross_guard();
+        
+        // Handle
+        translate([0, 0, -handle_length/2])
+            handle();
+        
+        // Pommel
+        translate([0, 0, -handle_length - 2])
+            pommel();
     }
 }
 
-// Module for the bottle cap
-module bottle_cap() {
+// Curved blade with beveled edge
+module blade() {
     difference() {
-        // Cap outer shape
+        // Main blade shape - curved along the Y axis
+        translate([0, blade_curve/2, blade_length/2])
+        rotate([0, 0, 0])
+        linear_extrude(height = blade_length, center = true, convexity = 10, twist = 0, scale = 0.6)
+            translate([0, -blade_curve/blade_length*100, 0])
+            resize([blade_width, blade_thickness])
+            circle(d=10, $fn=detail_resolution);
+        
+        // Bevel for the cutting edge
+        translate([0, blade_curve/2, blade_length/2])
+        rotate([0, 0, 0])
+        linear_extrude(height = blade_length*1.1, center = true, convexity = 10, twist = 0, scale = 0.5)
+            translate([0, -blade_curve/blade_length*100, 0])
+            resize([blade_width-1, blade_thickness-1])
+            circle(d=10, $fn=detail_resolution);
+    }
+}
+
+// Cross-guard with slight curve
+module cross_guard() {
+    difference() {
         union() {
-            cylinder(h=cap_height, d=cap_diameter, $fn=100);
+            // Main guard bar
+            translate([0, 0, 0])
+            rotate([0, 90, 0])
+            cylinder(h=guard_width, d=guard_thickness, center=true, $fn=detail_resolution);
             
-            // Add grip pattern on top of cap
-            for(i = [0:30:359]) {
-                rotate([0, 0, i])
-                translate([cap_diameter/2 - 2, 0, cap_height - 1])
-                    cylinder(h=2, d=4, $fn=20);
+            // Decorative center piece
+            translate([0, 0, 0])
+            sphere(d=guard_thickness*1.5, $fn=detail_resolution);
+            
+            // Curved guard ends
+            for(i = [-1, 1]) {
+                translate([i*guard_width/2, 0, 0])
+                rotate([0, i*20, 0])
+                rotate([0, 90, 0])
+                cylinder(h=guard_width/4, d=guard_thickness, center=false, $fn=detail_resolution);
             }
         }
         
-        // Hollow inside of cap
-        translate([0, 0, wall_thickness])
-            cylinder(h=cap_height, d=neck_diameter, $fn=100);
-            
-        // Thread cutout
-        translate([0, 0, wall_thickness])
-            thread(neck_diameter + thread_depth, thread_height, thread_depth, thread_rotations);
+        // Hole for blade
+        translate([0, 0, blade_length/6])
+        cube([blade_width/2, blade_thickness*2, blade_length/3], center=true);
     }
 }
 
-// Module to create threads
-module thread(diameter, height, depth, rotations) {
-    pitch = height / rotations;
-    
-    for (i = [0:5:359*rotations]) {
-        rotate([0, 0, i])
-            translate([diameter/2, 0, i * pitch / 360])
-                rotate([0, 90, 0])
-                    cylinder(h=depth, d=pitch*0.8, $fn=20);
+// Handle with grip texture
+module handle() {
+    difference() {
+        // Main handle cylinder
+        cylinder(h=handle_length, d=handle_diameter, center=true, $fn=detail_resolution);
+        
+        // Grip texture
+        for(i = [0:15:360]) {
+            rotate([0, 0, i])
+            translate([handle_diameter/2, 0, 0])
+            rotate([90, 0, 0])
+            cylinder(h=handle_diameter*2, d=1, center=true, $fn=8);
+        }
     }
 }
 
-// Render water bottle (comment/uncomment as needed)
-water_bottle();
+// Decorative pommel at end of handle
+module pommel() {
+    union() {
+        sphere(d=pommel_diameter, $fn=detail_resolution);
+        
+        // Decorative cap
+        translate([0, 0, pommel_diameter/3])
+        rotate_extrude($fn=detail_resolution)
+        polygon(points=[[0,0],[pommel_diameter/4,0],[pommel_diameter/6,pommel_diameter/4],[0,pommel_diameter/3]]);
+    }
+}
 
-// Render cap (moved to display next to the bottle)
-translate([bottle_diameter + 20, 0, 0])
-    bottle_cap();
+// Render the sword
+pirate_sword();

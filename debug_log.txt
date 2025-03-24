@@ -1,17 +1,17 @@
 === SCAD GENERATION START ===
-Description: I want a water bottle
+Description: I want a pirate sword thankyou
 Provider: anthropic
 Model: claude-3-7-sonnet-20250219
 ==================================================
 
 
 === STEP-BACK ANALYSIS ===
-Query: I want a water bottle
+Query: I want a pirate sword thankyou
 Provider: anthropic
 Model: claude-3-7-sonnet-20250219
 
 === FULL PROMPT ===
-When creating a 3D model for "I want a water bottle", what are the fundamental principles and high-level concepts I should consider before implementation?
+When creating a 3D model for "I want a pirate sword thankyou", what are the fundamental principles and high-level concepts I should consider before implementation?
 
 Please provide a structured technical analysis in this format:
 
@@ -52,74 +52,68 @@ Please maintain the XML-style tags and structured format shown above.
 
 === LLM RESPONSE ===
 <think>
-For a 3D water bottle model, I need to consider:
-- Cylindrical geometry with possible tapering
-- Rotational symmetry around vertical axis
-- Volume capacity considerations
-- Ergonomic grip factors
-- Material thickness and properties
-- Cap/lid mechanisms and threading
-- Balance and center of gravity
-- Potential for parametric modeling
-- Real-world proportions and usability
+For a pirate sword 3D model, I need to consider:
+- The geometric structure of different sword components (blade, guard, handle, pommel)
+- Mathematical principles for curves, bevels, and proportions
+- Historical accuracy vs. stylization balance
+- Technical constraints like mesh topology, edge flow, and material properties
+- Practical considerations like level of detail and potential animation requirements
 </think>
 
 <analysis>
 Based on these principles, let me develop a structured implementation plan:
 
 CORE PRINCIPLES:
-- Rotational symmetry around vertical axis for the bottle body
-- Surface continuity for smooth transitions between components
-- Volume preservation for accurate capacity representation
-- Material thickness considerations for realistic rendering
-- Balance between aesthetic design and functional ergonomics
+- Bilateral symmetry along the longitudinal axis for balanced weapon design
+- Proper weight distribution principles (center of mass considerations)
+- Surface curvature continuity for realistic blade edges and bevels
+- Material-specific geometric properties (metal reflectivity, handle wrapping texture)
+- Historical accuracy balanced with pirate-specific stylistic elements
 
 SHAPE COMPONENTS:
-- Primary cylinder/tapered cylinder for main bottle body
-- Threaded neck section with precise pitch and depth
-- Cap/lid with matching internal thread pattern
-- Optional components: grip indentations, texture patterns, label area
-- Potential internal volume representation for liquid visualization
+- Primary blade: Elongated curved or straight triangular prism with beveled edges
+- Cross-guard: Perpendicular component with characteristic curvature (often S-shaped for pirate cutlasses)
+- Handle/grip: Cylindrical form with ergonomic tapering and texture mapping
+- Pommel: Counterweight element with period-appropriate detailing
+- Optional basket hilt or knuckle bow for cutlass variants
 
 IMPLEMENTATION STEPS:
-1. Define bottle profile curve for revolution/extrusion (considering ergonomics and capacity)
-2. Create main body through revolution or extrusion with appropriate wall thickness
-3. Model threaded neck section with precise dimensions for cap interaction
-4. Design cap/lid with matching thread pattern and appropriate sealing mechanism
-5. Add secondary features like texture, grip indentations, and label area
-6. Apply appropriate fillets and chamfers for realism
+1. Create base blade profile using spline curves; extrude with appropriate thickness and taper
+2. Model cross-guard with proper intersection to blade; ensure clean topology at junction
+3. Develop handle with appropriate grip diameter and length; apply wrapping pattern
+4. Add pommel and decorative elements; ensure proper weight appearance
+5. Apply edge bevels, weathering details, and surface imperfections for realism
 
 MEASUREMENT CONSIDERATIONS:
-- Standard water bottle proportions: height-to-width ratio typically 3:1 to 4:1
-- Neck diameter: typically 1-1.5 inches for standard bottles
-- Thread pitch: 3-5 mm for standard bottle caps
-- Wall thickness: 1-3 mm depending on material simulation
-- Capacity considerations: volume calculation to match intended fluid ounces/milliliters
+- Blade-to-handle ratio typically 4:1 for practical cutlass designs
+- Guard width proportional to handle (approximately 1.5-2x handle width)
+- Overall length between 75-90cm for standard cutlass
+- Blade curvature radius approximately 8-12x blade width for proper sweep
+- Edge bevel angle between 20-30 degrees for realistic cutting geometry
 </analysis>
 
 === PARSED COMPONENTS ===
 
 CORE PRINCIPLES:
-- Rotational symmetry around vertical axis for the bottle body
-- Surface continuity for smooth transitions between components
-- Volume preservation for accurate capacity representation
-- Material thickness considerations for realistic rendering
-- Balance between aesthetic design and functional ergonomics
+- Bilateral symmetry along the longitudinal axis for balanced weapon design
+- Proper weight distribution principles (center of mass considerations)
+- Surface curvature continuity for realistic blade edges and bevels
+- Material-specific geometric properties (metal reflectivity, handle wrapping texture)
+- Historical accuracy balanced with pirate-specific stylistic elements
 
 SHAPE COMPONENTS:
-- Primary cylinder/tapered cylinder for main bottle body
-- Threaded neck section with precise pitch and depth
-- Cap/lid with matching internal thread pattern
-- Optional components: grip indentations, texture patterns, label area
-- Potential internal volume representation for liquid visualization
+- Primary blade: Elongated curved or straight triangular prism with beveled edges
+- Cross-guard: Perpendicular component with characteristic curvature (often S-shaped for pirate cutlasses)
+- Handle/grip: Cylindrical form with ergonomic tapering and texture mapping
+- Pommel: Counterweight element with period-appropriate detailing
+- Optional basket hilt or knuckle bow for cutlass variants
 
 IMPLEMENTATION STEPS:
-1. Define bottle profile curve for revolution/extrusion (considering ergonomics and capacity)
-2. Create main body through revolution or extrusion with appropriate wall thickness
-3. Model threaded neck section with precise dimensions for cap interaction
-4. Design cap/lid with matching thread pattern and appropriate sealing mechanism
-5. Add secondary features like texture, grip indentations, and label area
-6. Apply appropriate fillets and chamfers for realism
+1. Create base blade profile using spline curves; extrude with appropriate thickness and taper
+2. Model cross-guard with proper intersection to blade; ensure clean topology at junction
+3. Develop handle with appropriate grip diameter and length; apply wrapping pattern
+4. Add pommel and decorative elements; ensure proper weight appearance
+5. Apply edge bevels, weathering details, and surface imperfections for realism
 
 === USER VALIDATION ===
 Valid: y
@@ -182,102 +176,28 @@ RELEVANT EXAMPLES:
 
 Analysis to consider:
 CORE PRINCIPLES:
-                    - Rotational symmetry around vertical axis for the bottle body
-- Surface continuity for smooth transitions between components
-- Volume preservation for accurate capacity representation
-- Material thickness considerations for realistic rendering
-- Balance between aesthetic design and functional ergonomics
+                    - Bilateral symmetry along the longitudinal axis for balanced weapon design
+- Proper weight distribution principles (center of mass considerations)
+- Surface curvature continuity for realistic blade edges and bevels
+- Material-specific geometric properties (metal reflectivity, handle wrapping texture)
+- Historical accuracy balanced with pirate-specific stylistic elements
                     
                     SHAPE COMPONENTS:
-                    - Primary cylinder/tapered cylinder for main bottle body
-- Threaded neck section with precise pitch and depth
-- Cap/lid with matching internal thread pattern
-- Optional components: grip indentations, texture patterns, label area
-- Potential internal volume representation for liquid visualization
+                    - Primary blade: Elongated curved or straight triangular prism with beveled edges
+- Cross-guard: Perpendicular component with characteristic curvature (often S-shaped for pirate cutlasses)
+- Handle/grip: Cylindrical form with ergonomic tapering and texture mapping
+- Pommel: Counterweight element with period-appropriate detailing
+- Optional basket hilt or knuckle bow for cutlass variants
                     
                     IMPLEMENTATION STEPS:
-                    1. Define bottle profile curve for revolution/extrusion (considering ergonomics and capacity)
-2. Create main body through revolution or extrusion with appropriate wall thickness
-3. Model threaded neck section with precise dimensions for cap interaction
-4. Design cap/lid with matching thread pattern and appropriate sealing mechanism
-5. Add secondary features like texture, grip indentations, and label area
-6. Apply appropriate fillets and chamfers for realism
+                    1. Create base blade profile using spline curves; extrude with appropriate thickness and taper
+2. Model cross-guard with proper intersection to blade; ensure clean topology at junction
+3. Develop handle with appropriate grip diameter and length; apply wrapping pattern
+4. Add pommel and decorative elements; ensure proper weight appearance
+5. Apply edge bevels, weathering details, and surface imperfections for realism
 
 USER REQUEST:
-I want a water bottle
-
-Please generate OpenSCAD code that satisfies the user's request. Follow these guidelines:
-1. Use clear variable names and comments
-2. Break down complex shapes into modules
-3. Use proper indentation and formatting
-4. Include helpful comments explaining the code
-5. Wrap the code in <code> tags or ```scad code blocks
-
-Your response should ONLY contain the OpenSCAD code, properly wrapped in tags. Do not include any explanations or additional text.
-
-OpenSCAD code:
-
-=== GENERATION ERROR ===
-Error: Error generating OpenSCAD code: Error code: 503 - {'error': {'message': '所有令牌分组 Official 下对于模型 claude-3-7-sonnet-20250219 均无可用渠道 (request id: 20250322232633923663566zuYsHkar) (request id: 20250322232633841591344qNg60fVw)', 'type': 'rix_api_error', 'param': '', 'code': None}}
-==================================================
-
-=== GENERATION PROMPT ===
-You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user's description.
-
-BASIC KNOWLEDGE:
-        
-OpenSCAD is a 3D modeling tool that uses a scripting language to create 3D objects. Here are some basic concepts:
-
-Basic shapes (3D):
-1. cube(size = [x,y,z], center = true/false); - Creates a rectangular prism
-2. sphere(r=radius); - Creates a sphere
-3. cylinder(h = height, r1 = BottomRadius, r2 = TopRadius, center = true/false); - Creates a cylinder
-4. polyhedron( points = [ [X0, Y0, Z0], [X1, Y1, Z1], ... ], faces = [ [P0, P1, P2, P3, ...], ... ], convexity = N); - Creates complex shapes
-
-Transformations:
-1. translate([x,y,z]) - Moves object
-2. rotate(a = deg_a, v = [x, y, z]) - Rotates object (degrees)
-3. scale([x,y,z]) - Scales object
-4. resize([x,y,z],auto,convexity) - Modifies the size of the child object to match the given x,y,z.
-5. mirror([x,y,z]) - Creates a mirror image of a child element across a specified plane
-6. multmatrix(m) - Multiplies the geometry of all child elements with the given affine transformation matrix
-7. offset(r|delta,chamfer) - generates a new 2d interior or exterior outline from an existing outline
-8. hull() - Displays the convex hull of child nodes.
-9. minkowski(convexity) - Creates a minkowski sum of child nodes.
-
-Boolean operations:
-1. union() - Combines objects
-2. difference() - Subtracts second object from first
-3. intersection() - Shows overlap between objects
-
-Basic Syntax:
-1. Variables: var = value; (e.g., radius = 10;)
-2. Comments: // Single line comment, /* Multi-line comment */
-3. Mathematical Operators: +, -, *, /, %, ^
-4. Comparison Operators: ==, !=, <, <=, >, >=
-5. Logical Operators: &&, ||, !
-6. Conditional Statement: if (condition) { ... } else { ... }
-7. Loops:
-- for (i = [start:step:end]) { ... }
-- for (i = [value1, value2, ...]) { ... }
-8. Modules:
-- Define: module name(parameters) { ... }
-- Call: name(parameters);
-9. Functions:
-- Define: function name(parameters) = expression;
-- Call: name(parameters)
-10. Echo Command: echo("text", variable);
-11. Children: Using $children and children() for module composition
-
-
-RELEVANT EXAMPLES:
-        []
-
-Analysis to consider:
-
-
-USER REQUEST:
-I want a water bottle
+I want a pirate sword thankyou
 
 Please generate OpenSCAD code that satisfies the user's request. Follow these guidelines:
 1. Use clear variable names and comments
@@ -292,175 +212,237 @@ OpenSCAD code:
 
 === LLM RESPONSE ===
 ```scad
-// Water Bottle with Cap
-// Parameters for customization
-bottle_height = 200;       // Height of the bottle (mm)
-bottle_diameter = 70;      // Diameter of the bottle (mm)
-wall_thickness = 2;        // Thickness of the bottle wall (mm)
-neck_diameter = 30;        // Diameter of the bottle neck (mm)
-neck_height = 20;          // Height of the bottle neck (mm)
-cap_height = 15;           // Height of the cap (mm)
-cap_diameter = neck_diameter + 4; // Diameter of the cap (mm)
-thread_height = 10;        // Height of the thread section (mm)
-thread_depth = 2;          // Depth of the thread (mm)
-thread_rotations = 2;      // Number of thread rotations
+// Pirate Cutlass Sword Model
+// This model creates a classic pirate cutlass with curved blade, cross-guard, and handle
 
-// Main module for the water bottle
-module water_bottle() {
-    difference() {
-        union() {
-            // Main body of the bottle
-            cylinder(h=bottle_height - neck_height, d=bottle_diameter, $fn=100);
-            
-            // Neck of the bottle
-            translate([0, 0, bottle_height - neck_height])
-                cylinder(h=neck_height, d1=bottle_diameter, d2=neck_diameter, $fn=100);
-            
-            // Thread for cap
-            translate([0, 0, bottle_height - thread_height])
-                thread(neck_diameter, thread_height, thread_depth, thread_rotations);
-        }
+// Parameters for customization
+blade_length = 120;
+blade_width = 15;
+blade_thickness = 3;
+blade_curve = 15;  // Amount of curvature in the blade
+handle_length = 30;
+handle_diameter = 10;
+guard_width = 30;
+guard_thickness = 4;
+pommel_diameter = 12;
+detail_resolution = 64;  // Smoothness of curved surfaces
+
+// Main sword module
+module pirate_sword() {
+    union() {
+        // Blade
+        blade();
         
-        // Hollow out the bottle
-        translate([0, 0, wall_thickness])
-            cylinder(h=bottle_height - wall_thickness, d=bottle_diameter - 2*wall_thickness, $fn=100);
-            
-        // Hollow out the neck
-        translate([0, 0, bottle_height - neck_height + wall_thickness])
-            cylinder(h=neck_height, d1=bottle_diameter - 2*wall_thickness, 
-                    d2=neck_diameter - 2*wall_thickness, $fn=100);
+        // Cross-guard
+        translate([0, 0, 0])
+            cross_guard();
+        
+        // Handle
+        translate([0, 0, -handle_length/2])
+            handle();
+        
+        // Pommel
+        translate([0, 0, -handle_length - 2])
+            pommel();
     }
 }
 
-// Module for the bottle cap
-module bottle_cap() {
+// Curved blade with beveled edge
+module blade() {
     difference() {
-        // Cap outer shape
+        // Main blade shape - curved along the Y axis
+        translate([0, blade_curve/2, blade_length/2])
+        rotate([0, 0, 0])
+        linear_extrude(height = blade_length, center = true, convexity = 10, twist = 0, scale = 0.6)
+            translate([0, -blade_curve/blade_length*100, 0])
+            resize([blade_width, blade_thickness])
+            circle(d=10, $fn=detail_resolution);
+        
+        // Bevel for the cutting edge
+        translate([0, blade_curve/2, blade_length/2])
+        rotate([0, 0, 0])
+        linear_extrude(height = blade_length*1.1, center = true, convexity = 10, twist = 0, scale = 0.5)
+            translate([0, -blade_curve/blade_length*100, 0])
+            resize([blade_width-1, blade_thickness-1])
+            circle(d=10, $fn=detail_resolution);
+    }
+}
+
+// Cross-guard with slight curve
+module cross_guard() {
+    difference() {
         union() {
-            cylinder(h=cap_height, d=cap_diameter, $fn=100);
+            // Main guard bar
+            translate([0, 0, 0])
+            rotate([0, 90, 0])
+            cylinder(h=guard_width, d=guard_thickness, center=true, $fn=detail_resolution);
             
-            // Add grip pattern on top of cap
-            for(i = [0:30:359]) {
-                rotate([0, 0, i])
-                translate([cap_diameter/2 - 2, 0, cap_height - 1])
-                    cylinder(h=2, d=4, $fn=20);
+            // Decorative center piece
+            translate([0, 0, 0])
+            sphere(d=guard_thickness*1.5, $fn=detail_resolution);
+            
+            // Curved guard ends
+            for(i = [-1, 1]) {
+                translate([i*guard_width/2, 0, 0])
+                rotate([0, i*20, 0])
+                rotate([0, 90, 0])
+                cylinder(h=guard_width/4, d=guard_thickness, center=false, $fn=detail_resolution);
             }
         }
         
-        // Hollow inside of cap
-        translate([0, 0, wall_thickness])
-            cylinder(h=cap_height, d=neck_diameter, $fn=100);
-            
-        // Thread cutout
-        translate([0, 0, wall_thickness])
-            thread(neck_diameter + thread_depth, thread_height, thread_depth, thread_rotations);
+        // Hole for blade
+        translate([0, 0, blade_length/6])
+        cube([blade_width/2, blade_thickness*2, blade_length/3], center=true);
     }
 }
 
-// Module to create threads
-module thread(diameter, height, depth, rotations) {
-    pitch = height / rotations;
-    
-    for (i = [0:5:359*rotations]) {
-        rotate([0, 0, i])
-            translate([diameter/2, 0, i * pitch / 360])
-                rotate([0, 90, 0])
-                    cylinder(h=depth, d=pitch*0.8, $fn=20);
+// Handle with grip texture
+module handle() {
+    difference() {
+        // Main handle cylinder
+        cylinder(h=handle_length, d=handle_diameter, center=true, $fn=detail_resolution);
+        
+        // Grip texture
+        for(i = [0:15:360]) {
+            rotate([0, 0, i])
+            translate([handle_diameter/2, 0, 0])
+            rotate([90, 0, 0])
+            cylinder(h=handle_diameter*2, d=1, center=true, $fn=8);
+        }
     }
 }
 
-// Render water bottle (comment/uncomment as needed)
-water_bottle();
+// Decorative pommel at end of handle
+module pommel() {
+    union() {
+        sphere(d=pommel_diameter, $fn=detail_resolution);
+        
+        // Decorative cap
+        translate([0, 0, pommel_diameter/3])
+        rotate_extrude($fn=detail_resolution)
+        polygon(points=[[0,0],[pommel_diameter/4,0],[pommel_diameter/6,pommel_diameter/4],[0,pommel_diameter/3]]);
+    }
+}
 
-// Render cap (moved to display next to the bottle)
-translate([bottle_diameter + 20, 0, 0])
-    bottle_cap();
+// Render the sword
+pirate_sword();
 ```
 
 === GENERATED SCAD CODE ===
-// Water Bottle with Cap
-// Parameters for customization
-bottle_height = 200;       // Height of the bottle (mm)
-bottle_diameter = 70;      // Diameter of the bottle (mm)
-wall_thickness = 2;        // Thickness of the bottle wall (mm)
-neck_diameter = 30;        // Diameter of the bottle neck (mm)
-neck_height = 20;          // Height of the bottle neck (mm)
-cap_height = 15;           // Height of the cap (mm)
-cap_diameter = neck_diameter + 4; // Diameter of the cap (mm)
-thread_height = 10;        // Height of the thread section (mm)
-thread_depth = 2;          // Depth of the thread (mm)
-thread_rotations = 2;      // Number of thread rotations
+// Pirate Cutlass Sword Model
+// This model creates a classic pirate cutlass with curved blade, cross-guard, and handle
 
-// Main module for the water bottle
-module water_bottle() {
-    difference() {
-        union() {
-            // Main body of the bottle
-            cylinder(h=bottle_height - neck_height, d=bottle_diameter, $fn=100);
-            
-            // Neck of the bottle
-            translate([0, 0, bottle_height - neck_height])
-                cylinder(h=neck_height, d1=bottle_diameter, d2=neck_diameter, $fn=100);
-            
-            // Thread for cap
-            translate([0, 0, bottle_height - thread_height])
-                thread(neck_diameter, thread_height, thread_depth, thread_rotations);
-        }
+// Parameters for customization
+blade_length = 120;
+blade_width = 15;
+blade_thickness = 3;
+blade_curve = 15;  // Amount of curvature in the blade
+handle_length = 30;
+handle_diameter = 10;
+guard_width = 30;
+guard_thickness = 4;
+pommel_diameter = 12;
+detail_resolution = 64;  // Smoothness of curved surfaces
+
+// Main sword module
+module pirate_sword() {
+    union() {
+        // Blade
+        blade();
         
-        // Hollow out the bottle
-        translate([0, 0, wall_thickness])
-            cylinder(h=bottle_height - wall_thickness, d=bottle_diameter - 2*wall_thickness, $fn=100);
-            
-        // Hollow out the neck
-        translate([0, 0, bottle_height - neck_height + wall_thickness])
-            cylinder(h=neck_height, d1=bottle_diameter - 2*wall_thickness, 
-                    d2=neck_diameter - 2*wall_thickness, $fn=100);
+        // Cross-guard
+        translate([0, 0, 0])
+            cross_guard();
+        
+        // Handle
+        translate([0, 0, -handle_length/2])
+            handle();
+        
+        // Pommel
+        translate([0, 0, -handle_length - 2])
+            pommel();
     }
 }
 
-// Module for the bottle cap
-module bottle_cap() {
+// Curved blade with beveled edge
+module blade() {
     difference() {
-        // Cap outer shape
+        // Main blade shape - curved along the Y axis
+        translate([0, blade_curve/2, blade_length/2])
+        rotate([0, 0, 0])
+        linear_extrude(height = blade_length, center = true, convexity = 10, twist = 0, scale = 0.6)
+            translate([0, -blade_curve/blade_length*100, 0])
+            resize([blade_width, blade_thickness])
+            circle(d=10, $fn=detail_resolution);
+        
+        // Bevel for the cutting edge
+        translate([0, blade_curve/2, blade_length/2])
+        rotate([0, 0, 0])
+        linear_extrude(height = blade_length*1.1, center = true, convexity = 10, twist = 0, scale = 0.5)
+            translate([0, -blade_curve/blade_length*100, 0])
+            resize([blade_width-1, blade_thickness-1])
+            circle(d=10, $fn=detail_resolution);
+    }
+}
+
+// Cross-guard with slight curve
+module cross_guard() {
+    difference() {
         union() {
-            cylinder(h=cap_height, d=cap_diameter, $fn=100);
+            // Main guard bar
+            translate([0, 0, 0])
+            rotate([0, 90, 0])
+            cylinder(h=guard_width, d=guard_thickness, center=true, $fn=detail_resolution);
             
-            // Add grip pattern on top of cap
-            for(i = [0:30:359]) {
-                rotate([0, 0, i])
-                translate([cap_diameter/2 - 2, 0, cap_height - 1])
-                    cylinder(h=2, d=4, $fn=20);
+            // Decorative center piece
+            translate([0, 0, 0])
+            sphere(d=guard_thickness*1.5, $fn=detail_resolution);
+            
+            // Curved guard ends
+            for(i = [-1, 1]) {
+                translate([i*guard_width/2, 0, 0])
+                rotate([0, i*20, 0])
+                rotate([0, 90, 0])
+                cylinder(h=guard_width/4, d=guard_thickness, center=false, $fn=detail_resolution);
             }
         }
         
-        // Hollow inside of cap
-        translate([0, 0, wall_thickness])
-            cylinder(h=cap_height, d=neck_diameter, $fn=100);
-            
-        // Thread cutout
-        translate([0, 0, wall_thickness])
-            thread(neck_diameter + thread_depth, thread_height, thread_depth, thread_rotations);
+        // Hole for blade
+        translate([0, 0, blade_length/6])
+        cube([blade_width/2, blade_thickness*2, blade_length/3], center=true);
     }
 }
 
-// Module to create threads
-module thread(diameter, height, depth, rotations) {
-    pitch = height / rotations;
-    
-    for (i = [0:5:359*rotations]) {
-        rotate([0, 0, i])
-            translate([diameter/2, 0, i * pitch / 360])
-                rotate([0, 90, 0])
-                    cylinder(h=depth, d=pitch*0.8, $fn=20);
+// Handle with grip texture
+module handle() {
+    difference() {
+        // Main handle cylinder
+        cylinder(h=handle_length, d=handle_diameter, center=true, $fn=detail_resolution);
+        
+        // Grip texture
+        for(i = [0:15:360]) {
+            rotate([0, 0, i])
+            translate([handle_diameter/2, 0, 0])
+            rotate([90, 0, 0])
+            cylinder(h=handle_diameter*2, d=1, center=true, $fn=8);
+        }
     }
 }
 
-// Render water bottle (comment/uncomment as needed)
-water_bottle();
+// Decorative pommel at end of handle
+module pommel() {
+    union() {
+        sphere(d=pommel_diameter, $fn=detail_resolution);
+        
+        // Decorative cap
+        translate([0, 0, pommel_diameter/3])
+        rotate_extrude($fn=detail_resolution)
+        polygon(points=[[0,0],[pommel_diameter/4,0],[pommel_diameter/6,pommel_diameter/4],[0,pommel_diameter/3]]);
+    }
+}
 
-// Render cap (moved to display next to the bottle)
-translate([bottle_diameter + 20, 0, 0])
-    bottle_cap();
+// Render the sword
+pirate_sword();
 ==================================================
 
 === USER DECISION ===
