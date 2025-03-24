@@ -414,5 +414,21 @@
       "abstractions": "- Hub cylinder or ellipsoid as central mounting structure\n- Blade airfoil profiles at various radial stations (typically 5-7 cross-sections)\n- Transitional fillets between hub and blade roots\n- Optional tip caps or specialized tip geometry for efficiency\n- Symmetrically arranged blades (typically 2-6 depending on application)",
       "approach": "1. Create the central hub cylinder with appropriate diameter and mounting features\n2. Design a single airfoil cross-section profile and establish twist/pitch progression\n3. Generate blade by sweeping airfoil along helical path with decreasing thickness\n4. Create smooth fillets at blade-hub junction for stress distribution\n5. Array the completed blade around hub axis at equal angular intervals\n6. Apply final smoothing and aerodynamic refinements to blade surfaces"
     }
+  },
+  {
+    "query": "I want a medieval carbinet please",
+    "step_back_analysis": {
+      "principles": "- Rectilinear geometry with potential Gothic arches or decorative elements\n- Hierarchical component structure (frame, panels, hardware)\n- Material authenticity (wood grain direction, metal fixtures)\n- Period-appropriate joinery (mortise and tenon, dovetails)\n- Structural integrity with proper support mechanisms",
+      "abstractions": "- Rectangular prisms for main cabinet body and frame elements\n- Flat planes for panels and surfaces\n- Cylinders for turned elements (if any)\n- Beveled edges for decorative framing\n- Boolean operations for joinery and panel insets",
+      "approach": "1. Create base cabinet frame with proper proportions and structural members\n2. Model panel components with appropriate thickness and edge treatments\n3. Develop decorative elements (carvings, moldings) using boolean operations and displacement maps\n4. Add functional components (doors, hinges, latches, drawers)\n5. Apply appropriate materials and textures with period-accurate finishes"
+    }
+  },
+  {
+    "query": "I want a carbinet",
+    "step_back_analysis": {
+      "principles": "- Euclidean geometry with emphasis on rectangular prisms and planar surfaces\n- Boolean operations (union, difference) for creating door openings and joinery\n- Material thickness considerations for realistic construction\n- Structural integrity requiring appropriate support elements and load distribution\n- Parametric relationships between components for design flexibility",
+      "abstractions": "- Primary rectangular prism for cabinet body/carcass\n- Secondary rectangular prisms for doors, drawers, and shelving\n- Cylindrical elements for handles, knobs, and hinges\n- Planar surfaces for back panels, side panels, and shelves\n- Edge treatments requiring fillets or chamfers for realistic appearance",
+      "approach": "1. Define cabinet dimensions and create base carcass structure with material thickness\n2. Model internal components (shelves, dividers) with proper spatial relationships\n3. Create door and drawer components with appropriate offsets for movement\n4. Add hardware components (hinges, handles, drawer slides) with correct positioning\n5. Apply materials, textures, and finishing details"
+    }
   }
 ]

@@ -163,7 +163,12 @@ METADATA_EXTRACTION_PROMPT = """You are an expert in 3D modeling and OpenSCAD. A
 
 Description: {description}
 
-Extract the following metadata and format it as a valid JSON object with these fields:
+First, perform a step-back analysis:
+1. Consider the core principles and geometric foundations
+2. Break down the shape into basic components
+3. Plan the implementation steps
+
+Then, extract the following metadata and format it as a valid JSON object with these fields:
 1. "object_type": Main category/type of the object (e.g., "mug", "chair", "box")
 2. "dimensions": Dictionary of any mentioned measurements or proportions
 3. "features": List of key characteristics or components
@@ -173,6 +178,47 @@ Extract the following metadata and format it as a valid JSON object with these f
 7. "use_case": Primary intended use or purpose
 8. "geometric_properties": List of key geometric characteristics (e.g., "symmetrical", "curved", "angular")
 9. "technical_requirements": List of specific technical considerations
+10. "step_back_analysis": {{
+    "core_principles": ["list of fundamental principles and concepts"],
+    "shape_components": ["list of basic geometric shapes and parts"],
+    "implementation_steps": ["list of ordered steps for construction"]
+}}
+
+Example response format:
+{{
+    "object_type": "sword",
+    "dimensions": {{
+        "length": "100cm",
+        "blade_width": "5cm"
+    }},
+    "features": ["blade", "hilt", "guard", "pommel"],
+    "materials": ["metal", "leather"],
+    "complexity": "MEDIUM",
+    "style": "Fantasy",
+    "use_case": ["Role-playing", "Display", "Decoration"],
+    "geometric_properties": ["symmetrical", "tapered", "angular"],
+    "technical_requirements": ["boolean operations", "smooth transitions"],
+    "step_back_analysis": {{
+        "core_principles": [
+            "Blade geometry follows historical sword designs",
+            "Guard provides hand protection",
+            "Weight distribution affects balance"
+        ],
+        "shape_components": [
+            "Elongated tapered cylinder for blade",
+            "Cross-shaped guard",
+            "Cylindrical grip",
+            "Spherical pommel"
+        ],
+        "implementation_steps": [
+            "Create blade using cylinder and scale",
+            "Add cross-guard using cube and transforms",
+            "Form grip with cylinder",
+            "Attach spherical pommel",
+            "Apply boolean operations for details"
+        ]
+    }}
+}}
 
 Only include fields where information can be confidently extracted from the description.
 Format numbers consistently (use metric units when possible).

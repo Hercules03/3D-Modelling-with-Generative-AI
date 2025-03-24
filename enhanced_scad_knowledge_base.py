@@ -10,6 +10,7 @@ from prompts import KEYWORD_EXTRACTOR_PROMPT, CATEGORY_ANALYSIS_PROMPT, STEP_BAC
 from LLM import LLMProvider
 from metadata_extractor import MetadataExtractor
 import re
+import hashlib
 
 class EnhancedSCADKnowledgeBase:
     # Add this as a class variable at the top of the class
@@ -232,7 +233,6 @@ class EnhancedSCADKnowledgeBase:
                     continue
                 
                 # Generate unique ID based on content hash
-                import hashlib
                 content_hash = hashlib.md5(f"{description}{code}".encode()).hexdigest()[:8]
                 example_id = f"{self._generate_base_name(description)}_{content_hash}"
                 
@@ -365,89 +365,94 @@ class EnhancedSCADKnowledgeBase:
                 "similar_objects": []
             }
 
-    def add_example(self, description, code):
-        """Add a new example to the knowledge base with metadata"""
+    def add_example(self, description, code, metadata=None):
+        """Add a new example to the knowledge base"""
         try:
-            # Generate unique ID based on content hash
-            import hashlib
-            content_hash = hashlib.md5(f"{description}{code}".encode()).hexdigest()[:8]
-            example_id = f"{self._generate_base_name(description)}_{content_hash}"
+            # Generate a unique ID based on style and hash of description
+            style = metadata.get('style', 'unknown').lower() if metadata else 'unknown'
+            description_hash = hashlib.md5(description.encode()).hexdigest()[:8]
+            example_id = f"{style}_{description_hash}"
             
             # Check if example already exists
-            try:
-                existing = self.collection.get(ids=[example_id])
-                if existing and existing['ids']:
-                    print(f"\nSkipping duplicate example with ID: {example_id}")
-                    print("This example is already in the knowledge base.")
-                    return True
-            except Exception:
-                pass  # Example doesn't exist, continue with adding it
+            if self._example_exists(example_id):
+                print(f"\nSkipping duplicate example with ID: {example_id}")
+                print("This example is already in the knowledge base.")
+                return True
             
-            # Extract metadata
-            metadata = self.metadata_extractor.extract_metadata(description)
+            # Extract metadata if not provided
+            if not metadata:
+                metadata = self.metadata_extractor.extract_metadata(description)
             
-            # Use LLM for dynamic categorization if object_type is present
-            if "object_type" in metadata:
-                object_type = metadata["object_type"].lower()
-                category_analysis = self._analyze_object_categories(object_type, description)
-                
-                if category_analysis:
-                    # Add categories from LLM analysis
-                    metadata["categories"] = category_analysis.get("categories", ["other"])
-                    
-                    # Add properties from LLM analysis
-                    llm_properties = category_analysis.get("properties", {})
-                    metadata["properties"] = {
-                        **metadata.get("properties", {}),
-                        **llm_properties
-                    }
-                    
-                    # Add similar objects for better matching
-                    metadata["similar_objects"] = category_analysis.get("similar_objects", [])
+            # Perform step-back analysis
+            step_back_prompt = STEP_BACK_PROMPT_TEMPLATE.format(query=description)
+            step_back_response = self.llm.invoke(step_back_prompt)
+            technical_analysis = step_back_response.content
             
-            # Flatten nested structures in metadata
+            # Parse step-back analysis
+            principles = []
+            abstractions = []
+            approach = []
+            
+            current_section = None
+            for line in technical_analysis.split('\n'):
+                line = line.strip()
+                if 'CORE PRINCIPLES:' in line:
+                    current_section = 'principles'
+                elif 'SHAPE COMPONENTS:' in line:
+                    current_section = 'abstractions'
+                elif 'IMPLEMENTATION STEPS:' in line:
+                    current_section = 'approach'
+                elif line and line[0] == '-' and current_section == 'principles':
+                    principles.append(line[1:].strip())
+                elif line and line[0] == '-' and current_section == 'abstractions':
+                    abstractions.append(line[1:].strip())
+                elif line and line[0].isdigit() and current_section == 'approach':
+                    approach.append(line[line.find('.')+1:].strip())
+            
+            # Add step-back analysis to metadata
+            metadata['step_back_analysis'] = {
+                'principles': principles,
+                'abstractions': abstractions,
+                'approach': approach
+            }
+            
+            # Flatten metadata for ChromaDB
             flattened_metadata = {}
             for key, value in metadata.items():
                 if isinstance(value, dict):
                     # For dictionaries, create separate keys with prefixes
                     for sub_key, sub_value in value.items():
-                        flattened_metadata[f"{key}_{sub_key}"] = str(sub_value)
+                        if isinstance(sub_value, (list, dict)):
+                            flattened_metadata[f"{key}_{sub_key}"] = json.dumps(sub_value)
+                        else:
+                            flattened_metadata[f"{key}_{sub_key}"] = str(sub_value)
                 elif isinstance(value, list):
                     # For lists, join into a comma-separated string
                     flattened_metadata[key] = ", ".join(str(item) for item in value)
                 else:
                     flattened_metadata[key] = str(value)
             
-            # Add to ChromaDB with flattened metadata
-            timestamp = datetime.now().isoformat()
+            # Add code to metadata
+            flattened_metadata['code'] = code
+            
+            # Add example to ChromaDB
+            print(f"\nAdd of existing embedding ID: {example_id}")
             self.collection.add(
                 documents=[description],
-                metadatas=[{
-                    "code": code,
-                    "timestamp": timestamp,
-                    "type": "scad_generation",
-                    "user_accepted": True,
-                    **flattened_metadata  # Include flattened metadata
-                }],
+                metadatas=[flattened_metadata],
                 ids=[example_id]
             )
             
             # Update last processed timestamp
-            self.last_processed_time = timestamp
-            self._save_last_processed_time()
-            
-            print(f"\nExample added successfully with ID: {example_id}")
-            print("Stored metadata:")
-            for key, value in flattened_metadata.items():
-                print(f"  {key}: {value}")
+            self.last_processed = datetime.now()
             
             return True
             
         except Exception as e:
-            print(f"\nError adding example: {e}")
+            print(f"Error adding example: {str(e)}")
             return False
     
-    def get_relevant_examples(self, query, max_examples=2, filters=None, similarity_threshold=0.7):
+    def get_relevant_examples(self, query, max_examples=2, filters=None, similarity_threshold=0.15):
         """Get relevant examples based on description similarity and metadata filters"""
         try:
             print(f"\nSearching for examples matching: '{query}'")
@@ -588,6 +593,12 @@ class EnhancedSCADKnowledgeBase:
                 for result in filtered_results:
                     print(f"\nSimilarity Score: {result['scores']['final']:.2f}")
                     print(f"Description: {result['description']}")
+                    print("\nScore Breakdown:")
+                    print(f"  Base Similarity: {result['scores']['similarity']:.3f}")
+                    print(f"  Step-back Analysis: {sum(result['scores']['step_back'].values()) / len(result['scores']['step_back']):.3f}")
+                    print(f"  Component Match: {result['scores']['component_match']:.3f}")
+                    print(f"  Metadata Match: {result['scores']['metadata_match']:.3f}")
+                    print(f"  Complexity: {result['scores']['complexity']:.3f}")
             else:
                 print(f"\nNo examples met the similarity threshold of {similarity_threshold}")
             
@@ -838,210 +849,142 @@ class EnhancedSCADKnowledgeBase:
         """Rank and filter search results based on multiple criteria"""
         ranked_results = []
         
-        try:
-            print("\n📊 DEBUG: Results Structure")
-            print("=" * 50)
+        for i, (doc, metadata, distance) in enumerate(zip(
+            results['documents'][0],
+            results['metadatas'][0],
+            results['distances'][0]
+        )):
+            # Convert ChromaDB distance to similarity score (0-1)
+            base_similarity = 1 - min(distance, 1.0)
             
-            # Print available keys
-            print("\n🔑 Available Keys:")
-            for key in results.keys():
-                print(f"  • {key}")
+            # Get step-back analysis scores
+            step_back_scores = {'principles': 0.0, 'abstractions': 0.0, 'approach': 0.0}
             
-            # Print first document info
-            print("\n📄 First Document:")
-            print(f"  {results['documents'][0][0] if results['documents'][0] else 'None'}")
-            
-            # Print first metadata in a structured way
-            print("\n📋 First Metadata:")
-            if results['metadatas'][0]:
-                metadata = results['metadatas'][0][0]
-                for key, value in metadata.items():
-                    if isinstance(value, dict) or isinstance(value, list):
-                        print(f"\n  🔸 {key}:")
-                        print(f"    {json.dumps(value, indent=4).replace('{', '').replace('}', '')}")
-                    else:
-                        print(f"  🔸 {key}: {value}")
-            else:
-                print("  None")
-            
-            # Print first distance
-            print("\n📏 First Distance:")
-            print(f"  {results['distances'][0][0] if results['distances'][0] else 'None'}")
-            print("\n" + "=" * 50)
-            
-            for i, (desc, metadata, distance) in enumerate(zip(
-                results['documents'][0], 
-                results['metadatas'][0],
-                results['distances'][0]
-            )):
-                print(f"\nProcessing result {i}:")
-                print(f"Description: {desc[:100]}...")
+            if 'step_back_analysis' in query_metadata and 'step_back_analysis' in metadata:
+                query_analysis = query_metadata['step_back_analysis']
+                example_analysis = metadata['step_back_analysis']
                 
-                # Get code from metadata
-                code = metadata.get('code', '')
-                if not code:
-                    print(f"No code found in metadata")
-                    print(f"Available metadata keys: {metadata.keys()}")
-                    continue
+                # Compare principles
+                if query_analysis['principles'] and example_analysis['principles']:
+                    matches = sum(1 for p1 in query_analysis['principles']
+                                for p2 in example_analysis['principles']
+                                if self._fuzzy_match(p1, p2))
+                    total = max(len(query_analysis['principles']), len(example_analysis['principles']))
+                    step_back_scores['principles'] = matches / total if total > 0 else 0.0
                 
-                # Calculate base similarity score (convert distance to similarity)
-                similarity = 1 - min(distance, 1.0)  # Ensure similarity is between 0 and 1
-                print(f"Base similarity score: {similarity:.3f}")
+                # Compare abstractions
+                if query_analysis['abstractions'] and example_analysis['abstractions']:
+                    matches = sum(1 for a1 in query_analysis['abstractions']
+                                for a2 in example_analysis['abstractions']
+                                if self._fuzzy_match(a1, a2))
+                    total = max(len(query_analysis['abstractions']), len(example_analysis['abstractions']))
+                    step_back_scores['abstractions'] = matches / total if total > 0 else 0.0
                 
-                # Calculate step-back analysis similarity scores
-                step_back_scores = {'principles': 0.0, 'abstractions': 0.0, 'approach': 0.0}
+                # Compare approach steps
+                if query_analysis['approach'] and example_analysis['approach']:
+                    matches = sum(1 for s1 in query_analysis['approach']
+                                for s2 in example_analysis['approach']
+                                if self._fuzzy_match(s1, s2))
+                    total = max(len(query_analysis['approach']), len(example_analysis['approach']))
+                    step_back_scores['approach'] = matches / total if total > 0 else 0.0
+            
+            # Calculate component match score
+            component_match = 0.0
+            if 'components' in query_metadata and 'components' in metadata:
+                query_components = query_metadata['components']
+                example_components = metadata['components']
                 
-                if 'step_back_analysis' in query_metadata:
-                    query_analysis = query_metadata['step_back_analysis']
-                    example_analysis = None
-                    
-                    # Try to extract step-back analysis from example description
+                # Convert string components to dict format if needed
+                if isinstance(example_components, str):
                     try:
-                        analysis_start = desc.find('Technical Analysis:')
-                        if analysis_start != -1:
-                            analysis_text = desc[analysis_start:]
-                            
-                            # Parse example's step-back analysis
-                            example_principles = []
-                            example_abstractions = []
-                            example_approach = []
-                            
-                            current_section = None
-                            for line in analysis_text.split('\n'):
-                                line = line.strip()
-                                if 'CORE PRINCIPLES:' in line:
-                                    current_section = 'principles'
-                                elif 'SHAPE COMPONENTS:' in line:
-                                    current_section = 'abstractions'
-                                elif 'IMPLEMENTATION STEPS:' in line:
-                                    current_section = 'approach'
-                                elif line and line[0] == '-' and current_section == 'principles':
-                                    example_principles.append(line[1:].strip())
-                                elif line and line[0] == '-' and current_section == 'abstractions':
-                                    example_abstractions.append(line[1:].strip())
-                                elif line and line[0].isdigit() and current_section == 'approach':
-                                    example_approach.append(line[line.find('.')+1:].strip())
-                            
-                            example_analysis = {
-                                'principles': example_principles,
-                                'abstractions': example_abstractions,
-                                'approach': example_approach
-                            }
-                    except Exception as e:
-                        print(f"Error parsing example step-back analysis: {str(e)}")
-                    
-                    if example_analysis:
-                        # Calculate similarity scores for each section
-                        for section in ['principles', 'abstractions', 'approach']:
-                            query_items = query_analysis[section]
-                            example_items = example_analysis[section]
-                            
-                            matching_items = 0
-                            total_items = len(query_items)
-                            
-                            for query_item in query_items:
-                                query_words = set(query_item.lower().split())
-                                for example_item in example_items:
-                                    example_words = set(example_item.lower().split())
-                                    # Calculate word overlap
-                                    overlap = len(query_words & example_words) / len(query_words | example_words)
-                                    if overlap > 0.3:  # If more than 30% words match
-                                        matching_items += overlap
-                            
-                            step_back_scores[section] = matching_items / total_items if total_items > 0 else 0
-                            print(f"{section.capitalize()} similarity: {step_back_scores[section]:.3f}")
+                        example_components = json.loads(example_components)
+                    except:
+                        example_components = []
                 
-                # Calculate complexity score
-                complexity_score = self._calculate_complexity_score(code, metadata)
-                print(f"Complexity score: {complexity_score}")
-                
-                # Calculate component match score
-                query_components = query_metadata.get('components', [])
-                example_components = self._analyze_components(code)
-                component_match = 0
-                
-                # Handle both dictionary and string formats for components
-                if query_components:
-                    # If query_components is a dictionary with 'components' key
-                    if isinstance(query_components, dict) and 'components' in query_components:
-                        query_components = query_components['components']
-                    
-                    # Count matching components
-                    matching_components = 0
+                if query_components and example_components:
+                    matches = 0
                     total_components = len(query_components)
-                    for qc in query_components:
-                        qc_name = qc['name'] if isinstance(qc, dict) else qc
-                        for ec in example_components:
-                            ec_name = ec['name'] if isinstance(ec, dict) else ec
-                            if qc_name.lower() == ec_name.lower():
-                                matching_components += 1
-                
-                    component_match = matching_components / total_components if total_components > 0 else 0
-                    print(f"Component match score: {component_match:.3f} ({matching_components}/{total_components} components)")
-                
-                # Calculate metadata match score
-                metadata_match = 0
-                matching_props = 0
-                total_props = 0
-                
-                if query_metadata and metadata:
-                    # Important properties to check
-                    key_properties = ['object_type', 'complexity', 'style', 'use_case']
                     
-                    for k in key_properties:
-                        if k in query_metadata and k in metadata:
-                            total_props += 1
-                            if str(metadata[k]).lower() == str(query_metadata[k]).lower():
-                                matching_props += 1
-                
-                    # Check arrays (like geometric_properties, features)
-                    array_properties = ['geometric_properties', 'features']
-                    for k in array_properties:
-                        if k in query_metadata and k in metadata:
-                            query_values = query_metadata[k] if isinstance(query_metadata[k], list) else [query_metadata[k]]
-                            example_values = metadata[k].split(', ') if isinstance(metadata[k], str) else metadata[k]
-                            
-                            total_props += len(query_values)
-                            for qv in query_values:
-                                if any(str(qv).lower() in str(ev).lower() for ev in example_values):
-                                    matching_props += 1
-                
-                    metadata_match = matching_props / total_props if total_props > 0 else 0
-                    print(f"Metadata match score: {metadata_match:.3f} ({matching_props}/{total_props} properties)")
-                
-                # Calculate step-back analysis score (average of all sections)
-                step_back_score = sum(step_back_scores.values()) / len(step_back_scores)
-                print(f"Step-back analysis score: {step_back_score:.3f}")
-                
-                # Calculate final score with adjusted weights
-                final_score = (
-                    similarity * 0.25 +           # Base similarity (25%)
-                    step_back_score * 0.25 +      # Step-back analysis matching (25%)
-                    component_match * 0.25 +      # Component matching (25%)
-                    metadata_match * 0.15 +       # Metadata matching (15%)
-                    (complexity_score/100) * 0.1  # Complexity score (10%)
-                )
-                
-                print(f"Final score: {final_score:.3f}")
-                
-                ranked_results.append({
-                    'description': desc,
-                    'metadata': metadata,
-                    'code': code,
-                    'scores': {
-                        'final': final_score,
-                        'similarity': similarity,
-                        'step_back': step_back_scores,
-                        'component_match': component_match,
-                        'metadata_match': metadata_match,
-                        'complexity': complexity_score
-                    }
-                })
-                
-        except Exception as e:
-            print(f"Error ranking results: {str(e)}")
-            import traceback
-            traceback.print_exc()
+                    for q_comp in query_components:
+                        for e_comp in example_components:
+                            if (isinstance(q_comp, dict) and isinstance(e_comp, dict) and
+                                q_comp['type'] == e_comp['type'] and
+                                self._fuzzy_match(q_comp['name'], e_comp['name'])):
+                                matches += 1
+                                break
+                    
+                    component_match = matches / total_components if total_components > 0 else 0.0
+            
+            # Calculate metadata match score
+            metadata_match = 0.0
+            metadata_scores = []
+            
+            key_properties = [
+                'object_type',
+                'style',
+                'use_case',
+                'geometric_properties',
+                'technical_requirements'
+            ]
+            
+            for key in key_properties:
+                if key in query_metadata and key in metadata:
+                    query_value = query_metadata[key]
+                    example_value = metadata[key]
+                    
+                    # Handle array values
+                    if isinstance(query_value, list) and isinstance(example_value, list):
+                        matches = sum(1 for q in query_value
+                                    for e in example_value
+                                    if self._fuzzy_match(str(q), str(e)))
+                        total = max(len(query_value), len(example_value))
+                        score = matches / total if total > 0 else 0.0
+                    else:
+                        # Handle string values
+                        score = 1.0 if self._fuzzy_match(str(query_value), str(example_value)) else 0.0
+                    
+                    metadata_scores.append(score)
+            
+            metadata_match = sum(metadata_scores) / len(metadata_scores) if metadata_scores else 0.0
+            
+            # Calculate complexity score
+            complexity_score = 0.0
+            if 'complexity' in query_metadata and 'complexity' in metadata:
+                complexity_map = {'SIMPLE': 0.0, 'MEDIUM': 0.5, 'COMPLEX': 1.0}
+                query_complexity = complexity_map.get(query_metadata['complexity'], 0.5)
+                example_complexity = complexity_map.get(metadata['complexity'], 0.5)
+                complexity_diff = abs(query_complexity - example_complexity)
+                complexity_score = 1.0 - complexity_diff
+            
+            # Calculate final score with weights
+            weights = {
+                'similarity': 0.3,
+                'step_back': 0.2,
+                'component_match': 0.2,
+                'metadata_match': 0.2,
+                'complexity': 0.1
+            }
+            
+            final_score = (
+                weights['similarity'] * base_similarity +
+                weights['step_back'] * (sum(step_back_scores.values()) / len(step_back_scores)) +
+                weights['component_match'] * component_match +
+                weights['metadata_match'] * metadata_match +
+                weights['complexity'] * complexity_score
+            )
+            
+            ranked_results.append({
+                'description': doc,
+                'metadata': metadata,
+                'scores': {
+                    'final': final_score,
+                    'similarity': base_similarity,
+                    'step_back': step_back_scores,
+                    'component_match': component_match,
+                    'metadata_match': metadata_match,
+                    'complexity': complexity_score
+                }
+            })
         
         # Sort by final score
         ranked_results.sort(key=lambda x: x['scores']['final'], reverse=True)
@@ -1199,3 +1142,39 @@ class EnhancedSCADKnowledgeBase:
             print(f"Error analyzing code metadata: {str(e)}")
         
         return metadata 
+
+    def _fuzzy_match(self, str1, str2, threshold=0.8):
+        """Compare two strings for fuzzy matching"""
+        if not str1 or not str2:
+            return False
+            
+        str1 = str(str1).lower()
+        str2 = str(str2).lower()
+        
+        # Direct match
+        if str1 == str2:
+            return True
+            
+        # Substring match
+        if str1 in str2 or str2 in str1:
+            return True
+            
+        # Word overlap match
+        words1 = set(str1.split())
+        words2 = set(str2.split())
+        overlap = len(words1 & words2)
+        total = len(words1 | words2)
+        
+        if total == 0:
+            return False
+            
+        similarity = overlap / total
+        return similarity >= threshold 
+
+    def _example_exists(self, example_id):
+        """Check if an example with the given ID already exists"""
+        try:
+            existing = self.collection.get(ids=[example_id])
+            return bool(existing and existing['ids'])
+        except Exception:
+            return False 
