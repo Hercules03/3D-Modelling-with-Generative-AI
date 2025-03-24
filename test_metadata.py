@@ -3,40 +3,34 @@ from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
 import json
 
 def test_metadata_extraction():
+    """Test metadata extraction and knowledge base integration"""
     print("\n=== Testing Metadata Extraction ===\n")
     
-    # Test direct metadata extraction
-    print("1. Testing MetadataExtractor directly:")
-    extractor = MetadataExtractor()
+    # Test description
     description = "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design"
+    
+    print("1. Testing MetadataExtractor directly:\n")
+    extractor = MetadataExtractor()
     metadata = extractor.extract_metadata(description)
+    
     print("\nExtracted Metadata:")
     print(json.dumps(metadata, indent=2))
     
-    # Test metadata in knowledge base
-    print("\n2. Testing Knowledge Base Integration:")
+    print("\n2. Testing Knowledge Base Integration:\n")
     kb = EnhancedSCADKnowledgeBase()
     
-    # Add an example with metadata
-    test_code = """
-    difference() {
-        cylinder(h=100, r=40);
-        translate([0,0,-1])
-            cylinder(h=102, r=35);
-    }
-    """
+    # Add example
+    example_added = kb.add_example(description, "")
+    print(f"\nExample added successfully: {example_added}")
     
-    success = kb.add_example(description, test_code)
-    print(f"\nExample added successfully: {success}")
-    
-    # Retrieve the example with metadata
     print("\n3. Retrieving example with metadata:")
     examples = kb.get_relevant_examples(
         "I want a modern minimalist mug",
-        filters={"style": "Modern"}
+        similarity_threshold=0.25
     )
+    
     print("\nRetrieved Examples:")
-    print(examples)
+    print(json.dumps(examples, indent=2))
     
     kb.cleanup()
 

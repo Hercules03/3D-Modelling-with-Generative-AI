@@ -593,5 +593,532 @@
       "success": true,
       "error": null
     }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:27:48.786782",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "10cm tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:28:44.726405",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:32:33.273263",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "tall",
+        "sleek",
+        "minimalist"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:33:27.856206",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:35:01.336517",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:35:58.841904",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:37:03.516053",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "sleek",
+        "minimalist"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:38:30.482984",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:39:04.473489",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:40:03.874318",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:40:39.123230",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:42:04.093756",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "10cm tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:42:36.805979",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:44:28.718584",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "modern coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:44:58.839102",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:46:12.554141",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "10cm tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "modern coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:46:44.410450",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:51:44.068977",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:52:20.118435",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:55:49.609178",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "tall",
+        "sleek",
+        "minimalist"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:56:22.789374",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:59:38.837665",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "modern coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T01:00:09.076781",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T01:01:27.917178",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T01:02:02.432581",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T01:06:02.928803",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T01:06:39.624136",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "modern minimalist mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
   }
 ]

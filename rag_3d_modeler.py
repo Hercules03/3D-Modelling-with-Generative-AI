@@ -17,6 +17,8 @@ from constant import *
 from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
 from OpenSCAD_Generator import OpenSCADGenerator
 from LLMmodel import *
+from llm_prompt_logger import LLMPromptLogger
+from prompts import STEP_BACK_PROMPT_TEMPLATE
 
 # Configure logging
 logging.basicConfig(
@@ -384,30 +386,110 @@ class KnowledgeManager:
             logger.debug("Initializing knowledge base")
             kb = EnhancedSCADKnowledgeBase()
             
-            # Extract metadata and log the prompt-response pair
-            metadata_result = kb.extract_metadata(description, scad_code)
+            print("\nExtracting metadata and performing analysis...")
+            
+            # Extract metadata
+            metadata_result = kb.metadata_extractor.extract_metadata(description, scad_code)
+            if not metadata_result:
+                logger.error("Failed to extract metadata")
+                print("Failed to extract metadata from the description.")
+                return False
+                
+            # Log metadata extraction
             KnowledgeManager._prompt_logger.log_metadata_extraction(
                 query=description,
                 code=scad_code,
                 response=metadata_result
             )
             
-            # Perform category analysis and log the prompt-response pair
+            # Perform category analysis
             category_result = kb.analyze_categories(description, scad_code)
+            if not category_result:
+                logger.error("Failed to analyze categories")
+                print("Failed to analyze categories.")
+                return False
+                
+            # Log category analysis
             KnowledgeManager._prompt_logger.log_category_analysis(
                 query=description,
                 code=scad_code,
                 response=category_result
             )
             
-            # Add example with metadata
-            logger.debug("Adding example to knowledge base")
-            logger.debug("Description: %s", description)
-            logger.debug("Metadata: %s", json.dumps(metadata_result, indent=2))
-            logger.debug("Categories: %s", json.dumps(category_result, indent=2))
-            logger.debug("Code length: %d characters", len(scad_code))
+            # Perform step-back analysis
+            step_back_prompt = STEP_BACK_PROMPT_TEMPLATE.format(query=description)
+            step_back_response = kb.llm.invoke(step_back_prompt)
+            technical_analysis = step_back_response.content
             
-            if kb.add_example(description, scad_code, metadata_result, category_result):
+            # Parse step-back analysis
+            principles = []
+            abstractions = []
+            approach = []
+            
+            current_section = None
+            for line in technical_analysis.split('\n'):
+                line = line.strip()
+                if 'CORE PRINCIPLES:' in line:
+                    current_section = 'principles'
+                elif 'SHAPE COMPONENTS:' in line:
+                    current_section = 'abstractions'
+                elif 'IMPLEMENTATION STEPS:' in line:
+                    current_section = 'approach'
+                elif line and line.startswith('-'):
+                    if current_section == 'principles':
+                        principles.append(line[1:].strip())
+                    elif current_section == 'abstractions':
+                        abstractions.append(line[1:].strip())
+                elif line and line[0].isdigit() and current_section == 'approach':
+                    approach.append(line[line.find('.')+1:].strip())
+            
+            # Add step-back analysis to metadata
+            metadata_result['step_back_analysis'] = {
+                'principles': principles,
+                'abstractions': abstractions,
+                'approach': approach
+            }
+            
+            # Analyze required components
+            components_prompt = f"""Analyze the following request and identify the key OpenSCAD components needed:
+            {description}
+            {technical_analysis}
+            
+            List only the core components needed (modules, primitives, transformations, boolean operations).
+            Respond with a valid JSON array of objects, each with 'type' and 'name' fields."""
+            
+            components_response = kb.llm.invoke(components_prompt)
+            try:
+                # Clean up JSON response
+                json_str = components_response.content.strip()
+                if json_str.startswith("```json"):
+                    json_str = json_str.split("```json")[1]
+                if json_str.endswith("```"):
+                    json_str = json_str.rsplit("```", 1)[0]
+                metadata_result['components'] = json.loads(json_str.strip())
+            except:
+                metadata_result['components'] = []
+            
+            # Display extracted information
+            print("\nExtracted Information:")
+            print("---------------------")
+            print(f"Object Type: {metadata_result.get('object_type', 'Unknown')}")
+            print(f"Style: {metadata_result.get('style', 'Unknown')}")
+            print(f"Complexity: {metadata_result.get('complexity', 'Unknown')}")
+            print("\nCategories:", ", ".join(category_result.get('categories', [])))
+            print("\nProperties:", json.dumps(category_result.get('properties', {}), indent=2))
+            print("\nTechnical Requirements:", ", ".join(metadata_result.get('technical_requirements', [])))
+            
+            # Ask for confirmation
+            confirm = input("\nDo you want to add this example to the knowledge base? (y/n): ").strip().lower()
+            if confirm != 'y':
+                logger.info("User cancelled adding example")
+                print("Example not added.")
+                return False
+            
+            # Add example with all metadata
+            logger.debug("Adding example to knowledge base")
+            if kb.add_example(description, scad_code, metadata_result):
                 logger.info("Knowledge successfully saved")
                 print("\nKnowledge has been successfully saved!")
                 return True
