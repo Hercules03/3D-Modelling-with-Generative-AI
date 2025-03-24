@@ -430,5 +430,13 @@
       "abstractions": "- Primary rectangular prism for cabinet body/carcass\n- Secondary rectangular prisms for doors, drawers, and shelving\n- Cylindrical elements for handles, knobs, and hinges\n- Planar surfaces for back panels, side panels, and shelves\n- Edge treatments requiring fillets or chamfers for realistic appearance",
       "approach": "1. Define cabinet dimensions and create base carcass structure with material thickness\n2. Model internal components (shelves, dividers) with proper spatial relationships\n3. Create door and drawer components with appropriate offsets for movement\n4. Add hardware components (hinges, handles, drawer slides) with correct positioning\n5. Apply materials, textures, and finishing details"
     }
+  },
+  {
+    "query": "I want a drum",
+    "step_back_analysis": {
+      "principles": "- Cylindrical geometry with circular end caps (drumheads)\n- Rotational symmetry around vertical axis\n- Shell-membrane interaction system (tension-based design)\n- Material differentiation between resonant body and tensioned membranes\n- Physical proportionality based on acoustic requirements",
+      "abstractions": "- Primary cylinder for drum shell (hollow interior)\n- Two circular planes for top and bottom drumheads\n- Cylindrical rim components for head attachment\n- Tension rods and lugs as secondary components\n- Optional: support structures (legs, mounts) depending on drum type",
+      "approach": "1. Create hollow cylinder with appropriate diameter-to-height ratio for shell\n2. Model circular drumhead planes with slight tension curvature\n3. Add hardware components: rims, lugs, tension rods in symmetrical pattern\n4. Apply material properties to differentiate wood/metal shell, plastic/skin heads, and metal hardware\n5. Position components with appropriate spatial relationships and constraints"
+    }
   }
 ]

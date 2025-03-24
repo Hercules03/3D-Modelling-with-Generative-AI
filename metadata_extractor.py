@@ -1,9 +1,11 @@
 from LLM import LLMProvider
 import json
 from datetime import datetime
-from prompts import METADATA_EXTRACTION_PROMPT, KEYWORD_EXTRACTOR_PROMPT
+from prompts import METADATA_EXTRACTION_PROMPT, KEYWORD_EXTRACTOR_PROMPT, CATEGORY_ANALYSIS_PROMPT
 from conversation_logger import ConversationLogger
 from LLMmodel import keyword_extractor_model
+from LLMPromptLogger import LLMPromptLogger
+from constant import BASIC_KNOWLEDGE
 
 class MetadataExtractor:
     def __init__(self, llm_provider="gemma"):
@@ -30,8 +32,9 @@ class MetadataExtractor:
         self.extraction_prompt = METADATA_EXTRACTION_PROMPT
         self.keyword_prompt = KEYWORD_EXTRACTOR_PROMPT
         self.logger = ConversationLogger()
+        self.prompt_logger = LLMPromptLogger()  # Add LLMPromptLogger
 
-    def extract_metadata(self, description):
+    def extract_metadata(self, description, code=""):
         """Extract metadata from a model description"""
         try:
             print(f"\nExtracting metadata from description: {description}")
@@ -123,6 +126,25 @@ class MetadataExtractor:
                 print("Successfully extracted metadata:")
                 for key, value in metadata.items():
                     print(f"  • {key}: {value}")
+                
+                # Log metadata extraction
+                self.prompt_logger.log_metadata_extraction(
+                    query=description,
+                    code=code,
+                    response=metadata,
+                    timestamp=timestamp
+                )
+                
+                # Perform category analysis
+                category_result = self.analyze_categories(description, metadata)
+                if category_result:
+                    self.prompt_logger.log_category_analysis(
+                        query=description,
+                        code=code,
+                        response=category_result,
+                        timestamp=timestamp
+                    )
+                
                 print("=== Full Metadata Extraction Complete ===\n")
                 return metadata
             except json.JSONDecodeError as e:
@@ -137,4 +159,32 @@ class MetadataExtractor:
             import traceback
             traceback.print_exc()
             print("=== Metadata Extraction Failed ===\n")
-            return {} 
+            return {}
+
+    def analyze_categories(self, description, metadata):
+        """Analyze categories for the given description and metadata"""
+        try:
+            # Format the prompt with standard categories and properties
+            prompt = CATEGORY_ANALYSIS_PROMPT.format(
+                object_type=metadata.get("object_type", ""),
+                description=description,
+                categories_info=BASIC_KNOWLEDGE["categories"],
+                properties_info=BASIC_KNOWLEDGE["properties"]
+            )
+            
+            # Get category analysis from LLM
+            response = self.llm.invoke(prompt)
+            content = response.content.strip()
+            
+            try:
+                # Clean up and parse JSON response
+                clean_content = content.replace("```json", "").replace("```", "").strip()
+                category_data = json.loads(clean_content)
+                return category_data
+            except json.JSONDecodeError as e:
+                print(f"Error parsing category analysis response: {e}")
+                return None
+                
+        except Exception as e:
+            print(f"Category analysis failed: {e}")
+            return None 

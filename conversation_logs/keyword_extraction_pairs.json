@@ -518,5 +518,80 @@
       "success": true,
       "error": null
     }
+  },
+  {
+    "query": {
+      "input": "Create a modern coffee mug that is 10cm tall with a sleek handle and minimalist design",
+      "timestamp": "2025-03-25T00:13:56.064719",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "coffee mug",
+      "modifiers": [
+        "tall",
+        "sleek handle",
+        "minimalist design"
+      ],
+      "compound_type": "coffee mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a modern minimalist mug",
+      "timestamp": "2025-03-25T00:14:50.566490",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "mug",
+      "modifiers": [
+        "modern",
+        "minimalist"
+      ],
+      "compound_type": "mug"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a drum",
+      "timestamp": "2025-03-25T00:17:51.543724",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "drum",
+      "modifiers": [
+        "drum"
+      ],
+      "compound_type": "drum"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a drum",
+      "timestamp": "2025-03-25T00:20:09.534234",
+      "model": "gemma3:1b"
+    },
+    "response": {
+      "core_type": "drum",
+      "modifiers": [
+        "drum"
+      ],
+      "compound_type": "drum"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
   }
 ]
