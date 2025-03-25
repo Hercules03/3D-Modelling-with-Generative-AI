@@ -1195,3 +1195,145 @@ class EnhancedSCADKnowledgeBase:
                     grouped[comp_type] = []
                 grouped[comp_type].append(component)
         return grouped 
+
+    def delete_examples(self, example_ids: List[str]) -> bool:
+        """Delete multiple examples from the knowledge base"""
+        try:
+            self.collection.delete(ids=example_ids)
+            return True
+        except Exception as e:
+            print(f"Error deleting examples: {str(e)}")
+            traceback.print_exc()
+            return False
+
+    def search_examples(self, search_term: str = None, filters: Dict = None, page: int = 1, page_size: int = 10) -> Dict:
+        """
+        Search for examples with pagination and filtering
+        
+        Args:
+            search_term: Optional search term to filter descriptions
+            filters: Optional dictionary of metadata filters
+            page: Page number (1-based)
+            page_size: Number of items per page
+        """
+        try:
+            # Calculate offset
+            offset = (page - 1) * page_size
+            
+            # Get all examples first
+            results = self.collection.get()
+            if not results or not results['ids']:
+                return {
+                    'examples': [],
+                    'total': 0,
+                    'page': page,
+                    'total_pages': 0
+                }
+            
+            # Prepare examples list
+            examples = []
+            for i, (id, doc, metadata) in enumerate(zip(results['ids'], results['documents'], results['metadatas'])):
+                # Apply search term filter if provided
+                if search_term and search_term.lower() not in doc.lower():
+                    continue
+                
+                # Apply metadata filters if provided
+                if filters:
+                    skip = False
+                    for key, value in filters.items():
+                        if key in metadata:
+                            # Handle JSON string values
+                            meta_value = metadata[key]
+                            if isinstance(meta_value, str):
+                                if meta_value.startswith('[') or meta_value.startswith('{'):
+                                    try:
+                                        meta_value = json.loads(meta_value)
+                                    except:
+                                        pass
+                            
+                            # Check if value matches filter
+                            if isinstance(meta_value, list):
+                                if value not in meta_value:
+                                    skip = True
+                                    break
+                            elif str(meta_value).lower() != str(value).lower():
+                                skip = True
+                                break
+                    if skip:
+                        continue
+                
+                # Parse metadata
+                parsed_metadata = {}
+                for key, value in metadata.items():
+                    if isinstance(value, str):
+                        if value.startswith('[') or value.startswith('{'):
+                            try:
+                                parsed_metadata[key] = json.loads(value)
+                            except:
+                                parsed_metadata[key] = value
+                        else:
+                            parsed_metadata[key] = value
+                    else:
+                        parsed_metadata[key] = value
+                
+                examples.append({
+                    'id': id,
+                    'description': doc,
+                    'metadata': parsed_metadata
+                })
+            
+            # Calculate pagination
+            total = len(examples)
+            total_pages = (total + page_size - 1) // page_size
+            
+            # Apply pagination
+            start = offset
+            end = min(start + page_size, total)
+            paginated_examples = examples[start:end]
+            
+            return {
+                'examples': paginated_examples,
+                'total': total,
+                'page': page,
+                'total_pages': total_pages
+            }
+            
+        except Exception as e:
+            print(f"Error searching examples: {str(e)}")
+            traceback.print_exc()
+            return {
+                'examples': [],
+                'total': 0,
+                'page': page,
+                'total_pages': 0
+            }
+
+    def get_example_details(self, example_id: str) -> Dict:
+        """Get detailed information about a specific example"""
+        try:
+            result = self.collection.get(ids=[example_id])
+            if not result or not result['ids']:
+                return None
+            
+            # Parse metadata
+            metadata = result['metadatas'][0]
+            parsed_metadata = {}
+            for key, value in metadata.items():
+                if value.startswith('[') or value.startswith('{'):
+                    try:
+                        parsed_metadata[key] = json.loads(value)
+                    except:
+                        parsed_metadata[key] = value
+                else:
+                    parsed_metadata[key] = value
+                
+            return {
+                'id': result['ids'][0],
+                'description': result['documents'][0],
+                'metadata': parsed_metadata
+            }
+            
+        except Exception as e:
+            print(f"Error getting example details: {str(e)}")
+            traceback.print_exc()
+            return None 

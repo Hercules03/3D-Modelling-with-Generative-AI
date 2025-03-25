@@ -1,242 +1,60 @@
-2025-03-25 00:16:20,339 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: clear_logs
 Message: Logs cleared for new generation
 -------------------
 
-2025-03-25 00:16:20,339 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-25 00:16:20,339 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
 Message: Starting 3D Model Generator
 -------------------
 
-2025-03-25 00:16:20,339 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
-Message: Time: 2025-03-25T00:16:20.339871
+Message: Time: 2025-03-25T13:20:26.032258
 -------------------
 
-2025-03-25 00:16:20,339 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
 Message: Configuration:
 -------------------
 
-2025-03-25 00:16:20,339 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
 Message:   - Max Generation Attempts: 3
 -------------------
 
-2025-03-25 00:16:20,339 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
 Message:   - Similarity Threshold: 0.70
 -------------------
 
-2025-03-25 00:16:20,340 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
 Message:   - Output Directory: output
 -------------------
 
-2025-03-25 00:16:20,340 - __main__ - INFO
+2025-03-25 13:20:26,032 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-25 00:16:22,029 - __main__ - INFO
+2025-03-25 13:20:27,911 - __main__ - INFO
 Function: main
-Message: Initializing generator with provider: anthropic
+Message: Starting knowledge deletion
 -------------------
 
-2025-03-25 00:16:22,029 - __main__ - DEBUG
-Function: update_stage
-Message: Stage Start: Initialization
-  Time: 2025-03-25T00:16:22.029727
-  Initial Message: Initializing generator
+2025-03-25 13:20:27,911 - __main__ - INFO
+Function: delete_knowledge
+Message: Starting knowledge deletion
 -------------------
 
-2025-03-25 00:16:22,029 - __main__ - DEBUG
-Function: _calculate_total_progress
-Message: Progress Calculation:
-  Completed Weight: 0.5
-  Current Stage Weight: 0.1
-  Current Progress: 50.0%
-  Total Progress: 55.0%
--------------------
-
-2025-03-25 00:16:22,029 - __main__ - DEBUG
-Function: update_stage
-Message: Progress Update:
-  Stage: Initialization
-  Stage Progress: 50.0%
-  Total Progress: 55.0%
-  Message: Initializing generator
-  Time: 2025-03-25T00:16:22.029967
--------------------
-
-2025-03-25 00:16:22,030 - __main__ - DEBUG
-Function: _create_progress_bar
-Message: Progress Bar:
-  Progress: 55.0%
-  Width: 30
-  Filled: 16
-  Bar: ================--------------
--------------------
-
-2025-03-25 00:16:27,326 - __main__ - DEBUG
-Function: _calculate_total_progress
-Message: Progress Calculation:
-  Completed Weight: 0.5
-  Current Stage Weight: 0.1
-  Current Progress: 100.0%
-  Total Progress: 60.0%
--------------------
-
-2025-03-25 00:16:27,326 - __main__ - DEBUG
-Function: update_stage
-Message: Progress Update:
-  Stage: Initialization
-  Stage Progress: 100.0%
-  Total Progress: 60.0%
-  Message: Generator initialized
-  Time: 2025-03-25T00:16:27.326152
--------------------
-
-2025-03-25 00:16:27,326 - __main__ - DEBUG
-Function: _create_progress_bar
-Message: Progress Bar:
-  Progress: 60.0%
-  Width: 30
-  Filled: 18
-  Bar: ==================------------
--------------------
-
-2025-03-25 00:16:44,128 - __main__ - INFO
-Function: main
-Message: Generating model for: I want a drum
--------------------
-
-2025-03-25 00:16:44,130 - __main__ - DEBUG
-Function: update_stage
-Message: Stage Complete: Initialization
-  Duration: 22.10s
-  Final Progress: 100.0%
--------------------
-
-2025-03-25 00:16:44,130 - __main__ - DEBUG
-Function: update_stage
-Message: Stage Start: Code Generation
-  Time: 2025-03-25T00:16:44.130510
-  Initial Message: Generation attempt 1
--------------------
-
-2025-03-25 00:16:44,130 - __main__ - DEBUG
-Function: _calculate_total_progress
-Message: Progress Calculation:
-  Completed Weight: 0
-  Current Stage Weight: 0.3
-  Current Progress: 0.0%
-  Total Progress: 0.0%
--------------------
-
-2025-03-25 00:16:44,130 - __main__ - DEBUG
-Function: update_stage
-Message: Progress Update:
-  Stage: Code Generation
-  Stage Progress: 0.0%
-  Total Progress: 0.0%
-  Message: Generation attempt 1
-  Time: 2025-03-25T00:16:44.130744
--------------------
-
-2025-03-25 00:16:44,130 - __main__ - DEBUG
-Function: _create_progress_bar
-Message: Progress Bar:
-  Progress: 0.0%
-  Width: 30
-  Filled: 0
-  Bar: ------------------------------
--------------------
-
-2025-03-25 00:20:48,890 - __main__ - DEBUG
-Function: _calculate_total_progress
-Message: Progress Calculation:
-  Completed Weight: 0
-  Current Stage Weight: 0.3
-  Current Progress: 100.0%
-  Total Progress: 30.0%
--------------------
-
-2025-03-25 00:20:48,890 - __main__ - DEBUG
-Function: update_stage
-Message: Progress Update:
-  Stage: Code Generation
-  Stage Progress: 100.0%
-  Total Progress: 30.0%
-  Message: Generation complete
-  Time: 2025-03-25T00:20:48.890833
--------------------
-
-2025-03-25 00:20:48,890 - __main__ - DEBUG
-Function: _create_progress_bar
-Message: Progress Bar:
-  Progress: 30.0%
-  Width: 30
-  Filled: 9
-  Bar: =========---------------------
--------------------
-
-2025-03-25 00:20:48,890 - __main__ - INFO
-Function: main
-Message: 
-Generation Summary:
--------------------
-
-2025-03-25 00:20:48,890 - __main__ - INFO
-Function: main
-Message:   Description: I want a drum
--------------------
-
-2025-03-25 00:20:48,890 - __main__ - INFO
-Function: main
-Message:   Provider: anthropic
--------------------
-
-2025-03-25 00:20:48,890 - __main__ - INFO
-Function: main
-Message:   Attempts: 1
--------------------
-
-2025-03-25 00:20:48,891 - __main__ - INFO
-Function: main
-Message:   Stage Summary:
-Stage Duration Summary:
-  Initialization: 22.10s
-
-Total Duration: 22.10s
--------------------
-
-2025-03-25 00:21:29,536 - __main__ - INFO
-Function: main
-Message: 
-Session Summary:
--------------------
-
-2025-03-25 00:21:29,538 - __main__ - INFO
-Function: main
-Message: Stage Duration Summary:
-  Initialization: 22.10s
-
-Total Duration: 22.10s
--------------------
-
-2025-03-25 00:21:29,538 - __main__ - INFO
-Function: main
-Message: Session ended at: 2025-03-25T00:21:29.538451
--------------------
-
-2025-03-25 00:21:29,538 - __main__ - INFO
-Function: main
-Message: ==================================================
+2025-03-25 13:20:27,911 - __main__ - DEBUG
+Function: delete_knowledge
+Message: Initializing knowledge base for deletion
 -------------------
 

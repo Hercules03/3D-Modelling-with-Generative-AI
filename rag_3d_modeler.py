@@ -506,7 +506,7 @@ class KnowledgeManager:
 
     @staticmethod
     def delete_knowledge() -> bool:
-        """Handle knowledge deletion"""
+        """Handle knowledge deletion with improved user experience"""
         logger.info("Starting knowledge deletion")
         print("\nKnowledge Deletion Mode")
         print("----------------------")
@@ -515,63 +515,122 @@ class KnowledgeManager:
             logger.debug("Initializing knowledge base for deletion")
             kb = EnhancedSCADKnowledgeBase()
             
-            # Get all examples
-            logger.debug("Retrieving all examples")
-            results = kb.collection.get()
-            if not results or not results['ids']:
-                logger.info("No examples found in knowledge base")
-                print("\nNo examples found in the knowledge base.")
-                return False
-            
-            # Log retrieved examples
-            logger.debug("Found %d examples", len(results['ids']))
-            
-            # Display examples
-            print("\nAvailable examples:")
-            print("------------------")
-            for i, (id, doc) in enumerate(zip(results['ids'], results['documents']), 1):
-                print(f"\n{i}. ID: {id}")
-                print(f"   Description: {doc[:100]}...")
-                logger.debug("Example %d: ID=%s, Description=%s", i, id, doc[:100])
-            
-            # Get user selection
             while True:
-                choice = input("\nEnter the number of the example to delete (or 'q' to quit): ").strip()
-                if choice.lower() == 'q':
-                    logger.info("User cancelled deletion")
-                    return False
+                # Show menu
+                print("\nDelete Knowledge Options:")
+                print("1. Search by description")
+                print("2. Filter by metadata")
+                print("3. View all examples")
+                print("4. Return to main menu")
                 
-                try:
-                    index = int(choice) - 1
-                    if 0 <= index < len(results['ids']):
-                        example_id = results['ids'][index]
-                        logger.debug("Selected example %d with ID: %s", index + 1, example_id)
+                choice = input("\nEnter your choice (1-4): ").strip()
+                
+                if choice == "4":
+                    logger.info("User exited deletion mode")
+                    return True
+                    
+                # Initialize search parameters
+                search_term = None
+                filters = {}
+                page = 1
+                page_size = 5
+                
+                if choice == "1":
+                    search_term = input("\nEnter search term: ").strip()
+                elif choice == "2":
+                    print("\nAvailable filters:")
+                    print("1. Style (e.g., Modern, Traditional, Minimalist)")
+                    print("2. Complexity (SIMPLE, MEDIUM, COMPLEX)")
+                    print("3. Object Type")
+                    
+                    filter_choice = input("\nEnter filter number (1-3): ").strip()
+                    
+                    if filter_choice == "1":
+                        style = input("Enter style: ").strip()
+                        filters["style"] = style
+                    elif filter_choice == "2":
+                        complexity = input("Enter complexity: ").strip().upper()
+                        filters["complexity"] = complexity
+                    elif filter_choice == "3":
+                        obj_type = input("Enter object type: ").strip()
+                        filters["object_type"] = obj_type
+                
+                # Search for examples
+                while True:
+                    results = kb.search_examples(search_term, filters, page, page_size)
+                    
+                    if not results['examples']:
+                        print("\nNo examples found.")
                         break
-                    else:
-                        logger.warning("Invalid selection index: %d", index + 1)
-                        print("Invalid selection. Please try again.")
-                except ValueError:
-                    logger.warning("Invalid input: %s", choice)
-                    print("Invalid input. Please enter a number or 'q' to quit.")
-            
-            # Confirm deletion
-            confirm = input(f"\nAre you sure you want to delete example {example_id}? (y/n): ").strip().lower()
-            if confirm != 'y':
-                logger.info("Deletion cancelled by user")
-                print("Deletion cancelled.")
-                return False
-            
-            # Delete the example
-            logger.debug("Deleting example with ID: %s", example_id)
-            kb.collection.delete(ids=[example_id])
-            logger.info("Successfully deleted example %s", example_id)
-            print(f"\nExample {example_id} has been deleted successfully!")
+                    
+                    print(f"\nShowing page {results['page']} of {results['total_pages']} (Total: {results['total']} examples)")
+                    print("\nAvailable examples:")
+                    print("------------------")
+                    
+                    for i, example in enumerate(results['examples'], 1):
+                        print(f"\n{i}. ID: {example['id']}")
+                        print(f"   Description: {example['description'][:100]}...")
+                        print("   Metadata:")
+                        print(f"   - Style: {example['metadata'].get('style', 'N/A')}")
+                        print(f"   - Complexity: {example['metadata'].get('complexity', 'N/A')}")
+                        print(f"   - Object Type: {example['metadata'].get('object_type', 'N/A')}")
+                    
+                    # Show navigation options
+                    print("\nOptions:")
+                    print("1-5: Select example to delete")
+                    print("n: Next page")
+                    print("p: Previous page")
+                    print("b: Back to delete menu")
+                    print("q: Return to main menu")
+                    
+                    action = input("\nEnter your choice: ").strip().lower()
+                    
+                    if action == 'q':
+                        logger.info("User exited deletion mode")
+                        return True
+                    elif action == 'b':
+                        break
+                    elif action == 'n' and page < results['total_pages']:
+                        page += 1
+                    elif action == 'p' and page > 1:
+                        page -= 1
+                    elif action.isdigit():
+                        index = int(action) - 1
+                        if 0 <= index < len(results['examples']):
+                            example = results['examples'][index]
+                            
+                            # Show example details
+                            print("\nExample Details:")
+                            print("-" * 40)
+                            print(f"ID: {example['id']}")
+                            print(f"Description: {example['description']}")
+                            print("\nMetadata:")
+                            for key, value in example['metadata'].items():
+                                if key != 'code':  # Skip code for cleaner display
+                                    print(f"{key}: {value}")
+                            
+                            # Confirm deletion
+                            confirm = input(f"\nAre you sure you want to delete this example? (y/n): ").strip().lower()
+                            if confirm == 'y':
+                                if kb.delete_examples([example['id']]):
+                                    print(f"\nExample {example['id']} has been deleted successfully!")
+                                    logger.info(f"Deleted example {example['id']}")
+                                    # Refresh the current page
+                                    results = kb.search_examples(search_term, filters, page, page_size)
+                                    if not results['examples'] and page > 1:
+                                        page -= 1
+                                else:
+                                    print("\nFailed to delete example.")
+                                    logger.error(f"Failed to delete example {example['id']}")
+                        else:
+                            print("\nInvalid selection.")
+                
             return True
             
         except Exception as e:
-            logger.error("Error deleting knowledge: %s", str(e))
+            logger.error("Error in delete_knowledge: %s", str(e))
             logger.error("Stack trace: %s", traceback.format_exc())
-            print(f"\nError deleting knowledge: {str(e)}")
+            print(f"\nError in delete_knowledge: {str(e)}")
             return False
 
     @staticmethod
