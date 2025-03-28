@@ -995,5 +995,1283 @@
       "input_tokens": 6,
       "output_tokens": 13
     }
+  },
+  {
+    "timestamp": "2025-03-25T13:31:02.955672",
+    "input": {
+      "description": "I want a phone stand",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Utility",
+        "Display"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "bookshelf",
+        "picture frame",
+        "tablet stand"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 15
+    }
+  },
+  {
+    "timestamp": "2025-03-25T13:35:46.496141",
+    "input": {
+      "description": "I want a office chair please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Organization"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "Desk",
+        "Shelf"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 6,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-25T13:42:27.535681",
+    "input": {
+      "description": "I want a office chair",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Organization"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "desk",
+        "shelf",
+        "cabinet"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-25T13:47:33.276633",
+    "input": {
+      "description": "I want a work desk",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Organization"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Regular"
+      },
+      "similar_objects": [
+        "table",
+        "console table",
+        "writing desk"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 15
+    }
+  },
+  {
+    "timestamp": "2025-03-25T13:49:03.903755",
+    "input": {
+      "description": "I want a work desk",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Organization"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "table",
+        "shelf",
+        "workstation"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-25T13:52:10.631952",
+    "input": {
+      "description": "I want a rim of a wheel",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Accessories"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "Gaming Mouse",
+        "Gaming Keyboard",
+        "Headset"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 15
+    }
+  },
+  {
+    "timestamp": "2025-03-25T13:58:19.295881",
+    "input": {
+      "description": "I want a rim of a wheel please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Accessories"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "MEDIUM",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "Gaming Chair",
+        "Office Chair",
+        "Racing Seat"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-25T20:08:34.519139",
+    "input": {
+      "description": "I want a tire of a car",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "MEDIUM",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "car hubcap",
+        "wheel rim",
+        "lug nut"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-25T20:20:11.616084",
+    "input": {
+      "description": "I want a rim of a racing car",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "car key",
+        "steering wheel",
+        "model car"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-25T20:23:20.950613",
+    "input": {
+      "description": "I want a rim of a car",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "wheel",
+        "hubcap"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-25T20:28:24.648330",
+    "input": {
+      "description": "I want a rim of a car please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "wheel",
+        "hubcap"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-25T22:33:29.524258",
+    "input": {
+      "description": "I want a rear wing of a car please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "car seat",
+        "steering wheel",
+        "headlight"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 9,
+      "output_tokens": 15
+    }
+  },
+  {
+    "timestamp": "2025-03-25T22:51:16.936270",
+    "input": {
+      "description": "I want a rear wing of a car please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Utility",
+        "geometric_properties": "Regular"
+      },
+      "similar_objects": [
+        "bike chain",
+        "bicycle pedal",
+        "helmet"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 9,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-25T23:18:04.541510",
+    "input": {
+      "description": "i want a rim of a bicycle",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Utility",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "tire",
+        "wheel"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-25T23:30:01.083900",
+    "input": {
+      "description": "I want a bicycle rim",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "tire",
+        "wheel"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-26T00:11:27.075186",
+    "input": {
+      "description": "I want a BB623 ball bearing",
+      "code": "function ball_bearing_id(type) = type[0];function ball_bearing_od(type) = type[1];function ball_bearing_diameter(type) = type[1];function ball_bearing_width(type) = type[2];// Type table//            id, od, t,  labelBB623      = [3,  10, 4,  \"623\"];            // 623 bearingsBB624      = [4,  13, 5,  \"624\"];            // 624 ball bearing for idlersBB608      = [8,  22, 7,  \"608\"];            // 608 bearings for wadesBB625_2RS  = [5,  16, 5,  \"625_2RS\"];    //  625 bearings for Delrin v groove wheelsBB6205_2RS = [25, 52, 15, \"6205_2RS\"];// Type collectionball_bearing_types = [    BB623,    BB624,    BB608,    BB625_2RS,    BB6205_2RS];// connectorsball_bearing_Con_Def = [[0,0,0], [0,0,1], 0,0,0];function ball_bearing_Con_Face(t) = [[0,0,-ball_bearing_width(t)/2], [0,0,1], 0,0,0];// Vitamin cataloguemodule ball_bearing_Catalogue() {    for (t = ball_bearing_types) ball_bearing(t);}// local color mappingbearing_color = MetalColor;module ball_bearing(type=BB624, ExplodeSpacing=10) {    tn = type[3];    vitamin(\"vitamins/ball_bearing.scad\", str(\"Ball Bearing \",tn), str(\"ball_bearing(BB\",tn,\")\")) {        view(d=200);    }    rim = type[1] / 10;    color(bearing_color) render() difference() {        cylinder(r = type[1] / 2, h = type[2], center = true);        cylinder(r = type[0] / 2, h = type[2] + 1, center = true);        for(z = [-type[2] / 2, type[2] / 2])            translate([0,0,z]) difference() {                cylinder(r = (type[1] - rim) / 2, h = 2, center = true);                cylinder(r = (type[0] + rim) / 2, 2, center = true);            }    }    thread(type[2]/2, ExplodeSpacing=ExplodeSpacing)        children();}module bearing_ball(dia) {    //vitamin(str(\"SB\",dia * 10,\": Steel ball \",dia, \"mm\"));    color(bearing_color) render() sphere(r = dia / 2);}ball_bearing(type=BB623);"
+    },
+    "output": {
+      "categories": [
+        "Tableware",
+        "Utility"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": [
+          "Functional",
+          "Utility"
+        ],
+        "geometric_properties": [
+          "Curved"
+        ]
+      },
+      "similar_objects": [
+        "ball",
+        "marble",
+        "sphere"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 208,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-26T00:12:03.751537",
+    "input": {
+      "description": "I want a BB623 ball bearing",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Tools"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Regular"
+      },
+      "similar_objects": [
+        "rivets",
+        "pins",
+        "small fasteners"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 6,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-26T00:12:32.589397",
+    "input": {
+      "description": "I want a BB623 ball bearing",
+      "code": "function ball_bearing_id(type) = type[0];function ball_bearing_od(type) = type[1];function ball_bearing_diameter(type) = type[1];function ball_bearing_width(type) = type[2];// Type table//            id, od, t,  labelBB623      = [3,  10, 4,  \"623\"];            // 623 bearingsBB624      = [4,  13, 5,  \"624\"];            // 624 ball bearing for idlersBB608      = [8,  22, 7,  \"608\"];            // 608 bearings for wadesBB625_2RS  = [5,  16, 5,  \"625_2RS\"];    //  625 bearings for Delrin v groove wheelsBB6205_2RS = [25, 52, 15, \"6205_2RS\"];// Type collectionball_bearing_types = [    BB623,    BB624,    BB608,    BB625_2RS,    BB6205_2RS];// connectorsball_bearing_Con_Def = [[0,0,0], [0,0,1], 0,0,0];function ball_bearing_Con_Face(t) = [[0,0,-ball_bearing_width(t)/2], [0,0,1], 0,0,0];// Vitamin cataloguemodule ball_bearing_Catalogue() {    for (t = ball_bearing_types) ball_bearing(t);}// local color mappingbearing_color = MetalColor;module ball_bearing(type=BB624, ExplodeSpacing=10) {    tn = type[3];    vitamin(\"vitamins/ball_bearing.scad\", str(\"Ball Bearing \",tn), str(\"ball_bearing(BB\",tn,\")\")) {        view(d=200);    }    rim = type[1] / 10;    color(bearing_color) render() difference() {        cylinder(r = type[1] / 2, h = type[2], center = true);        cylinder(r = type[0] / 2, h = type[2] + 1, center = true);        for(z = [-type[2] / 2, type[2] / 2])            translate([0,0,z]) difference() {                cylinder(r = (type[1] - rim) / 2, h = 2, center = true);                cylinder(r = (type[0] + rim) / 2, 2, center = true);            }    }    thread(type[2]/2, ExplodeSpacing=ExplodeSpacing)        children();}module bearing_ball(dia) {    //vitamin(str(\"SB\",dia * 10,\": Steel ball \",dia, \"mm\"));    color(bearing_color) render() sphere(r = dia / 2);}ball_bearing(type=BB623);"
+    },
+    "output": {
+      "categories": [
+        "other"
+      ],
+      "properties": {},
+      "similar_objects": []
+    },
+    "tokens": {
+      "input_tokens": 208,
+      "output_tokens": 3
+    }
+  },
+  {
+    "timestamp": "2025-03-26T01:41:39.031112",
+    "input": {
+      "description": "I want a controller knob",
+      "code": "n=5;difference(){\tintersection(){\t\tunion(){\t\t\tcylinder(d=12,h=15,$fn=n);\t\t\trotate(a=360/n/2,v=[0,0,1]) cylinder(d=12,h=15,$fn=n);\t\t\tcylinder(d=15,h=2,$fn=50);\t\t\ttranslate([0,0,2]) cylinder(d1=15,d2=0,h=6,$fn=50);\t\t};\t\tcylinder(d1=30,d2=8,h=15);\t};\tdifference(){\t\tunion(){\t\t\tcylinder(d=7.5,h=11,$fn=50);\t\t\tcylinder(d1=8.5,d2=0,h=8.5,$fn=50);\t\t}\t\ttranslate([7,0,6]) cube([10,10,12],center=true);\t}}"
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "game joystick",
+        "volume knob",
+        "radio dial"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 25,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-26T01:42:18.780199",
+    "input": {
+      "description": "I want a controller knob",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "game joystick",
+        "volume knob",
+        "turntable control"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-26T01:42:44.647615",
+    "input": {
+      "description": "I want a controller knob",
+      "code": "n=5;difference(){\tintersection(){\t\tunion(){\t\t\tcylinder(d=12,h=15,$fn=n);\t\t\trotate(a=360/n/2,v=[0,0,1]) cylinder(d=12,h=15,$fn=n);\t\t\tcylinder(d=15,h=2,$fn=50);\t\t\ttranslate([0,0,2]) cylinder(d1=15,d2=0,h=6,$fn=50);\t\t};\t\tcylinder(d1=30,d2=8,h=15);\t};\tdifference(){\t\tunion(){\t\t\tcylinder(d=7.5,h=11,$fn=50);\t\t\tcylinder(d1=8.5,d2=0,h=8.5,$fn=50);\t\t}\t\ttranslate([7,0,6]) cube([10,10,12],center=true);\t}}"
+    },
+    "output": {
+      "categories": [
+        "other"
+      ],
+      "properties": {},
+      "similar_objects": []
+    },
+    "tokens": {
+      "input_tokens": 25,
+      "output_tokens": 3
+    }
+  },
+  {
+    "timestamp": "2025-03-26T10:09:04.503057",
+    "input": {
+      "description": "I want a controller knob",
+      "code": "n=5;\n\ndifference(){\n\tintersection(){\n\t\tunion(){\n\t\t\tcylinder(d=12,h=15,$fn=n);\n\t\t\trotate(a=360/n/2,v=[0,0,1]) cylinder(d=12,h=15,$fn=n);\n\t\t\tcylinder(d=15,h=2,$fn=50);\n\t\t\ttranslate([0,0,2]) cylinder(d1=15,d2=0,h=6,$fn=50);\n\t\t};\n\t\tcylinder(d1=30,d2=8,h=15);\n\t};\n\tdifference(){\n\t\tunion(){\n\t\t\tcylinder(d=7.5,h=11,$fn=50);\n\t\t\tcylinder(d1=8.5,d2=0,h=8.5,$fn=50);\n\t\t}\n\t\ttranslate([7,0,6]) cube([10,10,12],center=true);\n\t}\n}"
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Entertainment",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "game joystick",
+        "volume knob",
+        "steering wheel"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 27,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-26T10:09:41.873584",
+    "input": {
+      "description": "I want a controller knob",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "game joystick",
+        "volume knob",
+        "appliance dial"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-26T10:10:12.728122",
+    "input": {
+      "description": "I want a controller knob",
+      "code": "n=5;\n\ndifference(){\n\tintersection(){\n\t\tunion(){\n\t\t\tcylinder(d=12,h=15,$fn=n);\n\t\t\trotate(a=360/n/2,v=[0,0,1]) cylinder(d=12,h=15,$fn=n);\n\t\t\tcylinder(d=15,h=2,$fn=50);\n\t\t\ttranslate([0,0,2]) cylinder(d1=15,d2=0,h=6,$fn=50);\n\t\t};\n\t\tcylinder(d1=30,d2=8,h=15);\n\t};\n\tdifference(){\n\t\tunion(){\n\t\t\tcylinder(d=7.5,h=11,$fn=50);\n\t\t\tcylinder(d1=8.5,d2=0,h=8.5,$fn=50);\n\t\t}\n\t\ttranslate([7,0,6]) cube([10,10,12],center=true);\n\t}\n}"
+    },
+    "output": {
+      "categories": [
+        "other"
+      ],
+      "properties": {},
+      "similar_objects": []
+    },
+    "tokens": {
+      "input_tokens": 27,
+      "output_tokens": 3
+    }
+  },
+  {
+    "timestamp": "2025-03-26T22:58:49.052674",
+    "input": {
+      "description": "I want a cup with handle please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Tableware",
+        "Utility"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "mug",
+        "goblet",
+        "tea cup"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-27T06:50:53.378587",
+    "input": {
+      "description": "i want a bed",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Utility"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "chair",
+        "table",
+        "sofa"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-27T07:02:42.649117",
+    "input": {
+      "description": "I want a sofa",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "armchair",
+        "ottoman",
+        "bench"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-27T07:34:22.440962",
+    "input": {
+      "description": "I want a double bed",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Utility"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "MEDIUM",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "sofa",
+        "table",
+        "chair"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-27T07:41:36.476198",
+    "input": {
+      "description": "I want a double bed",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Utility"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "MEDIUM",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "sofa",
+        "table",
+        "chair"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-27T09:37:02.180182",
+    "input": {
+      "description": "I want a L-shape sofa",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "MEDIUM",
+        "use_case": "Functional",
+        "geometric_properties": "Angular"
+      },
+      "similar_objects": [
+        "sofa",
+        "sectional sofa",
+        "L-shaped armchair"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-28T11:13:14.843535",
+    "input": {
+      "description": "I want a lighter please\nConsider these adjustments: rectangular shape",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Utility",
+        "Accessories"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "lighter",
+        "matchbox",
+        "pocket knife"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 10,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-28T12:48:39.836555",
+    "input": {
+      "description": "i want a rim\nConsider these adjustments: i want a car rim with 5 strokes\nConsider these aspects in your analysis: make sure the strokes are connected to the rim",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "Wheel hub",
+        "Car wheel center"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 30,
+      "output_tokens": 15
+    }
+  },
+  {
+    "timestamp": "2025-03-28T13:51:08.934655",
+    "input": {
+      "description": "I want a car rim",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "tire",
+        "wheel"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-28T13:53:51.699660",
+    "input": {
+      "description": "I want a car rim",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "Wheel",
+        "Hubcap",
+        "Tire"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-28T14:00:55.995906",
+    "input": {
+      "description": "I want a car rim. mordern style\nConsider these adjustments: mordern style please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Decoration",
+        "Accessories"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "Wheel",
+        "Hubcap"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 13,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-28T14:02:42.039648",
+    "input": {
+      "description": "I want a car rim. mordern style\nConsider these adjustments: mordern style please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Decoration",
+        "Accessories"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "wheel",
+        "hubcap",
+        "tire"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 13,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-28T14:08:58.112447",
+    "input": {
+      "description": "I want a sport car rim",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "car hubcap",
+        "wheel cover"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 6,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-28T14:14:15.027220",
+    "input": {
+      "description": "I want a sport car rim",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "car tire",
+        "wheel",
+        "hubcap"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 6,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-28T15:26:57.025746",
+    "input": {
+      "description": "I want a rim of a car please",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "wheel",
+        "hubcap"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-28T15:40:19.019993",
+    "input": {
+      "description": "I want a controller knob",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "game joystick",
+        "volume knob",
+        "radio dial"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-03-28T15:43:39.849885",
+    "input": {
+      "description": "I want a car rim with thick strokes\nConsider these adjustments: thick stroke\nConsider these adjustments: car rim with thick stroke",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Decoration",
+        "Accessories"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Decorative",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "wheel",
+        "hubcap"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 21,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-28T15:48:13.314282",
+    "input": {
+      "description": "I want a race car rim with 6 strokes\nConsider these adjustments: 6 strokes",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Decoration"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Decorative",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "wheel",
+        "hubcap"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 14,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-03-28T15:53:50.592125",
+    "input": {
+      "description": "i want a bed",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Utility"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Functional",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "chair",
+        "table",
+        "sofa"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-28T16:28:57.170119",
+    "input": {
+      "description": "I want a controller knob",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Accessories",
+        "Utility"
+      ],
+      "properties": {
+        "style": "Minimalist",
+        "complexity": "SIMPLE",
+        "use_case": "Entertainment",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "game controller buttons",
+        "volume knob",
+        "radio knob"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 17
+    }
+  },
+  {
+    "timestamp": "2025-03-28T16:42:23.429990",
+    "input": {
+      "description": "I want a drawer with hex pattern",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Storage",
+        "Organization"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Storage",
+        "geometric_properties": "Regular"
+      },
+      "similar_objects": [
+        "drawer",
+        "toolbox",
+        "storage box"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-03-28T19:53:02.476267",
+    "input": {
+      "description": "I want a car",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Utility",
+        "Accessories"
+      ],
+      "properties": {
+        "style": "Modern",
+        "complexity": "MEDIUM",
+        "use_case": "Functional",
+        "geometric_properties": "Curved"
+      },
+      "similar_objects": [
+        "bicycle",
+        "motorcycle",
+        "truck"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-03-28T19:56:15.092666",
+    "input": {
+      "description": "I want a drawer",
+      "code": ""
+    },
+    "output": {
+      "categories": [
+        "Furniture",
+        "Storage",
+        "Organization"
+      ],
+      "properties": {
+        "style": "MIMIMALIST",
+        "complexity": "SIMPLE",
+        "use_case": "Storage",
+        "geometric_properties": "Symmetrical"
+      },
+      "similar_objects": [
+        "cabinet",
+        "chest",
+        "shelf"
+      ]
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 14
+    }
   }
 ]

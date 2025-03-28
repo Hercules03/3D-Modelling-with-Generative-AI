@@ -32,7 +32,7 @@ class ConversationLogger:
     def _append_to_json(self, file_path, new_data):
         """Append new data to existing JSON file"""
         print(f"\nAppending to file: {file_path}")
-        print(f"New data to append: {json.dumps(new_data, indent=2)}")
+        # print(f"New data to append: {json.dumps(new_data, indent=2)}")
         try:
             # Read existing data
             with open(file_path, 'r') as f:
@@ -59,23 +59,90 @@ class ConversationLogger:
         """Log step-back analysis conversation"""
         print("\n=== Logging Step-Back Analysis ===")
         conversation = {
-            'query': query,
+            'original_query': analysis.get('original_query', query),
+            'focused_description': analysis.get('focused_description', query),
             'step_back_analysis': {
-                'principles': analysis.get('principles', ''),
-                'abstractions': analysis.get('abstractions', ''),
-                'approach': analysis.get('approach', '')
+                'principles': analysis.get('principles', []),
+                'abstractions': analysis.get('abstractions', []),
+                'approach': analysis.get('approach', [])
             }
         }
         self._append_to_json(self.step_back_file, conversation)
         print("=== Step-Back Analysis Logged ===\n")
+        
+    def log_step_back_analysis(self, step_back_data):
+        """Log user-approved step-back analysis
+        
+        Args:
+            step_back_data (dict): Dictionary containing:
+                - query: Dict with input and timestamp
+                - response: Dict with principles, abstractions, approach
+                - metadata: Dict with success, error, and user_approved info
+        """
+        print("\n=== Logging Step-Back Analysis with User Approval ===")
+        try:
+            # Add timestamp if not present
+            if 'query' in step_back_data and 'timestamp' not in step_back_data['query']:
+                step_back_data['query']['timestamp'] = datetime.now().isoformat()
+                
+            # Structure for logging
+            entry = {
+                'timestamp': datetime.now().isoformat(),
+                'type': 'step_back_analysis',
+                'user_approved': step_back_data.get('metadata', {}).get('user_approved', False),
+                'original_query': step_back_data.get('query', {}).get('input', ''),
+                'step_back_analysis': step_back_data.get('response', {})
+            }
+            
+            self._append_to_json(self.step_back_file, entry)
+            print(f"Successfully logged step-back analysis with user approval")
+        except Exception as e:
+            print(f"Error logging step-back analysis: {str(e)}")
+            print("Stack trace:")
+            import traceback
+            traceback.print_exc()
+        print("=== Step-Back Analysis with User Approval Logging Complete ===\n")
     
     def log_scad_generation(self, full_prompt, scad_code):
         """Log OpenSCAD generation conversation"""
-        conversation = {
-            'prompt': full_prompt,
-            'scad_code': scad_code,
-        }
-        self._append_to_json(self.scad_gen_file, conversation)
+        print("\n=== Logging SCAD Generation ===")
+        try:
+            conversation = {
+                'timestamp': datetime.now().isoformat(),
+                'prompt': full_prompt,
+                'scad_code': scad_code,
+                'type': 'scad_generation',
+                'user_accepted': True  # Mark as user-accepted since this is called when user approves
+            }
+            
+            # Extract description from the prompt
+            description = ""
+            for line in full_prompt.split('\n'):
+                if line.startswith("USER REQUEST:"):
+                    # Get the next non-empty line
+                    parts = full_prompt.split("USER REQUEST:", 1)
+                    if len(parts) > 1:
+                        description_part = parts[1].split("\n\n", 1)[0].strip()
+                        if description_part:
+                            description = description_part
+                    break
+            
+            if description:
+                conversation['request'] = description
+            
+            print(f"SCAD Generation Entry:")
+            print(f"- Timestamp: {conversation['timestamp']}")
+            print(f"- Request: {conversation.get('request', '[No description extracted]')[:50]}...")
+            print(f"- Code length: {len(scad_code)} characters")
+            
+            self._append_to_json(self.scad_gen_file, conversation)
+            print("Successfully logged SCAD generation")
+        except Exception as e:
+            print(f"Error logging SCAD generation: {str(e)}")
+            print("Stack trace:")
+            import traceback
+            traceback.print_exc()
+        print("=== SCAD Generation Logging Complete ===\n")
     
     def log_validation(self, validation_data):
         """Log a validation decision"""
@@ -98,7 +165,7 @@ class ConversationLogger:
         print(f"Log file path: {self.keyword_extraction_file}")
         
         try:
-            print(f"Received query-response pair: {json.dumps(query_response_pair, indent=2)}")
+            print(f"Received query-response pair")
             
             # Read existing data
             print("Reading existing data...")
@@ -137,11 +204,30 @@ class ConversationLogger:
                 # Convert the logs to the format expected by the knowledge base
                 formatted_logs = []
                 for log in logs:
-                    formatted_logs.append({
-                        'request': log.get('prompt', ''),  # The original prompt/request
-                        'code': log.get('scad_code', '')   # The generated SCAD code
-                    })
-                print(f"- Successfully read {len(formatted_logs)} SCAD generation logs")
+                    # Only include entries marked as user_accepted
+                    if log.get('user_accepted', False):
+                        timestamp = log.get('timestamp', datetime.now().isoformat())
+                        # Get request from the log or extract from prompt if needed
+                        request = log.get('request', '')
+                        if not request and 'prompt' in log:
+                            # Try to extract description from prompt
+                            prompt = log['prompt']
+                            parts = prompt.split("USER REQUEST:", 1)
+                            if len(parts) > 1:
+                                request = parts[1].split("\n\n", 1)[0].strip()
+                        
+                        # Create a properly formatted log entry
+                        entry = {
+                            'request': request,  # The description/query
+                            'code': log.get('scad_code', ''),   # The generated SCAD code
+                            'timestamp': timestamp,
+                            'type': 'scad_generation',
+                            'user_accepted': True
+                        }
+                        formatted_logs.append(entry)
+                        print(f"- Found user-accepted example from {timestamp}")
+                
+                print(f"- Successfully read {len(formatted_logs)} user-accepted SCAD generation logs out of {len(logs)} total")
                 print("=== SCAD Generation Logs Read Complete ===\n")
                 return formatted_logs
         except (FileNotFoundError, json.JSONDecodeError) as e:

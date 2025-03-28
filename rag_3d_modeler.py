@@ -1,5 +1,8 @@
 import os
 import logging
+# Set tokenizers parallelism to false to avoid warnings
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
 from typing import Dict, Optional, List, Any
 import subprocess
 import json
@@ -15,6 +18,7 @@ from langchain_community.vectorstores import Chroma
 from openpyscad import *
 from constant import *
 from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
+from conversation_logger import ConversationLogger
 from OpenSCAD_Generator import OpenSCADGenerator
 from LLMmodel import *
 from llm_prompt_logger import LLMPromptLogger
@@ -340,6 +344,20 @@ class LLMPromptLogger:
 class KnowledgeManager:
     """Manager class for knowledge base operations"""
     
+    """ 
+    Workflow
+    ================================
+    1. Get description
+    2. Get OpenSCAD code (add.scad)
+    3. Validate OpenSCAD code    # Need check the mechanism of the code
+    4. Keyword extraction
+    5. Perform step-back analysis
+    6. Extract metadata
+    7. Perform category analysis
+    8. Analyze required components
+    9. Add example to knowledge base
+    """
+    
     _prompt_logger = LLMPromptLogger()  # Class-level instance for prompt logging
     
     @staticmethod
@@ -350,154 +368,298 @@ class KnowledgeManager:
         print("\nManual Knowledge Input Mode")
         print("---------------------------")
         
-        # Get description
+        # Step 1: Get description
         description = input("\nEnter the description/query for the 3D model: ").strip()
         if not description:
             logger.warning("Empty description provided")
             print("Description cannot be empty.")
             return False
             
-        # Get OpenSCAD code
-        print("\nEnter the OpenSCAD code (press Enter twice to finish):")
-        print("----------------------------------------------------")
-        
-        lines = []
-        while True:
-            line = input()
-            if line.strip() == "" and (not lines or lines[-1].strip() == ""):
-                break
-            lines.append(line)
-        
-        scad_code = "\n".join(lines[:-1])
-        
-        if not scad_code.strip():
-            logger.warning("Empty OpenSCAD code provided")
-            print("OpenSCAD code cannot be empty.")
-            return False
-        
+        # Step 2: Get OpenSCAD code from add.scad
         try:
+            with open("add.scad", "r") as f:
+                scad_code = f.read().strip()
+            if not scad_code:
+                logger.warning("Empty OpenSCAD code provided")
+                print("OpenSCAD code cannot be empty.")
+                return False
+            print("\nRead OpenSCAD code from add.scad:")
+            print("-" * 52)
+            print(scad_code)
+            print("-" * 52 + "\n")
+            
             # Validate OpenSCAD code
             logger.debug("Starting OpenSCAD code validation")
             if not KnowledgeManager._validate_scad_code(scad_code):
                 logger.warning("OpenSCAD code validation failed")
                 return False
-            
-            # Initialize knowledge base
+                
+        except FileNotFoundError:
+            logger.error("add.scad file not found")
+            print("Error: add.scad file not found. Please create the file with your OpenSCAD code.")
+            return False
+        except Exception as e:
+            logger.error(f"Error reading add.scad: {str(e)}")
+            print(f"Error reading add.scad: {str(e)}")
+            return False
+        
+        try:
+            # Initialize knowledge base and logger
             logger.debug("Initializing knowledge base")
             kb = EnhancedSCADKnowledgeBase()
+            convLogger = ConversationLogger()
             
-            print("\nExtracting metadata and performing analysis...")
+            # Step 1: Extract keywords and get user confirmation
+            print("\n" + "="*50)
+            print("STEP 1: KEYWORD EXTRACTION")
+            print("="*50)
             
-            # Extract metadata
-            metadata_result = kb.metadata_extractor.extract_metadata(description, scad_code)
-            if not metadata_result:
-                logger.error("Failed to extract metadata")
-                print("Failed to extract metadata from the description.")
-                return False
+            keyword_data = None
+            max_keyword_retries = 3
+            keyword_retry_count = 0
+            
+            while keyword_retry_count < max_keyword_retries:
+                # Log keyword extraction query and prompt
+                keyword_prompt = kb.keyword_extractor.prompt.replace("<<INPUT>>", description)
+                logger.debug(
+                    "=== KEYWORD EXTRACTION ===\n"
+                    f"Attempt {keyword_retry_count + 1}/{max_keyword_retries}\n"
+                    "Query:\n"
+                    f"{description}\n\n"
+                    "Full Prompt Sent to LLM:\n"
+                    f"{keyword_prompt}\n\n"
+                )
                 
-            # Log metadata extraction
-            KnowledgeManager._prompt_logger.log_metadata_extraction(
-                query=description,
-                code=scad_code,
-                response=metadata_result
-            )
-            
-            # Perform category analysis
-            category_result = kb.analyze_categories(description, scad_code)
-            if not category_result:
-                logger.error("Failed to analyze categories")
-                print("Failed to analyze categories.")
-                return False
+                keyword_data = kb.keyword_extractor.extract_keyword(description)
                 
-            # Log category analysis
-            KnowledgeManager._prompt_logger.log_category_analysis(
-                query=description,
-                code=scad_code,
-                response=category_result
-            )
+                # Log keyword extraction response
+                logger.debug(
+                    "Response:\n"
+                    f"Core Type: {keyword_data.get('core_type', '')}\n"
+                    f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}\n"
+                    f"Compound Type: {keyword_data.get('compound_type', '')}\n"
+                    "=" * 50 + "\n\n"
+                )
+                
+                print("\nKeyword Analysis Results:")
+                print("-" * 30)
+                print(f"Core Type: {keyword_data.get('core_type', '')}")
+                print(f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}")
+                print(f"Compound Type: {keyword_data.get('compound_type', '')}")
+                print("-" * 30)
+                
+                # Ask for user confirmation
+                user_input = input("\nDo you accept these keywords? (yes/no): ").lower().strip()
+                
+                # Log user's keyword decision
+                logger.debug(
+                    "=== USER KEYWORD DECISION ===\n"
+                    f"User accepted keywords: {user_input == 'yes'}\n"
+                    "=" * 50 + "\n\n"
+                )
+                
+                if user_input == 'yes':
+                    # Log the approved keywords
+                    convLogger.log_keyword_extraction({
+                        "query": {
+                            "input": description,
+                            "timestamp": datetime.datetime.now().isoformat()
+                        },
+                        "response": keyword_data,
+                        "metadata": {
+                            "success": True,
+                            "error": None,
+                            "user_approved": True
+                        }
+                    })
+                    break
+                else:
+                    keyword_retry_count += 1
+                    if keyword_retry_count < max_keyword_retries:
+                        print("\nRetrying keyword extraction...")
+                        # Ask user for refinement suggestions
+                        print("Please provide any suggestions to improve the keyword extraction (or press Enter to retry):")
+                        user_feedback = input().strip()
+                        if user_feedback:
+                            description = f"{description}\nConsider these adjustments: {user_feedback}"
+                    else:
+                        print("\nMaximum keyword extraction attempts reached.")
+                        print("Please try again with a different description.")
+                        return False
+
+            if keyword_data is None:
+                print("\nKeyword extraction failed. Please try again with a different description.")
+                return False
+
+            # Step 2: Perform step-back analysis with approved keywords
+            print("\n" + "="*50)
+            print("STEP 2: TECHNICAL ANALYSIS")
+            print("="*50)
             
-            # Perform step-back analysis
-            step_back_prompt = STEP_BACK_PROMPT_TEMPLATE.format(query=description)
-            step_back_response = kb.llm.invoke(step_back_prompt)
-            technical_analysis = step_back_response.content
+            step_back_result = None
+            max_step_back_retries = 3
+            step_back_retry_count = 0
             
-            # Parse step-back analysis
-            principles = []
-            abstractions = []
-            approach = []
+            while step_back_retry_count < max_step_back_retries:
+                # Log step-back analysis query and prompt
+                step_back_prompt = STEP_BACK_PROMPT_TEMPLATE.format(
+                    Object=keyword_data.get('compound_type', '') or keyword_data.get('core_type', ''),
+                    Type=keyword_data.get('core_type', ''),
+                    Modifiers=', '.join(keyword_data.get('modifiers', []))
+                )
+                
+                logger.debug(
+                    "=== STEP-BACK ANALYSIS ===\n"
+                    f"Attempt {step_back_retry_count + 1}/{max_step_back_retries}\n"
+                    "Query:\n"
+                    f"{description}\n\n"
+                    "Keyword Data:\n"
+                    f"Core Type: {keyword_data.get('core_type', '')}\n"
+                    f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}\n"
+                    f"Compound Type: {keyword_data.get('compound_type', '')}\n\n"
+                    "Full Prompt Sent to LLM:\n"
+                    f"{step_back_prompt}\n\n"
+                )
+                
+                step_back_result = kb.perform_step_back(description, keyword_data)
+                if not step_back_result:
+                    msg = "Step-back analysis failed. Proceeding with basic generation..."
+                    print(msg)
+                    logger.debug(f"{msg}\n\n")
+                    return False
+                
+                # Log step-back analysis results
+                logger.debug(
+                    "Response:\n"
+                    "Core Principles:\n"
+                    "\n".join(f"- {p}" for p in step_back_result.get('principles', [])) + "\n\n"
+                    "Shape Components:\n"
+                    "\n".join(f"- {a}" for a in step_back_result.get('abstractions', [])) + "\n\n"
+                    "Implementation Steps:\n"
+                    "\n".join(f"{i+1}. {s}" for i, s in enumerate(step_back_result.get('approach', []))) + "\n"
+                    "=" * 50 + "\n\n"
+                )
+                
+                """
+                print("\nStep-back Analysis Results:")
+                print("-" * 30)
+                print("Core Principles:")
+                for p in step_back_result.get('principles', []):
+                    print(f"- {p}")
+                print("\nShape Components:")
+                for a in step_back_result.get('abstractions', []):
+                    print(f"- {a}")
+                print("\nImplementation Steps:")
+                for i, s in enumerate(step_back_result.get('approach', []), 1):
+                    print(f"{i}. {s}")
+                print("-" * 30)
+                """
+                
+                # Ask for user confirmation
+                user_input = input("\nDo you accept this technical analysis? (yes/no): ").lower().strip()
+                
+                # Log user's step-back decision
+                logger.debug(
+                    "=== USER STEP-BACK DECISION ===\n"
+                    f"User accepted step-back analysis: {user_input == 'yes'}\n"
+                    "=" * 50 + "\n\n"
+                )
+                
+                if user_input == 'yes':
+                    # Log the approved step-back analysis
+                    convLogger.log_step_back_analysis({
+                        "query": {
+                            "input": description,
+                            "timestamp": datetime.datetime.now().isoformat()
+                        },
+                        "response": {
+                            "principles": step_back_result.get('principles', []),
+                            "abstractions": step_back_result.get('abstractions', []),
+                            "approach": step_back_result.get('approach', [])
+                        },
+                        "metadata": {
+                            "success": True,
+                            "error": None,
+                            "user_approved": True
+                        }
+                    })
+                    break
+                else:
+                    step_back_retry_count += 1
+                    if step_back_retry_count < max_step_back_retries:
+                        print("\nRetrying step-back analysis...")
+                        # Ask user for refinement suggestions
+                        print("Please provide any suggestions to improve the step-back analysis (or press Enter to retry):")
+                        user_feedback = input().strip()
+                        if user_feedback:
+                            description = f"{description}\nConsider these aspects in your analysis: {user_feedback}"
+                    else:
+                        print("\nMaximum step-back analysis attempts reached.")
+                        print("Please try again with a different description.")
+                        return False
+
+            if step_back_result is None:
+                print("\nStep-back analysis failed. Please try again with a different description.")
+                return False
+
+            # Step 3: Add example to knowledge base
+            print("\n" + "="*50)
+            print("STEP 3: ADDING TO KNOWLEDGE BASE")
+            print("="*50)
             
-            current_section = None
-            for line in technical_analysis.split('\n'):
-                line = line.strip()
-                if 'CORE PRINCIPLES:' in line:
-                    current_section = 'principles'
-                elif 'SHAPE COMPONENTS:' in line:
-                    current_section = 'abstractions'
-                elif 'IMPLEMENTATION STEPS:' in line:
-                    current_section = 'approach'
-                elif line and line.startswith('-'):
-                    if current_section == 'principles':
-                        principles.append(line[1:].strip())
-                    elif current_section == 'abstractions':
-                        abstractions.append(line[1:].strip())
-                elif line and line[0].isdigit() and current_section == 'approach':
-                    approach.append(line[line.find('.')+1:].strip())
+            # Get relevant examples for similarity comparison
+            examples, metadata = kb.get_similar_examples(description, return_metadata=True)
             
-            # Add step-back analysis to metadata
-            metadata_result['step_back_analysis'] = {
-                'principles': principles,
-                'abstractions': abstractions,
-                'approach': approach
+            # Prepare metadata for the new example
+            current_time = datetime.datetime.now()
+            formatted_time = current_time.strftime("%Y%m%d_%H%M%S")
+            example_id = f"manual_{formatted_time}"
+            
+            example_metadata = {
+                "id": example_id,
+                "object_type": keyword_data.get('core_type', ''),
+                "features": keyword_data.get('modifiers', []),
+                "step_back_analysis": step_back_result,
+                "timestamp": current_time.isoformat(),
+                "user_accepted": True,
+                "type": "manual"
             }
             
-            # Analyze required components
-            components_prompt = f"""Analyze the following request and identify the key OpenSCAD components needed:
-            {description}
-            {technical_analysis}
-            
-            List only the core components needed (modules, primitives, transformations, boolean operations).
-            Respond with a valid JSON array of objects, each with 'type' and 'name' fields."""
-            
-            components_response = kb.llm.invoke(components_prompt)
+            # Add example to knowledge base
             try:
-                # Clean up JSON response
-                json_str = components_response.content.strip()
-                if json_str.startswith("```json"):
-                    json_str = json_str.split("```json")[1]
-                if json_str.endswith("```"):
-                    json_str = json_str.rsplit("```", 1)[0]
-                metadata_result['components'] = json.loads(json_str.strip())
-            except:
-                metadata_result['components'] = []
-            
-            # Display extracted information
-            print("\nExtracted Information:")
-            print("---------------------")
-            print(f"Object Type: {metadata_result.get('object_type', 'Unknown')}")
-            print(f"Style: {metadata_result.get('style', 'Unknown')}")
-            print(f"Complexity: {metadata_result.get('complexity', 'Unknown')}")
-            print("\nCategories:", ", ".join(category_result.get('categories', [])))
-            print("\nProperties:", json.dumps(category_result.get('properties', {}), indent=2))
-            print("\nTechnical Requirements:", ", ".join(metadata_result.get('technical_requirements', [])))
-            
-            # Ask for confirmation
-            confirm = input("\nDo you want to add this example to the knowledge base? (y/n): ").strip().lower()
-            if confirm != 'y':
-                logger.info("User cancelled adding example")
-                print("Example not added.")
+                success = kb.add_example(description, scad_code, example_metadata)
+                if success:
+                    print(f"\nExample successfully added to knowledge base with ID: {example_id}")
+                    logger.debug(
+                        "=== EXAMPLE ADDED TO KNOWLEDGE BASE ===\n"
+                        f"ID: {example_id}\n"
+                        f"Description: {description}\n"
+                        f"Code length: {len(scad_code)} characters\n"
+                        "Metadata:\n"
+                        f"Object Type: {example_metadata['object_type']}\n"
+                        f"Features: {', '.join(example_metadata['features'])}\n"
+                        f"Timestamp: {example_metadata['timestamp']}\n"
+                        "=" * 50 + "\n\n"
+                    )
+                    return True
+                else:
+                    print("\nFailed to add example to knowledge base.")
+                    logger.debug(
+                        "=== FAILED TO ADD EXAMPLE ===\n"
+                        "add_example() returned False\n"
+                        "=" * 50 + "\n\n"
+                    )
+                    return False
+            except Exception as e:
+                print(f"\nError adding example to knowledge base: {str(e)}")
+                logger.debug(
+                    "=== ERROR ADDING EXAMPLE ===\n"
+                    f"Exception: {str(e)}\n"
+                    f"Traceback:\n{traceback.format_exc()}\n"
+                    "=" * 50 + "\n\n"
+                )
                 return False
-            
-            # Add example with all metadata
-            logger.debug("Adding example to knowledge base")
-            if kb.add_example(description, scad_code, metadata_result):
-                logger.info("Knowledge successfully saved")
-                print("\nKnowledge has been successfully saved!")
-                return True
-            else:
-                logger.error("Failed to save knowledge")
-                print("\nFailed to save knowledge.")
-                return False
-            
+                
         except Exception as e:
             logger.error("Error saving knowledge: %s", str(e))
             logger.error("Stack trace: %s", traceback.format_exc())
@@ -608,8 +770,8 @@ class KnowledgeManager:
                             for key, value in example['metadata'].items():
                                 if key != 'code':  # Skip code for cleaner display
                                     print(f"{key}: {value}")
-                            
-                            # Confirm deletion
+            
+            # Confirm deletion
                             confirm = input(f"\nAre you sure you want to delete this example? (y/n): ").strip().lower()
                             if confirm == 'y':
                                 if kb.delete_examples([example['id']]):
@@ -699,11 +861,12 @@ def main():
         print("1. Generate a 3D object")
         print("2. Input knowledge manually")
         print("3. Delete knowledge")
-        print("4. Quit")
+        print("4. View knowledge base")
+        print("5. Quit")
         
-        choice = input("\nEnter your choice (1-4): ").strip()
+        choice = input("\nEnter your choice (1-5): ").strip()
         
-        if choice == "4" or choice.lower() in config.quit_words:
+        if choice == "5" or choice.lower() in config.quit_words:
             # Log final summary before exiting
             logger.info("\nSession Summary:")
             logger.info(progress_manager.get_stage_summary())
@@ -723,6 +886,18 @@ def main():
             logger.info("Starting knowledge deletion")
             result = KnowledgeManager.delete_knowledge()
             logger.info("Knowledge deletion result: %s", "Success" if result else "Failed")
+            continue
+            
+        elif choice == "4":
+            logger.info("Starting knowledge base viewer")
+            try:
+                generator = OpenSCADGenerator()
+                generator.view_knowledge_base()
+                logger.info("Knowledge base viewing completed")
+            except Exception as e:
+                error_msg = f"Error viewing knowledge base: {str(e)}"
+                logger.error(error_msg)
+                print(f"\nError: {error_msg}")
             continue
             
         elif choice == "1":
@@ -811,7 +986,7 @@ def main():
         
         else:
             logger.warning(f"Invalid choice: {choice}")
-            print("Invalid choice. Please select 1, 2, 3, or 4.")
+            print("Invalid choice. Please select 1, 2, 3, 4, or 5.")
 
 if __name__ == "__main__":
     main()

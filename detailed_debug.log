@@ -1,60 +1,121 @@
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: clear_logs
 Message: Logs cleared for new generation
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: main
 Message: Starting 3D Model Generator
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: main
-Message: Time: 2025-03-25T13:20:26.032258
+Message: Time: 2025-03-28T20:08:00.887832
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: main
 Message: Configuration:
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: main
 Message:   - Max Generation Attempts: 3
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: main
 Message:   - Similarity Threshold: 0.70
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,887 - __main__ - INFO
 Function: main
 Message:   - Output Directory: output
 -------------------
 
-2025-03-25 13:20:26,032 - __main__ - INFO
+2025-03-28 20:08:00,888 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-25 13:20:27,911 - __main__ - INFO
+2025-03-28 20:08:03,512 - __main__ - INFO
+Function: main
+Message: Starting knowledge base viewer
+-------------------
+
+2025-03-28 20:09:11,900 - __main__ - INFO
+Function: main
+Message: Knowledge base viewing completed
+-------------------
+
+2025-03-28 20:09:14,461 - __main__ - INFO
 Function: main
 Message: Starting knowledge deletion
 -------------------
 
-2025-03-25 13:20:27,911 - __main__ - INFO
+2025-03-28 20:09:14,461 - __main__ - INFO
 Function: delete_knowledge
 Message: Starting knowledge deletion
 -------------------
 
-2025-03-25 13:20:27,911 - __main__ - DEBUG
+2025-03-28 20:09:14,461 - __main__ - DEBUG
 Function: delete_knowledge
 Message: Initializing knowledge base for deletion
+-------------------
+
+2025-03-28 20:10:46,307 - __main__ - INFO
+Function: delete_knowledge
+Message: Deleted example human_lets_1
+-------------------
+
+2025-03-28 20:10:54,695 - __main__ - INFO
+Function: delete_knowledge
+Message: Deleted example human_lets_2
+-------------------
+
+2025-03-28 20:11:39,544 - __main__ - INFO
+Function: delete_knowledge
+Message: User exited deletion mode
+-------------------
+
+2025-03-28 20:11:39,552 - __main__ - INFO
+Function: main
+Message: Knowledge deletion result: Success
+-------------------
+
+2025-03-28 20:11:43,976 - __main__ - INFO
+Function: main
+Message: Starting knowledge base viewer
+-------------------
+
+2025-03-28 20:12:55,161 - __main__ - INFO
+Function: main
+Message: Knowledge base viewing completed
+-------------------
+
+2025-03-28 20:12:57,576 - __main__ - INFO
+Function: main
+Message: 
+Session Summary:
+-------------------
+
+2025-03-28 20:12:57,576 - __main__ - INFO
+Function: main
+Message: Stage Duration Summary:
+-------------------
+
+2025-03-28 20:12:57,577 - __main__ - INFO
+Function: main
+Message: Session ended at: 2025-03-28T20:12:57.577082
+-------------------
+
+2025-03-28 20:12:57,577 - __main__ - INFO
+Function: main
+Message: ==================================================
 -------------------
 

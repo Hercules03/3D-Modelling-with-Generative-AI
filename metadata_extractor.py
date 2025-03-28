@@ -20,44 +20,38 @@ class MetadataExtractor:
         )
         print("- Main LLM provider initialized")
         
-        # Dedicated LLM for keyword extraction (using specified model)
-        print(f"- Using {keyword_extractor_model} for keyword extraction")
-        self.keyword_llm = LLMProvider.get_llm(
-            provider="gemma",
-            temperature=0.7,
-            model=keyword_extractor_model  # Keep using 1b for keywords
-        )
-        print("- Keyword extraction LLM initialized")
-        
         self.extraction_prompt = METADATA_EXTRACTION_PROMPT
-        self.keyword_prompt = KEYWORD_EXTRACTOR_PROMPT
         self.logger = ConversationLogger()
         self.prompt_logger = LLMPromptLogger()  # Add LLMPromptLogger
 
-    def extract_metadata(self, description, code=""):
+    def extract_metadata(self, description, code="", step_back_result=None, keyword_data=None):
         """Extract metadata from a model description"""
         try:
-            print(f"\nExtracting metadata from description: {description}")
+            print(f"\nExtracting metadata")
             
-            # First, extract keywords using enhanced extraction with dedicated LLM
-            print(f"\n=== Starting Keyword Extraction (using {keyword_extractor_model}) ===")
-            print(f"Using keyword prompt: {self.keyword_prompt}")
             timestamp = datetime.now().isoformat()
-            print(f"Invoking {keyword_extractor_model} for keyword extraction...")
-            # Use the new placeholder format
-            formatted_prompt = self.keyword_prompt.replace("<<INPUT>>", description)
-            keyword_response = self.keyword_llm.invoke(formatted_prompt)
-            keyword_content = keyword_response.content.strip()
-            print(f"Raw keyword response: {keyword_content}")
+            
+            # Handle case where keyword_data is None
+            if keyword_data is None:
+                print("No keyword data provided, using default values")
+                keyword_data = {
+                    "core_type": "model",
+                    "modifiers": [],
+                    "compound_type": ""
+                }
+            # Also handle string type conversion (in case it's not a dictionary)
+            elif isinstance(keyword_data, str):
+                print("Converting string keyword_data to dictionary")
+                try:
+                    keyword_data = json.loads(keyword_data)
+                except json.JSONDecodeError:
+                    keyword_data = {
+                        "core_type": "model",
+                        "modifiers": [],
+                        "compound_type": ""
+                    }
             
             try:
-                # Parse the keyword JSON response
-                print("Attempting to parse keyword JSON response...")
-                # Clean up the response by removing code block markers
-                clean_content = keyword_content.replace("```json", "").replace("```", "").strip()
-                keyword_data = json.loads(clean_content)
-                print(f"Successfully parsed keyword data: {json.dumps(keyword_data, indent=2)}")
-                
                 # Create the analysis object
                 analysis = {
                     "query": {
@@ -76,11 +70,7 @@ class MetadataExtractor:
                     }
                 }
                 print(f"Created analysis object: {json.dumps(analysis, indent=2)}")
-                
-                # Log the keyword extraction
-                print("Logging keyword extraction...")
-                self.logger.log_keyword_extraction(analysis)
-                print("Keyword extraction logged successfully")
+        
                 
                 # Use the extracted type for metadata
                 object_type = (keyword_data.get("compound_type") or 
@@ -89,7 +79,7 @@ class MetadataExtractor:
                 
             except json.JSONDecodeError as e:
                 print(f"Failed to parse keyword JSON response: {str(e)}")
-                print(f"Raw content that failed to parse: {keyword_content}")
+                print(f"Raw content that failed to parse: {keyword_data}")
                 analysis = {
                     "query": {
                         "input": description,
@@ -97,7 +87,7 @@ class MetadataExtractor:
                         "model": keyword_extractor_model  # Track which model was used
                     },
                     "response": {
-                        "raw_content": keyword_content
+                        "raw_content": keyword_data
                     },
                     "metadata": {
                         "success": False,
@@ -106,12 +96,12 @@ class MetadataExtractor:
                 }
                 print(f"Created error analysis object: {json.dumps(analysis, indent=2)}")
                 self.logger.log_keyword_extraction(analysis)
-                object_type = keyword_content.strip()
-            print("=== Keyword Extraction Complete ===\n")
+                object_type = keyword_data.strip()
+
             
             # Now proceed with full metadata extraction using main LLM
             print("\n=== Starting Full Metadata Extraction ===")
-            prompt = self.extraction_prompt.format(description=description)
+            prompt = self.extraction_prompt.format(description=description, step_back_analysis=step_back_result)
             print("Invoking main LLM for metadata extraction...")
             response = self.llm.invoke(prompt)
             print(f"Raw metadata response: {response.content}")

@@ -64,9 +64,9 @@ KEYWORD_EXTRACTOR_PROMPT = """Analyze this description and extract the core obje
 <<INPUT>>
 
 Instructions:
-1. Identify the main object type (e.g., sword, chair, box)
-2. Identify any important modifiers that significantly affect the object's nature (e.g., pirate, gaming, medieval)
-3. Consider compound objects (e.g., "gaming chair" should stay together)
+1. Identify the main object type 
+2. Identify any important modifiers that describe what the part belongs to 
+3. Consider compound objects where both parts are essential 
 
 Return a JSON object in this format:
 {
@@ -76,25 +76,25 @@ Return a JSON object in this format:
 }
 
 Example 1:
-Input: "I want a pirate sword thankyou"
+Input: "I want a rim of a car"
 Output: {
-    "core_type": "sword",
-    "modifiers": ["pirate"],
-    "compound_type": "pirate sword"
+    "core_type": "rim",
+    "modifiers": ["car"],
+    "compound_type": "car rim"
 }
 
 Example 2:
-Input: "Create a modern gaming chair"
+Input: "Create a bicycle gear"
 Output: {
-    "core_type": "chair",
-    "modifiers": ["modern", "gaming"],
-    "compound_type": "gaming chair"
+    "core_type": "gear",
+    "modifiers": ["bicycle"],
+    "compound_type": "bicycle gear"
 }
 
 Return ONLY the JSON object, no additional text."""
 
 # Step-back prompt template
-STEP_BACK_PROMPT_TEMPLATE = """When creating a 3D model for "{query}", what are the fundamental principles and high-level concepts I should consider before implementation?
+STEP_BACK_PROMPT_TEMPLATE = """When creating a 3D model for "{Object}"(a {Type}-type device with {Modifiers} modifiers and a knob compound structure), what are the fundamental principles and high-level concepts I should consider before implementation?
 
 Please provide a structured technical analysis in this format:
 
@@ -151,7 +151,7 @@ USER REQUEST:
 Please generate OpenSCAD code that satisfies the user's request. Follow these guidelines:
 1. Use clear variable names and comments
 2. Break down complex shapes into modules
-3. Use proper indentation and formatting
+. Use proper indentation and formatting
 4. Include helpful comments explaining the code
 5. Wrap the code in <code> tags or ```scad code blocks
 
@@ -163,10 +163,8 @@ METADATA_EXTRACTION_PROMPT = """You are an expert in 3D modeling and OpenSCAD. A
 
 Description: {description}
 
-First, perform a step-back analysis:
-1. Consider the core principles and geometric foundations
-2. Break down the shape into basic components
-3. Plan the implementation steps
+step-back analysis:
+{step_back_analysis}
 
 Then, extract the following metadata and format it as a valid JSON object with these fields:
 1. "object_type": Main category/type of the object (e.g., "mug", "chair", "box")

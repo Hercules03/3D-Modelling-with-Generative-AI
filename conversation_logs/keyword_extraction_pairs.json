@@ -1,0 +1,925 @@
+[
+  {
+    "query": {
+      "input": "I want a phone stand",
+      "timestamp": "2025-03-25T13:31:02.955672",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "phone stand",
+      "modifiers": [
+        "phone"
+      ],
+      "compound_type": "phone stand"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a office chair please",
+      "timestamp": "2025-03-25T13:35:46.496141",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "office"
+      ],
+      "compound_type": "office chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a office chair",
+      "timestamp": "2025-03-25T13:42:27.535681",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "office"
+      ],
+      "compound_type": "office chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a work desk",
+      "timestamp": "2025-03-25T13:47:33.276633",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "desk",
+      "modifiers": [
+        "work",
+        "desk"
+      ],
+      "compound_type": "desk"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a work desk",
+      "timestamp": "2025-03-25T13:49:03.903755",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "desk",
+      "modifiers": [
+        "work"
+      ],
+      "compound_type": "desk"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rim of a wheel",
+      "timestamp": "2025-03-25T13:51:12.739397",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "modern",
+        "gaming"
+      ],
+      "compound_type": "gaming chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rim of a wheel",
+      "timestamp": "2025-03-25T13:52:10.631952",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "modern",
+        "gaming"
+      ],
+      "compound_type": "gaming chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rim of a wheel please",
+      "timestamp": "2025-03-25T13:56:40.346675",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "gaming"
+      ],
+      "compound_type": "gaming chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rim of a wheel please",
+      "timestamp": "2025-03-25T13:58:19.295881",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "chair",
+      "modifiers": [
+        "modern",
+        "gaming"
+      ],
+      "compound_type": "gaming chair"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a tire of a car",
+      "timestamp": "2025-03-25T20:08:34.519139",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "tire",
+      "modifiers": [
+        "car"
+      ],
+      "compound_type": "tire of a car"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rim of a car please",
+      "timestamp": "2025-03-25T20:28:24.648330",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "car"
+      ],
+      "compound_type": "car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rear wing of a car please",
+      "timestamp": "2025-03-25T22:33:29.524258",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "rear wing",
+      "modifiers": [
+        "car"
+      ],
+      "compound_type": "rear wing of a car"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rear wing of a car please",
+      "timestamp": "2025-03-25T22:51:16.936270",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "gear",
+      "modifiers": [
+        "bicycle"
+      ],
+      "compound_type": "bicycle gear"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "i want a rim of a bicycle",
+      "timestamp": "2025-03-25T23:18:04.541510",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "bicycle"
+      ],
+      "compound_type": "bicycle rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a bicycle rim",
+      "timestamp": "2025-03-25T23:29:45.992116"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "bicycle"
+      ],
+      "compound_type": "bicycle rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a bicycle rim",
+      "timestamp": "2025-03-25T23:30:01.083900",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "bicycle"
+      ],
+      "compound_type": "bicycle rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rim of a car please",
+      "timestamp": "2025-03-25T23:42:54.436585"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "car"
+      ],
+      "compound_type": "car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-26T01:41:39.031112",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-26T01:42:18.780199",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-26T10:09:04.503057",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-26T10:09:41.873584",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-26T11:04:49.461945"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-26T11:54:08.931155"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a bag",
+      "timestamp": "2025-03-26T22:45:05.971118"
+    },
+    "response": {
+      "core_type": "bag",
+      "modifiers": [
+        "bag"
+      ],
+      "compound_type": "bag"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a cup with handle please",
+      "timestamp": "2025-03-26T22:57:05.812023"
+    },
+    "response": {
+      "core_type": "cup",
+      "modifiers": [
+        "handle"
+      ],
+      "compound_type": "cup with handle"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a cup with handle please",
+      "timestamp": "2025-03-26T22:58:49.052674",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "cup",
+      "modifiers": [
+        "handle"
+      ],
+      "compound_type": "cup with handle"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "i want a bed",
+      "timestamp": "2025-03-27T06:49:00.439387"
+    },
+    "response": {
+      "core_type": "bed",
+      "modifiers": [
+        "bed"
+      ],
+      "compound_type": "bed"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "i want a bed",
+      "timestamp": "2025-03-27T06:50:53.378587",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "bed",
+      "modifiers": [
+        "bed"
+      ],
+      "compound_type": "bed"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a sofa",
+      "timestamp": "2025-03-27T07:01:05.243074"
+    },
+    "response": {
+      "core_type": "sofa",
+      "modifiers": [
+        "sofa"
+      ],
+      "compound_type": "sofa"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a sofa",
+      "timestamp": "2025-03-27T07:02:42.649117",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "sofa",
+      "modifiers": [
+        "sofa"
+      ],
+      "compound_type": "sofa"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a double bed",
+      "timestamp": "2025-03-27T07:34:06.311875"
+    },
+    "response": {
+      "core_type": "bed",
+      "modifiers": [
+        "double"
+      ],
+      "compound_type": "bed"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a double bed",
+      "timestamp": "2025-03-27T07:34:22.440962",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "bed",
+      "modifiers": [
+        "double"
+      ],
+      "compound_type": "bed"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a double bed",
+      "timestamp": "2025-03-27T07:41:36.476198",
+      "model": "keyword-extractor:latest"
+    },
+    "response": {
+      "core_type": "bed",
+      "modifiers": [
+        "double"
+      ],
+      "compound_type": "bed"
+    },
+    "metadata": {
+      "success": true,
+      "error": null
+    }
+  },
+  {
+    "query": {
+      "input": "I want a L-shape sofa",
+      "timestamp": "2025-03-27T09:36:46.803649"
+    },
+    "response": {
+      "core_type": "sofa",
+      "modifiers": [
+        "L-shape"
+      ],
+      "compound_type": "L-shaped sofa"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a lighter please\nConsider these adjustments: rectangular shape",
+      "timestamp": "2025-03-28T11:12:58.400770"
+    },
+    "response": {
+      "core_type": "lighter",
+      "modifiers": [
+        "rectangular shape"
+      ],
+      "compound_type": "lighter"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "i want a rim\nConsider these adjustments: i want a car rim with 5 strokes",
+      "timestamp": "2025-03-28T12:46:32.018266"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "car",
+        "5 strokes"
+      ],
+      "compound_type": "car rim with 5 strokes"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a racing car rim]",
+      "timestamp": "2025-03-28T12:57:56.342031"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "racing car"
+      ],
+      "compound_type": "racing car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a racing car rim]",
+      "timestamp": "2025-03-28T12:58:26.984520"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "racing car"
+      ],
+      "compound_type": "racing car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a car rim",
+      "timestamp": "2025-03-28T13:50:40.808230"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "car"
+      ],
+      "compound_type": "car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a car rim. mordern style\nConsider these adjustments: mordern style please",
+      "timestamp": "2025-03-28T14:00:27.097133"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "modern style"
+      ],
+      "compound_type": "rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a sport car rim",
+      "timestamp": "2025-03-28T14:08:12.929499"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "sport car"
+      ],
+      "compound_type": "sport car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a rim of a car please",
+      "timestamp": "2025-03-28T15:26:32.670610"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "car"
+      ],
+      "compound_type": "car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-28T15:39:42.953314"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a car rim with thick strokes\nConsider these adjustments: thick stroke\nConsider these adjustments: car rim with thick stroke",
+      "timestamp": "2025-03-28T15:43:12.623287"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "thick stroke"
+      ],
+      "compound_type": "car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a race car rim with 6 strokes\nConsider these adjustments: 6 strokes",
+      "timestamp": "2025-03-28T15:47:43.704578"
+    },
+    "response": {
+      "core_type": "rim",
+      "modifiers": [
+        "6 strokes"
+      ],
+      "compound_type": "race car rim"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "i want a bed",
+      "timestamp": "2025-03-28T15:53:21.903648"
+    },
+    "response": {
+      "core_type": "bed",
+      "modifiers": [
+        "bed"
+      ],
+      "compound_type": "bed"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-28T16:23:31.754899"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a controller knob",
+      "timestamp": "2025-03-28T16:25:37.381985"
+    },
+    "response": {
+      "core_type": "knob",
+      "modifiers": [
+        "controller"
+      ],
+      "compound_type": "controller knob"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a drawer with hex pattern",
+      "timestamp": "2025-03-28T16:42:00.811893"
+    },
+    "response": {
+      "core_type": "drawer",
+      "modifiers": [
+        "hex pattern"
+      ],
+      "compound_type": "drawer with hex pattern"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a car\nConsider these adjustments: I want a car only , a car",
+      "timestamp": "2025-03-28T19:52:35.118927"
+    },
+    "response": {
+      "core_type": "car",
+      "modifiers": [
+        "only"
+      ],
+      "compound_type": "car"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a drawer",
+      "timestamp": "2025-03-28T19:55:57.010799"
+    },
+    "response": {
+      "core_type": "drawer",
+      "modifiers": [
+        "drawer"
+      ],
+      "compound_type": "drawer"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  }
+]

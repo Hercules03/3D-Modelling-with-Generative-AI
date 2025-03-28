@@ -98,6 +98,7 @@ class EnhancedSCADKnowledgeBase:
 
     def __init__(self):
         """Initialize the enhanced knowledge base with ChromaDB"""
+        self.debug_log = []
         print("\n" + "="*50)
         print("Initializing Enhanced SCAD Knowledge Base")
         print("="*50)
@@ -118,8 +119,10 @@ class EnhancedSCADKnowledgeBase:
         
         # Set up prompts
         print("\nInitializing prompts...")
-        self.keyword_prompt = KEYWORD_EXTRACTOR_PROMPT
-        print("- Keyword extraction prompt loaded")
+        self.keyword_extractor = KeywordExtractor()  # Initialize the keyword extractor
+        self.keyword_prompt = KEYWORD_EXTRACTOR_PROMPT  # Initialize the keyword prompt
+        print("- Keyword extractor initialized")
+        print("- Keyword prompt initialized")
         
         # Initialize ChromaDB
         print("\nInitializing ChromaDB...")
@@ -149,13 +152,25 @@ class EnhancedSCADKnowledgeBase:
                 print("- New collection created successfully")
                 example_count = 0
             
-            # Load timestamp
+            # Load timestamp and reset for fresh loading if needed
             self.last_processed_time = self._load_last_processed_time()
             print(f"- Last processed timestamp: {self.last_processed_time}")
             
+            # Temporarily set to earlier time to force fresh load of all examples
+            # This helps ensure we don't miss any examples
+            original_timestamp = self.last_processed_time
+            self.last_processed_time = '1970-01-01T00:00:00'
+            
             # Load new examples
-            print("\nChecking for new examples...")
+            print("\nChecking for new examples (with timestamp override)...")
             new_count = self._load_new_examples()
+            
+            # Restore timestamp if no new examples found to prevent reprocessing
+            if new_count == 0:
+                self.last_processed_time = original_timestamp
+                self._save_last_processed_time()
+                print(f"- Restored original timestamp: {self.last_processed_time}")
+            
             if new_count > 0:
                 print(f"- Added {new_count} new examples")
                 print(f"- Collection now has {self.collection.count()} total examples")
@@ -169,6 +184,11 @@ class EnhancedSCADKnowledgeBase:
         except Exception as e:
             print(f"\nError initializing ChromaDB: {str(e)}")
             raise
+        
+    def write_debug(self, *messages):
+        """Write messages to debug log"""
+        for message in messages:
+            self.debug_log.append(message)
     
     def cleanup(self):
         """Cleanup resources before shutdown"""
@@ -216,26 +236,51 @@ class EnhancedSCADKnowledgeBase:
     def _load_new_examples(self):
         """Load only new examples from conversation logs"""
         try:
-            # Get all examples from logs
+            # Get all user-approved examples from logs
             examples = self.logger.get_scad_generation_logs()
             if not examples:
+                print("No SCAD generation logs found.")
                 return 0
             
+            # Debug print all entries
+            print(f"Found {len(examples)} entries to process")
+            for i, example in enumerate(examples, 1):
+                desc = example.get('request', '')[:30] + "..." if example.get('request', '') else "[No description]"
+                code_len = len(example.get('code', ''))
+                timestamp = example.get('timestamp', 'Unknown')
+                print(f"Entry {i}: {desc} - {code_len} chars - Timestamp: {timestamp}")
+            
             new_examples = 0
+            skip_stats = {
+                'missing_data': 0,
+                'older_timestamp': 0,
+                'not_accepted': 0,
+                'already_exists': 0
+            }
+            
             for example in examples:
-                # Skip if example doesn't have a timestamp or wasn't accepted by user
-                example_time = example.get('timestamp', '1970-01-01T00:00:00')
-                if example_time <= self.last_processed_time:
-                    continue
-                    
-                # Skip if not a SCAD generation example or not accepted by user
-                if not example.get('user_accepted', False) or example.get('type') != 'scad_generation':
-                    continue
-                
+                # Skip if example doesn't have required data
+                timestamp = example.get('timestamp', '1970-01-01T00:00:00')
                 description = example.get('request', '')
                 code = example.get('code', '')
+                is_accepted = example.get('user_accepted', False)
                 
+                # Check if we have all required data
                 if not description or not code:
+                    print(f"Skipping example - missing description or code")
+                    skip_stats['missing_data'] += 1
+                    continue
+                    
+                # Check if it's a newer example
+                if timestamp <= self.last_processed_time:
+                    print(f"Skipping example from {timestamp} - older than last processed time {self.last_processed_time}")
+                    skip_stats['older_timestamp'] += 1
+                    continue
+                    
+                # Check if it's user accepted
+                if not is_accepted:
+                    print(f"Skipping example - not marked as user accepted")
+                    skip_stats['not_accepted'] += 1
                     continue
                 
                 # Generate unique ID based on content hash
@@ -243,56 +288,55 @@ class EnhancedSCADKnowledgeBase:
                 example_id = f"{self._generate_base_name(description)}_{content_hash}"
                 
                 # Check if example already exists
-                try:
-                    self.collection.get(ids=[example_id])
+                if self._example_exists(example_id):
+                    print(f"Skipping example with ID {example_id} - already exists in collection")
+                    skip_stats['already_exists'] += 1
                     continue
-                except Exception:
-                    # Example doesn't exist, add it
-                    try:
-                        self.collection.add(
-                            documents=[description],
-                            metadatas=[{
-                                "code": code,
-                                "timestamp": example_time,
-                                "type": "scad_generation",
-                                "user_accepted": True
-                            }],
-                            ids=[example_id]
-                        )
-                        new_examples += 1
-                        
-                        # Update last processed timestamp if this example is newer
-                        if example_time > self.last_processed_time:
-                            self.last_processed_time = example_time
-                            self._save_last_processed_time()
-                            
-                    except Exception:
-                        continue
+                    
+                # Example doesn't exist, add it
+                try:
+                    print(f"Adding new example with ID {example_id}")
+                    metadata = {
+                        "code": code,
+                        "timestamp": timestamp,
+                        "type": "scad_generation",
+                        "user_accepted": True,
+                        "description": description  # Include description in metadata for reference
+                    }
+                    
+                    self.collection.add(
+                        documents=[description],
+                        metadatas=[metadata],
+                        ids=[example_id]
+                    )
+                    new_examples += 1
+                    
+                    # Update last processed timestamp if this example is newer
+                    if timestamp > self.last_processed_time:
+                        self.last_processed_time = timestamp
+                        print(f"Updating last processed time to {self.last_processed_time}")
+                        self._save_last_processed_time()
+                except Exception as e:
+                    print(f"Error adding example {example_id}: {str(e)}")
+                    continue
+            
+            total_skipped = sum(skip_stats.values())
+            print("\nSkip Statistics:")
+            print("-" * 30)
+            print(f"Missing Data: {skip_stats['missing_data']}")
+            print(f"Older Timestamp: {skip_stats['older_timestamp']}")
+            print(f"Not User Accepted: {skip_stats['not_accepted']}")
+            print(f"Already Exists: {skip_stats['already_exists']}")
+            print("-" * 30)
+            print(f"Summary: Processed {len(examples)} examples, Added {new_examples}, Total Skipped {total_skipped}")
+            print("=" * 50)
             
             return new_examples
                 
         except Exception as e:
             print(f"Error loading new examples: {str(e)}")
+            traceback.print_exc()
             return 0
-    
-    def _generate_base_name(self, description):
-        """Generate a base name for the example"""
-        # Convert to lowercase and split into words
-        words = description.lower().split()
-        
-        # Common words to ignore
-        stop_words = {
-            'a', 'an', 'the', 'this', 'that', 'create', 'make', 'generate', 
-            'model', 'design', 'want', 'need', 'please', 'would', 'like', 'can', 
-            'you', 'me', 'build', 'draw', 'sketch', 'i', 'we', 'they', 'he', 'she'
-        }
-        
-        # Find first meaningful word
-        for word in words:
-            if word not in stop_words:
-                return ''.join(c for c in word if c.isalnum())
-        
-        return 'example'
     
     def _analyze_object_categories(self, object_type, description):
         """Use LLM to analyze object categories using standardized categories and properties"""
@@ -387,6 +431,7 @@ class EnhancedSCADKnowledgeBase:
             
             # Extract metadata if not provided
             if not metadata:
+                print("Warning: No metadata provided, extracting from description...")
                 metadata = self.metadata_extractor.extract_metadata(description)
             
             # Ensure metadata has required fields
@@ -398,65 +443,26 @@ class EnhancedSCADKnowledgeBase:
             metadata.setdefault('style', 'Modern')
             metadata.setdefault('use_case', [])
             
-            # Convert string lists to actual lists if needed
-            for field in ['features', 'geometric_properties', 'materials', 'technical_requirements', 'use_case']:
-                if isinstance(metadata[field], str):
-                    metadata[field] = [item.strip() for item in metadata[field].split(',') if item.strip()]
-            
-            # Perform step-back analysis
-            step_back_prompt = STEP_BACK_PROMPT_TEMPLATE.format(query=description)
-            step_back_response = self.llm.invoke(step_back_prompt)
-            technical_analysis = step_back_response.content
-            
-            # Parse step-back analysis
-            principles = []
-            shape_components = []
-            implementation_steps = []
-            
-            current_section = None
-            for line in technical_analysis.split('\n'):
-                line = line.strip()
-                if 'CORE PRINCIPLES:' in line:
-                    current_section = 'principles'
-                elif 'SHAPE COMPONENTS:' in line:
-                    current_section = 'shape_components'
-                elif 'IMPLEMENTATION STEPS:' in line:
-                    current_section = 'implementation_steps'
-                elif line and line[0] in ['-', '•', '*'] and current_section == 'principles':
-                    principles.append(line[1:].strip())
-                elif line and line[0] in ['-', '•', '*'] and current_section == 'shape_components':
-                    shape_components.append(line[1:].strip())
-                elif line and (line[0].isdigit() or line[0] in ['-', '•', '*']) and current_section == 'implementation_steps':
-                    implementation_steps.append(line[line.find('.')+1:].strip() if line[0].isdigit() else line[1:].strip())
-            
-            # Add step-back analysis to metadata
-            metadata['step_back_analysis'] = {
-                'core_principles': principles,
-                'shape_components': shape_components,
-                'implementation_steps': implementation_steps
-            }
-            
-            # Flatten metadata for ChromaDB while preserving list and dict structures
-            flattened_metadata = {}
+            # Serialize all list and dictionary values to JSON strings
+            serialized_metadata = {}
             for key, value in metadata.items():
-                if isinstance(value, dict):
-                    # For dictionaries, store as JSON string
-                    flattened_metadata[key] = json.dumps(value)
-                elif isinstance(value, list):
-                    # For lists, store as JSON string
-                    flattened_metadata[key] = json.dumps(value)
+                if isinstance(value, (list, dict)):
+                    serialized_metadata[key] = json.dumps(value)
                 else:
-                    # For scalar values, convert to string
-                    flattened_metadata[key] = str(value)
+                    serialized_metadata[key] = value
             
-            # Add code to metadata
-            flattened_metadata['code'] = code
+            # Add code and other metadata fields
+            serialized_metadata['code'] = code
+            serialized_metadata['timestamp'] = datetime.now().isoformat()
+            serialized_metadata['type'] = 'scad_generation'
+            serialized_metadata['user_accepted'] = True
+            serialized_metadata['description'] = description
             
             # Add example to ChromaDB
-            print(f"\nAdd of existing embedding ID: {example_id}")
+            print(f"\nAdding example with ID: {example_id}")
             self.collection.add(
                 documents=[description],
-                metadatas=[flattened_metadata],
+                metadatas=[serialized_metadata],
                 ids=[example_id]
             )
             
@@ -470,25 +476,70 @@ class EnhancedSCADKnowledgeBase:
             traceback.print_exc()
             return False
     
-    def get_relevant_examples(self, query: str, similarity_threshold: float = 0.15) -> List[Dict]:
+    def get_relevant_examples(self, query: str, similarity_threshold: float = 0.15, filters: Dict = None, keyword_data: Dict = None, step_back_result: Dict = None) -> List[Dict]:
         """
         Get relevant examples based on the query.
         
         Args:
             query: The search query
             similarity_threshold: Minimum similarity score required (default: 0.15)
+            filters: Optional dictionary of metadata filters
+            keyword_data: Optional pre-extracted keyword data
             
         Returns:
             List of relevant examples with their similarity scores
         """
         try:
-            # Extract metadata from query
-            query_metadata = self.metadata_extractor.extract_metadata(query)
+            # Use pre-extracted keyword data if provided, otherwise extract metadata
+            query_metadata = {}
+            if keyword_data:
+                query_metadata = {
+                    'object_type': keyword_data.get('compound_type') or keyword_data.get('core_type', ''),
+                    'features': keyword_data.get('modifiers', []),
+                    'step_back_analysis': {
+                        'core_principles': step_back_result.get('principles', []),
+                        'shape_components': step_back_result.get('abstractions', []),
+                        'implementation_steps': step_back_result.get('approach', [])
+                    }
+                }
+            print(f"Query: {query}")
+            print("\nExtracting metadata from query...")
+            query_metadata = self.metadata_extractor.extract_metadata(description=query, step_back_result=step_back_result, keyword_data=keyword_data)
+            
+            # Prepare the query parameters for logging
+            query_params = {
+                "query_text": query,
+                "n_results": 5,
+                "keyword_data": keyword_data,
+                "step_back_result": step_back_result,
+                "filters": filters,
+                "similarity_threshold": similarity_threshold
+            }
+            
+            # Log the full query parameters
+            self.write_debug(
+                "\n=== VECTOR STORE QUERY PARAMETERS ===\n",
+                f"Query Text: {query}\n",
+                f"Filters: {filters}\n",
+                f"Keyword Data: {keyword_data}\n",
+                f"Step-back Principles: {step_back_result.get('principles', []) if step_back_result else []}\n",
+                f"Similarity Threshold: {similarity_threshold}\n",
+                "=" * 50 + "\n"
+            )
             
             # Query the vector store
             results = self.collection.query(
                 query_texts=[query],
                 n_results=5
+            )
+            
+            # Log the raw query results
+            self.write_debug(
+                "\n=== VECTOR STORE QUERY RESULTS ===\n",
+                f"Results count: {len(results.get('ids', [[]])[0]) if results.get('ids') else 0}\n",
+                f"Result IDs: {results.get('ids', [[]])[0] if results.get('ids') else []}\n",
+                f"Result Distances: {results.get('distances', [[]])[0] if results.get('distances') else []}\n",
+                "=" * 50 + "\n"
             )
             
             if not results or not results['ids']:
@@ -503,6 +554,31 @@ class EnhancedSCADKnowledgeBase:
                     'metadata': results['metadatas'][0][i],
                     'distance': results['distances'][0][i]
                 }
+                
+                # Apply metadata filters if provided
+                if filters:
+                    skip = False
+                    for key, value in filters.items():
+                        if key in result['metadata']:
+                            meta_value = result['metadata'][key]
+                            if isinstance(meta_value, str):
+                                if meta_value.startswith('[') or meta_value.startswith('{'):
+                                    try:
+                                        meta_value = json.loads(meta_value)
+                                    except:
+                                        pass
+                            
+                            # Check if value matches filter
+                            if isinstance(meta_value, list):
+                                if value not in meta_value:
+                                    skip = True
+                                    break
+                            elif str(meta_value).lower() != str(value).lower():
+                                skip = True
+                                break
+                    if skip:
+                        continue
+                
                 search_results.append(result)
             
             print("\nRaw Results:")
@@ -510,11 +586,20 @@ class EnhancedSCADKnowledgeBase:
                 print(f"\nRaw Result {i}:")
                 print(f"ID: {result['id']}")
                 print(f"Distance: {result['distance']}")
-                print(f"Metadata: {result['metadata']}")
+            
+            # Log the search results before ranking
+            self.write_debug(
+                "\n=== SEARCH RESULTS BEFORE RANKING ===\n",
+                f"Number of results to rank: {len(search_results)}\n",
+                "".join(f"Result {i}: ID={result['id']}, Distance={result['distance']}\n" 
+                       for i, result in enumerate(search_results, 1)),
+                "=" * 50 + "\n"
+            )
             
             # Rank results
             ranked_results = self._rank_results(query_metadata, search_results)
             
+            """
             print("\nScores before filtering:")
             for result in ranked_results:
                 print("\nExample: ")
@@ -525,6 +610,16 @@ class EnhancedSCADKnowledgeBase:
                 print("Step-back Details:")
                 for name, score in result['score_breakdown']['step_back_details'].items():
                     print(f"  {name}: {score:.3f}")
+            """
+            
+            # Log the ranked results before filtering
+            self.write_debug(
+                "\n=== RANKED RESULTS BEFORE FILTERING ===\n",
+                f"Number of ranked results: {len(ranked_results)}\n",
+                "".join(f"Rank {i}: ID={result['example']['id']}, Score={result['score']:.3f}\n" 
+                       for i, result in enumerate(ranked_results, 1)),
+                "=" * 50 + "\n"
+            )
             
             # Filter by similarity threshold
             relevant_results = [
@@ -532,11 +627,20 @@ class EnhancedSCADKnowledgeBase:
                 if result['score'] >= similarity_threshold
             ]
             
+            # Log the final filtered results
+            self.write_debug(
+                "\n=== FINAL FILTERED RESULTS ===\n",
+                f"Number of relevant results: {len(relevant_results)}\n",
+                f"Similarity threshold: {similarity_threshold}\n",
+                "".join(f"Result {i}: ID={result['example']['id']}, Score={result['score']:.3f}, Score breakdown: {result['score_breakdown']['component_scores']}\n" 
+                       for i, result in enumerate(relevant_results, 1)),
+                "=" * 50 + "\n"
+            )
+            
             print(f"\nFound {len(relevant_results)} relevant examples (threshold: {similarity_threshold}):")
             for result in relevant_results:
                 print(f"\nExample (Score: {result['score']:.3f}):")
                 print(f"ID: {result['example']['id']}")
-                print(f"Metadata: {result['example']['metadata']}")
                 print("Score Breakdown:")
                 for name, score in result['score_breakdown']['component_scores'].items():
                     print(f"  {name}: {score:.3f}")
@@ -547,7 +651,7 @@ class EnhancedSCADKnowledgeBase:
             print(f"Error getting relevant examples: {str(e)}")
             traceback.print_exc()
             return []
-    
+            
     def _extract_object_type(self, description):
         """Extract the main object type and modifiers from a description.
         
@@ -791,30 +895,60 @@ class EnhancedSCADKnowledgeBase:
         """
         ranked_results = []
         
+        # Log the start of the ranking process with detailed info
+        self.write_debug(
+            "\n=== RANKING PROCESS DETAILS ===\n",
+            f"Number of results to rank: {len(results)}\n",
+            f"Query metadata: {json.dumps(query_metadata, default=str)}\n",
+            "=" * 50 + "\n"
+        )
+        
+        print("\nRe-ranking Process Details:")
+        print("=" * 50)
+        print(f"Number of results to rank: {len(results)}")
+        
         for result in results:
             try:
                 result_metadata = result['metadata']
                 
+                # Ensure all required fields exist with default values
+                result_metadata.setdefault('features', [])
+                result_metadata.setdefault('geometric_properties', [])
+                result_metadata.setdefault('step_back_analysis', {})
+                result_metadata.setdefault('style', 'Modern')
+                result_metadata.setdefault('complexity', 'SIMPLE')
+                
+                query_metadata.setdefault('features', [])
+                query_metadata.setdefault('geometric_properties', [])
+                query_metadata.setdefault('step_back_analysis', {})
+                query_metadata.setdefault('style', 'Modern')
+                query_metadata.setdefault('complexity', 'SIMPLE')
+
                 # Convert string fields to lists if they're strings
                 for field in ['features', 'geometric_properties']:
-                    if isinstance(result_metadata.get(field, ''), str):
-                        result_metadata[field] = [x.strip() for x in result_metadata[field].split(',')]
-                    if isinstance(query_metadata.get(field, ''), str):
-                        query_metadata[field] = [x.strip() for x in query_metadata[field].split(',')]
+                    if isinstance(result_metadata.get(field), str):
+                        try:
+                            result_metadata[field] = json.loads(result_metadata[field])
+                        except:
+                            result_metadata[field] = [x.strip() for x in result_metadata[field].split(',') if x.strip()]
+                    if isinstance(query_metadata.get(field), str):
+                        try:
+                            query_metadata[field] = json.loads(query_metadata[field])
+                        except:
+                            query_metadata[field] = [x.strip() for x in query_metadata[field].split(',') if x.strip()]
 
                 # Parse step-back analysis fields
                 try:
-                    # Handle old format with separate fields
                     if 'step_back_analysis_principles' in result_metadata:
                         result_metadata['step_back_analysis'] = {
                             'core_principles': json.loads(result_metadata['step_back_analysis_principles']),
                             'shape_components': json.loads(result_metadata.get('step_back_analysis_abstractions', '[]')),
                             'implementation_steps': json.loads(result_metadata.get('step_back_analysis_approach', '[]'))
                         }
-                    elif isinstance(result_metadata.get('step_back_analysis', ''), str):
+                    elif isinstance(result_metadata.get('step_back_analysis'), str):
                         result_metadata['step_back_analysis'] = json.loads(result_metadata['step_back_analysis'])
                     
-                    if isinstance(query_metadata.get('step_back_analysis', ''), str):
+                    if isinstance(query_metadata.get('step_back_analysis'), str):
                         query_metadata['step_back_analysis'] = json.loads(query_metadata['step_back_analysis'])
                 except:
                     result_metadata['step_back_analysis'] = {
@@ -823,58 +957,74 @@ class EnhancedSCADKnowledgeBase:
                         'implementation_steps': []
                     }
 
+                # Ensure step-back analysis structure
+                for metadata in [result_metadata, query_metadata]:
+                    metadata['step_back_analysis'].setdefault('core_principles', [])
+                    metadata['step_back_analysis'].setdefault('shape_components', [])
+                    metadata['step_back_analysis'].setdefault('implementation_steps', [])
+
+                # print(f"\nProcessing example {result.get('id', 'unknown')}:")
+                # print("-" * 30)
+
                 # Calculate component match score
-                result_components = result_metadata.get('step_back_analysis', {}).get('shape_components', [])
-                query_components = query_metadata.get('step_back_analysis', {}).get('shape_components', [])
+                result_components = result_metadata['step_back_analysis'].get('shape_components', [])
+                query_components = query_metadata['step_back_analysis'].get('shape_components', [])
                 component_match = self._calculate_text_similarity(query_components, result_components)
+                # print(f"Component Match Score: {component_match:.3f}")
 
                 # Calculate step-back analysis score
-                step_back_score = 0
-                if 'step_back_analysis' in result_metadata and 'step_back_analysis' in query_metadata:
-                    principles_score = self._calculate_text_similarity(
-                        query_metadata['step_back_analysis'].get('core_principles', []),
-                        result_metadata['step_back_analysis'].get('core_principles', [])
-                    )
-                    components_score = self._calculate_text_similarity(
-                        query_metadata['step_back_analysis'].get('shape_components', []),
-                        result_metadata['step_back_analysis'].get('shape_components', [])
-                    )
-                    steps_score = self._calculate_text_similarity(
-                        query_metadata['step_back_analysis'].get('implementation_steps', []),
-                        result_metadata['step_back_analysis'].get('implementation_steps', [])
-                    )
-                    step_back_score = (principles_score + components_score + steps_score) / 3
+                principles_score = self._calculate_text_similarity(
+                    query_metadata['step_back_analysis']['core_principles'],
+                    result_metadata['step_back_analysis']['core_principles']
+                )
+                components_score = self._calculate_text_similarity(
+                    query_metadata['step_back_analysis']['shape_components'],
+                    result_metadata['step_back_analysis']['shape_components']
+                )
+                steps_score = self._calculate_text_similarity(
+                    query_metadata['step_back_analysis']['implementation_steps'],
+                    result_metadata['step_back_analysis']['implementation_steps']
+                )
+                step_back_score = (principles_score + components_score + steps_score) / 3
+                # print(f"Step-back Analysis Score: {step_back_score:.3f}")
+                # print(f"- Principles Score: {principles_score:.3f}")
+                # print(f"- Components Score: {components_score:.3f}")
+                # print(f"- Steps Score: {steps_score:.3f}")
 
                 # Calculate geometric properties match
                 geometric_score = self._calculate_text_similarity(
-                    query_metadata.get('geometric_properties', []),
-                    result_metadata.get('geometric_properties', [])
+                    query_metadata['geometric_properties'],
+                    result_metadata['geometric_properties']
                 )
+                # print(f"Geometric Properties Score: {geometric_score:.3f}")
 
                 # Calculate feature match
                 feature_score = self._calculate_text_similarity(
-                    query_metadata.get('features', []),
-                    result_metadata.get('features', [])
+                    query_metadata['features'],
+                    result_metadata['features']
                 )
+                # print(f"Feature Match Score: {feature_score:.3f}")
 
-                # Calculate style match (case-insensitive and fuzzy)
-                query_style = str(query_metadata.get('style', '')).lower()
-                result_style = str(result_metadata.get('style', '')).lower()
+                # Calculate style match
+                query_style = str(query_metadata['style']).lower()
+                result_style = str(result_metadata['style']).lower()
                 style_score = fuzz.ratio(query_style, result_style) / 100.0
+                # print(f"Style Match Score: {style_score:.3f}")
 
-                # Calculate complexity match (case-insensitive)
-                query_complexity = str(query_metadata.get('complexity', '')).upper()
-                result_complexity = str(result_metadata.get('complexity', '')).upper()
+                # Calculate complexity match
+                query_complexity = str(query_metadata['complexity']).upper()
+                result_complexity = str(result_metadata['complexity']).upper()
                 complexity_score = 1.0 if query_complexity == result_complexity else 0.0
+                # print(f"Complexity Match Score: {complexity_score:.3f}")
 
                 # Calculate final score with weights
                 weights = {
-                    'component_match': 0.25,
-                    'step_back_match': 0.2,
-                    'geometric_match': 0.15,
-                    'feature_match': 0.2,
-                    'style_match': 0.1,
-                    'complexity_match': 0.1
+                    'component_match': 0.35,
+                    'geometric_match': 0.25,
+                    'step_back_match': 0.20,
+                    'feature_match': 0.15,
+                    'style_match': 0.03,
+                    'complexity_match': 0.02
                 }
 
                 final_score = (
@@ -885,6 +1035,15 @@ class EnhancedSCADKnowledgeBase:
                     weights['style_match'] * style_score +
                     weights['complexity_match'] * complexity_score
                 )
+
+                # print(f"\nFinal Score: {final_score:.3f}")
+                # print("Score Breakdown:")
+                # print(f"- Component Match (35%): {component_match:.3f}")
+                # print(f"- Geometric Match (25%): {geometric_score:.3f}")
+                # print(f"- Step-back Match (20%): {step_back_score:.3f}")
+                # print(f"- Feature Match (15%): {feature_score:.3f}")
+                #print(f"- Style Match (3%): {style_score:.3f}")
+                # print(f"- Complexity Match (2%): {complexity_score:.3f}")
 
                 # Create score breakdown
                 score_breakdown = {
@@ -912,33 +1071,71 @@ class EnhancedSCADKnowledgeBase:
 
             except Exception as e:
                 print(f"Error processing result: {str(e)}")
+                traceback.print_exc()
                 continue
 
         # Sort by score in descending order
         ranked_results.sort(key=lambda x: x['score'], reverse=True)
+        
+        print("\nFinal Ranking:")
+        print("=" * 50)
+        for i, result in enumerate(ranked_results, 1):
+            print(f"\nRank {i}:")
+            print(f"Example ID: {result['example'].get('id', 'unknown')}")
+            print(f"Final Score: {result['score']:.3f}")
+            print("Component Scores:")
+            for name, score in result['score_breakdown']['component_scores'].items():
+                print(f"- {name}: {score:.3f}")
+        
         return ranked_results
 
     def _calculate_text_similarity(self, list1, list2):
         """
-        Calculate similarity between two lists of text items using fuzzy matching.
+        Calculate similarity between two lists of text items using semantic matching.
         """
         if not list1 or not list2:
             return 0.0
+        
+        # Keywords that indicate mechanical/automotive relevance
+        mechanical_keywords = {
+            'circular', 'cylindrical', 'rotational', 'symmetric', 'concentric',
+            'wheel', 'rim', 'hub', 'spoke', 'bolt', 'mounting', 'automotive',
+            'vehicle', 'car', 'truck', 'axle', 'bearing'
+        }
         
         total_score = 0
         max_scores = []
         
         for item1 in list1:
             item_scores = []
+            item1_words = set(str(item1).lower().split())
+            
+            # Check for mechanical/automotive relevance
+            mechanical_relevance = len(item1_words.intersection(mechanical_keywords)) > 0
+            
             for item2 in list2:
-                ratio = fuzz.ratio(str(item1).lower(), str(item2).lower()) / 100.0
-                item_scores.append(ratio)
-            max_scores.append(max(item_scores))
+                item2_words = set(str(item2).lower().split())
+                
+                # Basic word overlap score
+                overlap_score = len(item1_words.intersection(item2_words)) / len(item1_words.union(item2_words))
+                
+                # Fuzzy match score
+                fuzzy_score = fuzz.ratio(str(item1).lower(), str(item2).lower()) / 100.0
+                
+                # Combined score with mechanical relevance bonus
+                combined_score = (overlap_score * 0.6 + fuzzy_score * 0.4)
+                if mechanical_relevance and len(item2_words.intersection(mechanical_keywords)) > 0:
+                    combined_score *= 1.5  # 50% bonus for mechanical matches
+                
+                item_scores.append(combined_score)
+            
+            if item_scores:
+                max_scores.append(max(item_scores))
         
         if max_scores:
             total_score = sum(max_scores) / len(max_scores)
         
-        return total_score
+        return min(total_score, 1.0)  # Cap at 1.0
 
     def _validate_metadata(self, metadata):
         """Validate the metadata structure."""
@@ -1336,4 +1533,301 @@ class EnhancedSCADKnowledgeBase:
         except Exception as e:
             print(f"Error getting example details: {str(e)}")
             traceback.print_exc()
+            return None
+
+    def perform_step_back(self, query, approved_keywords=None):
+        """Perform step-back analysis using pre-approved keywords if provided"""
+        try:
+            if not approved_keywords:
+                print("Error: No approved keywords provided")
+                return None
+            
+            # Perform step-back analysis with the focused description
+            print("\nPerforming technical analysis...")
+            step_back_prompt = STEP_BACK_PROMPT_TEMPLATE.format(
+                Object=approved_keywords.get('compound_type', '') or approved_keywords.get('core_type', ''),
+                Type=approved_keywords.get('core_type', ''),
+                Modifiers=', '.join(approved_keywords.get('modifiers', []))
+            )
+            
+            # Log the complete prompt for debugging
+            self.write_debug(
+                "\n=== STEP-BACK ANALYSIS PROMPT ===\n",
+                f"Query: {approved_keywords}\n",
+                f"Full Prompt Sent to LLM:\n{step_back_prompt}\n",
+                "=" * 50 + "\n"
+            )
+            
+            # Invoke LLM with the prompt
+            step_back_response = self.llm.invoke(step_back_prompt)
+            technical_analysis = step_back_response.content
+            
+            # Log the response
+            self.write_debug(
+                "\n=== STEP-BACK ANALYSIS RESPONSE ===\n",
+                f"Response:\n{technical_analysis}\n",
+                "=" * 50 + "\n"
+            )
+
+            # Parse step-back analysis
+            principles = []
+            abstractions = []
+            approach = []
+            
+            current_section = None
+            for line in technical_analysis.split('\n'):
+                line = line.strip()
+                if 'CORE PRINCIPLES:' in line:
+                    current_section = 'principles'
+                elif 'SHAPE COMPONENTS:' in line:
+                    current_section = 'abstractions'
+                elif 'IMPLEMENTATION STEPS:' in line:
+                    current_section = 'approach'
+                elif line and line[0] in ['-', '•', '*'] and current_section == 'principles':
+                    principles.append(line[1:].strip())
+                elif line and line[0] in ['-', '•', '*'] and current_section == 'abstractions':
+                    abstractions.append(line[1:].strip())
+                elif line and line[0].isdigit() and current_section == 'approach':
+                    approach.append(line[line.find('.')+1:].strip())
+
+            # Create the complete analysis result
+            analysis_result = {
+                'principles': principles,
+                'abstractions': abstractions,
+                'approach': approach,
+                'original_query': query,
+                'keyword_analysis': approved_keywords
+            }
+
+            # Display the complete analysis
+            print("\nStep-back Analysis Results:")
+            print("-" * 30)
+            print("Core Principles:")
+            for p in principles:
+                print(f"- {p}")
+            print("\nShape Components:")
+            for a in abstractions:
+                print(f"- {a}")
+            print("\nImplementation Steps:")
+            for i, s in enumerate(approach, 1):
+                print(f"{i}. {s}")
+            print("-" * 30)
+
+            return analysis_result
+
+        except Exception as e:
+            logger.error(f"Error in step-back analysis: {str(e)}")
+            logger.error(traceback.format_exc())
             return None 
+
+    def get_similar_examples(self, description: str, step_back_result: Dict = None, keyword_data: Dict = None, similarity_threshold: float = 0.7, return_metadata: bool = False) -> List[Dict]:
+        """
+        Get similar examples based on description, step-back analysis, and keyword data.
+        
+        Args:
+            description: The query description
+            step_back_result: Optional step-back analysis results containing complexity and style
+            keyword_data: Optional pre-extracted keyword data
+            similarity_threshold: Minimum similarity score required (default: 0.7)
+            return_metadata: Whether to return extracted metadata along with examples
+            
+        Returns:
+            If return_metadata is False: List of relevant examples with their similarity scores
+            If return_metadata is True: Tuple of (examples list, extracted metadata dict)
+        """
+        try:
+            print("\nRetrieving similar examples...")
+            
+            # Prepare filters from step-back analysis if available
+            filters = None
+            if step_back_result:
+                filters = {
+                    "complexity": step_back_result.get("complexity", None),
+                    "style": step_back_result.get("style", None)
+                }
+                # Remove None values
+                filters = {k: v for k, v in filters.items() if v is not None}
+            
+            # Get relevant examples
+            examples = self.get_relevant_examples(
+                description,
+                filters=filters,
+                keyword_data=keyword_data,
+                similarity_threshold=similarity_threshold,
+                step_back_result=step_back_result
+            )
+            
+            # Get the extracted metadata from the last query
+            query_metadata = {}
+            if keyword_data:
+                query_metadata = {
+                    'object_type': keyword_data.get('compound_type') or keyword_data.get('core_type', ''),
+                    'features': keyword_data.get('modifiers', []),
+                    'step_back_analysis': {
+                        'core_principles': step_back_result.get('principles', []),
+                        'shape_components': step_back_result.get('abstractions', []),
+                        'implementation_steps': step_back_result.get('approach', [])
+                    }
+                }
+            
+            if examples:
+                print(f"\nFound {len(examples)} similar examples")
+                for i, example in enumerate(examples, 1):
+                    print(f"\nExample {i} (Score: {example['score']:.3f}):")
+                    print(f"ID: {example['example']['id']}")
+                    print("Score Breakdown:")
+                    for name, score in example['score_breakdown']['component_scores'].items():
+                        print(f"  {name}: {score:.3f}")
+            else:
+                print("\nNo similar examples found")
+            
+            if return_metadata:
+                return examples, query_metadata
+            return examples
+            
+        except Exception as e:
+            print(f"Error getting similar examples: {str(e)}")
+            traceback.print_exc()
+            if return_metadata:
+                return [], {}
+            return []
+
+    def prepare_generation_inputs(self, description: str, examples: List[Dict], step_back_result: Dict = None) -> Dict:
+        """
+        Prepare inputs for the code generation prompt.
+        
+        Args:
+            description: The original query/description
+            examples: List of similar examples found
+            step_back_result: Optional step-back analysis results
+            
+        Returns:
+            Dictionary containing all inputs needed for the generation prompt
+        """
+        try:
+            # Format step-back analysis if available
+            step_back_text = ""
+            if step_back_result:
+                principles = step_back_result.get('principles', [])
+                abstractions = step_back_result.get('abstractions', [])
+                approach = step_back_result.get('approach', [])
+                
+                step_back_text = f"""
+                CORE PRINCIPLES:
+                {chr(10).join(f'- {p}' for p in principles)}
+                
+                SHAPE COMPONENTS:
+                {chr(10).join(f'- {a}' for a in abstractions)}
+                
+                IMPLEMENTATION STEPS:
+                {chr(10).join(f'{i+1}. {s}' for i, s in enumerate(approach))}
+                """
+            
+            # Format examples for logging
+            examples_text = []
+            for ex in examples:
+                example_id = ex.get('example', {}).get('id', 'unknown')
+                score = ex.get('score', 0.0)
+                score_breakdown = ex.get('score_breakdown', {})
+                
+                example_text = f"""
+                Example ID: {example_id}
+                Score: {score:.3f}
+                Component Scores:
+                {chr(10).join(f'  - {name}: {score:.3f}' for name, score in score_breakdown.get('component_scores', {}).items())}
+                """
+                examples_text.append(example_text)
+            
+            # Prepare the complete inputs
+            inputs = {
+                "basic_knowledge": BASIC_KNOWLEDGE,
+                "examples": examples,
+                "request": description,
+                "step_back_analysis": step_back_text.strip() if step_back_text else ""
+            }
+            
+            # Log the complete analysis and examples
+            """
+            print("\nStep-back Analysis:")
+            print(step_back_text.strip() if step_back_text else "No step-back analysis available")
+            """
+            
+            print("\nRetrieved Examples:")
+            if examples_text:
+                print("\n".join(examples_text))
+            else:
+                print("No examples found")
+            
+            return inputs
+            
+        except Exception as e:
+            print(f"Error preparing generation inputs: {str(e)}")
+            traceback.print_exc()
+            return {
+                "basic_knowledge": BASIC_KNOWLEDGE,
+                "examples": [],
+                "request": description,
+                "step_back_analysis": ""
+            } 
+
+    def get_all_examples(self) -> list:
+        """Get all examples from the knowledge base.
+        
+        Returns:
+            List of dictionaries containing example data with their metadata
+        """
+        try:
+            # Get all examples from ChromaDB
+            results = self.collection.get()
+            if not results or not results['ids']:
+                logger.debug("No examples found in knowledge base")
+                return []
+            
+            # Format the results
+            examples = []
+            for i in range(len(results['ids'])):
+                try:
+                    metadata = results['metadatas'][i]
+                    example = {
+                        'id': results['ids'][i],
+                        'description': results['documents'][i],
+                        'code': metadata.get('code', ''),
+                        'metadata': {
+                            'object_type': metadata.get('object_type', ''),
+                            'features': self._parse_json_field(metadata.get('features', '[]')),
+                            'timestamp': metadata.get('timestamp', ''),
+                            'type': metadata.get('type', ''),
+                            'user_accepted': metadata.get('user_accepted', True)
+                        }
+                    }
+                    
+                    # Add step-back analysis if available
+                    step_back = metadata.get('step_back_analysis')
+                    if step_back:
+                        example['metadata']['step_back_analysis'] = self._parse_json_field(step_back)
+                    
+                    examples.append(example)
+                except Exception as e:
+                    logger.error(f"Error processing example {results['ids'][i]}: {str(e)}")
+                    continue
+            
+            # Sort examples by timestamp (newest first)
+            examples.sort(key=lambda x: x['metadata']['timestamp'], reverse=True)
+            
+            logger.debug(f"Successfully retrieved {len(examples)} examples from knowledge base")
+            return examples
+            
+        except Exception as e:
+            logger.error(f"Error retrieving examples from knowledge base: {str(e)}")
+            return []
+    
+    def _parse_json_field(self, value):
+        """Helper method to safely parse JSON fields"""
+        if not value:
+            return []
+        if isinstance(value, (list, dict)):
+            return value
+        try:
+            return json.loads(value)
+        except json.JSONDecodeError:
+            return value if value else [] 

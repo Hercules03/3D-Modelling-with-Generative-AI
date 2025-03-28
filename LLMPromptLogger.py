@@ -39,7 +39,7 @@ class LLMPromptLogger:
         }
         
         self._append_to_json(self.metadata_file, entry)
-        print(f"Logged metadata extraction: {json.dumps(entry, indent=2)}")
+        print(f"Logged metadata extraction")
 
     def log_category_analysis(self, query: str, code: str, response: dict, timestamp: str = None):
         """Log category analysis prompt-response pair"""
