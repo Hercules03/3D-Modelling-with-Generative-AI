@@ -1,121 +1,218 @@
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: clear_logs
 Message: Logs cleared for new generation
 -------------------
 
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
 Message: Starting 3D Model Generator
 -------------------
 
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
-Message: Time: 2025-03-28T20:08:00.887832
+Message: Time: 2025-03-29T17:03:00.526817
 -------------------
 
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
 Message: Configuration:
 -------------------
 
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
 Message:   - Max Generation Attempts: 3
 -------------------
 
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
 Message:   - Similarity Threshold: 0.70
 -------------------
 
-2025-03-28 20:08:00,887 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
 Message:   - Output Directory: output
 -------------------
 
-2025-03-28 20:08:00,888 - __main__ - INFO
+2025-03-29 17:03:00,526 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-28 20:08:03,512 - __main__ - INFO
+2025-03-29 17:03:03,005 - __main__ - INFO
 Function: main
-Message: Starting knowledge base viewer
+Message: Initializing generator with provider: anthropic
 -------------------
 
-2025-03-28 20:09:11,900 - __main__ - INFO
+2025-03-29 17:03:03,005 - __main__ - DEBUG
+Function: update_stage
+Message: Stage Start: Initialization
+  Time: 2025-03-29T17:03:03.005841
+  Initial Message: Initializing generator
+-------------------
+
+2025-03-29 17:03:03,006 - __main__ - DEBUG
+Function: _calculate_total_progress
+Message: Progress Calculation:
+  Completed Weight: 0.5
+  Current Stage Weight: 0.1
+  Current Progress: 50.0%
+  Total Progress: 55.0%
+-------------------
+
+2025-03-29 17:03:03,006 - __main__ - DEBUG
+Function: update_stage
+Message: Progress Update:
+  Stage: Initialization
+  Stage Progress: 50.0%
+  Total Progress: 55.0%
+  Message: Initializing generator
+  Time: 2025-03-29T17:03:03.006116
+-------------------
+
+2025-03-29 17:03:03,006 - __main__ - DEBUG
+Function: _create_progress_bar
+Message: Progress Bar:
+  Progress: 55.0%
+  Width: 30
+  Filled: 16
+  Bar: ================--------------
+-------------------
+
+2025-03-29 17:03:09,564 - __main__ - DEBUG
+Function: _calculate_total_progress
+Message: Progress Calculation:
+  Completed Weight: 0.5
+  Current Stage Weight: 0.1
+  Current Progress: 100.0%
+  Total Progress: 60.0%
+-------------------
+
+2025-03-29 17:03:09,565 - __main__ - DEBUG
+Function: update_stage
+Message: Progress Update:
+  Stage: Initialization
+  Stage Progress: 100.0%
+  Total Progress: 60.0%
+  Message: Generator initialized
+  Time: 2025-03-29T17:03:09.565008
+-------------------
+
+2025-03-29 17:03:09,565 - __main__ - DEBUG
+Function: _create_progress_bar
+Message: Progress Bar:
+  Progress: 60.0%
+  Width: 30
+  Filled: 18
+  Bar: ==================------------
+-------------------
+
+2025-03-29 17:03:15,140 - __main__ - INFO
 Function: main
-Message: Knowledge base viewing completed
+Message: Generating model for: I want a camera
 -------------------
 
-2025-03-28 20:09:14,461 - __main__ - INFO
-Function: main
-Message: Starting knowledge deletion
+2025-03-29 17:03:15,141 - __main__ - DEBUG
+Function: update_stage
+Message: Stage Complete: Initialization
+  Duration: 12.14s
+  Final Progress: 100.0%
 -------------------
 
-2025-03-28 20:09:14,461 - __main__ - INFO
-Function: delete_knowledge
-Message: Starting knowledge deletion
+2025-03-29 17:03:15,142 - __main__ - DEBUG
+Function: update_stage
+Message: Stage Start: Code Generation
+  Time: 2025-03-29T17:03:15.142051
+  Initial Message: Generation attempt 1
 -------------------
 
-2025-03-28 20:09:14,461 - __main__ - DEBUG
-Function: delete_knowledge
-Message: Initializing knowledge base for deletion
+2025-03-29 17:03:15,142 - __main__ - DEBUG
+Function: _calculate_total_progress
+Message: Progress Calculation:
+  Completed Weight: 0
+  Current Stage Weight: 0.3
+  Current Progress: 0.0%
+  Total Progress: 0.0%
 -------------------
 
-2025-03-28 20:10:46,307 - __main__ - INFO
-Function: delete_knowledge
-Message: Deleted example human_lets_1
+2025-03-29 17:03:15,142 - __main__ - DEBUG
+Function: update_stage
+Message: Progress Update:
+  Stage: Code Generation
+  Stage Progress: 0.0%
+  Total Progress: 0.0%
+  Message: Generation attempt 1
+  Time: 2025-03-29T17:03:15.142530
 -------------------
 
-2025-03-28 20:10:54,695 - __main__ - INFO
-Function: delete_knowledge
-Message: Deleted example human_lets_2
+2025-03-29 17:03:15,142 - __main__ - DEBUG
+Function: _create_progress_bar
+Message: Progress Bar:
+  Progress: 0.0%
+  Width: 30
+  Filled: 0
+  Bar: ------------------------------
 -------------------
 
-2025-03-28 20:11:39,544 - __main__ - INFO
-Function: delete_knowledge
-Message: User exited deletion mode
+2025-03-29 17:07:16,007 - __main__ - DEBUG
+Function: _calculate_total_progress
+Message: Progress Calculation:
+  Completed Weight: 0
+  Current Stage Weight: 0.3
+  Current Progress: 100.0%
+  Total Progress: 30.0%
 -------------------
 
-2025-03-28 20:11:39,552 - __main__ - INFO
-Function: main
-Message: Knowledge deletion result: Success
+2025-03-29 17:07:16,012 - __main__ - DEBUG
+Function: update_stage
+Message: Progress Update:
+  Stage: Code Generation
+  Stage Progress: 100.0%
+  Total Progress: 30.0%
+  Message: Generation complete
+  Time: 2025-03-29T17:07:16.012520
 -------------------
 
-2025-03-28 20:11:43,976 - __main__ - INFO
-Function: main
-Message: Starting knowledge base viewer
+2025-03-29 17:07:16,013 - __main__ - DEBUG
+Function: _create_progress_bar
+Message: Progress Bar:
+  Progress: 30.0%
+  Width: 30
+  Filled: 9
+  Bar: =========---------------------
 -------------------
 
-2025-03-28 20:12:55,161 - __main__ - INFO
-Function: main
-Message: Knowledge base viewing completed
--------------------
-
-2025-03-28 20:12:57,576 - __main__ - INFO
+2025-03-29 17:07:16,013 - __main__ - INFO
 Function: main
 Message: 
-Session Summary:
+Generation Summary:
 -------------------
 
-2025-03-28 20:12:57,576 - __main__ - INFO
+2025-03-29 17:07:16,013 - __main__ - INFO
 Function: main
-Message: Stage Duration Summary:
+Message:   Description: I want a camera
 -------------------
 
-2025-03-28 20:12:57,577 - __main__ - INFO
+2025-03-29 17:07:16,014 - __main__ - INFO
 Function: main
-Message: Session ended at: 2025-03-28T20:12:57.577082
+Message:   Provider: anthropic
 -------------------
 
-2025-03-28 20:12:57,577 - __main__ - INFO
+2025-03-29 17:07:16,014 - __main__ - INFO
 Function: main
-Message: ==================================================
+Message:   Attempts: 1
+-------------------
+
+2025-03-29 17:07:16,034 - __main__ - INFO
+Function: main
+Message:   Stage Summary:
+Stage Duration Summary:
+  Initialization: 12.14s
+
+Total Duration: 12.14s
 -------------------
 

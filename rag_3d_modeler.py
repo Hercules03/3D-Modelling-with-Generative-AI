@@ -13,6 +13,9 @@ import traceback
 import datetime
 import time
 
+# Import ModelDefinitions first since other modules depend on it
+from llm_management import ModelDefinitions
+
 from myAPI import *
 from langchain_community.vectorstores import Chroma
 from openpyscad import *
@@ -20,7 +23,6 @@ from constant import *
 from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
 from conversation_logger import ConversationLogger
 from OpenSCAD_Generator import OpenSCADGenerator
-from LLMmodel import *
 from llm_prompt_logger import LLMPromptLogger
 from prompts import STEP_BACK_PROMPT_TEMPLATE
 
@@ -74,10 +76,10 @@ class ModelGeneratorConfig:
     def __init__(self):
         self.quit_words = ['quit', 'exit', 'bye', 'q']
         self.llm_providers = {
-            "1": {"name": "anthropic", "model": anthropic_model},
-            "2": {"name": "openai", "model": openai_model},
-            "3": {"name": "gemma", "model": gemma_model},
-            "4": {"name": "deepseek", "model": deepseek_model}
+            "1": {"name": "anthropic", "model": ModelDefinitions.ANTHROPIC},
+            "2": {"name": "openai", "model": ModelDefinitions.OPENAI},
+            "3": {"name": "gemma", "model": ModelDefinitions.GEMMA},
+            "4": {"name": "deepseek", "model": ModelDefinitions.DEEPSEEK}
         }
         self.settings = GenerationSettings()
         self.output_dir = Path("output")
@@ -252,9 +254,9 @@ class OllamaManager:
                 return False
                 
             model_name = {
-                "gemma": gemma_model,
-                "deepseek": deepseek_model
-            }.get(llm_provider, gemma_model)
+                "gemma": ModelDefinitions.GEMMA,
+                "deepseek": ModelDefinitions.DEEPSEEK
+            }.get(llm_provider, ModelDefinitions.GEMMA)
             
             model_list = json.loads(response.stdout)
             if not any(model['name'] == model_name for model in model_list['models']):

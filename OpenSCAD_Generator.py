@@ -1,12 +1,11 @@
 from prompts import OPENSCAD_GNERATOR_PROMPT_TEMPLATE, STEP_BACK_PROMPT_TEMPLATE, BASIC_KNOWLEDGE
 from constant import *
 from KeywordExtractor import KeywordExtractor
-from LLM import LLMProvider
+from llm_management import LLMProvider
 from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
 from langchain.prompts import ChatPromptTemplate
 import datetime
 from conversation_logger import ConversationLogger
-from LLMmodel import *
 from typing import Optional
 
 

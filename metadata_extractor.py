@@ -1,9 +1,8 @@
-from LLM import LLMProvider
+from llm_management import LLMProvider, ModelDefinitions
 import json
 from datetime import datetime
 from prompts import METADATA_EXTRACTION_PROMPT, KEYWORD_EXTRACTOR_PROMPT, CATEGORY_ANALYSIS_PROMPT
 from conversation_logger import ConversationLogger
-from LLMmodel import keyword_extractor_model
 from LLMPromptLogger import LLMPromptLogger
 from constant import BASIC_KNOWLEDGE
 
@@ -16,7 +15,7 @@ class MetadataExtractor:
         self.llm = LLMProvider.get_llm(
             provider="gemma",
             temperature=0.7,
-            model="gemma3:4b-it-q8_0"  # Explicitly use 4b model for main extraction
+            model=ModelDefinitions.GEMMA  # Explicitly use 4b model for main extraction
         )
         print("- Main LLM provider initialized")
         
@@ -57,7 +56,7 @@ class MetadataExtractor:
                     "query": {
                         "input": description,
                         "timestamp": timestamp,
-                        "model": keyword_extractor_model  # Track which model was used
+                        "model": ModelDefinitions.KEYWORD_EXTRACTOR  # Updated to use ModelDefinitions
                     },
                     "response": {
                         "core_type": keyword_data.get("core_type", ""),
@@ -84,7 +83,7 @@ class MetadataExtractor:
                     "query": {
                         "input": description,
                         "timestamp": timestamp,
-                        "model": keyword_extractor_model  # Track which model was used
+                        "model": ModelDefinitions.KEYWORD_EXTRACTOR  # Updated to use ModelDefinitions
                     },
                     "response": {
                         "raw_content": keyword_data

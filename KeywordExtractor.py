@@ -1,7 +1,7 @@
 from langchain_ollama import ChatOllama
 from langchain.prompts import ChatPromptTemplate
 from prompts import KEYWORD_EXTRACTOR_SYSTEM_PROMPT, KEYWORD_EXTRACTOR_PROMPT
-from LLMmodel import keyword_extractor_model
+from llm_management import ModelDefinitions
 import json
 
 class KeywordExtractor:
@@ -25,7 +25,7 @@ class KeywordExtractor:
         """Initialize LLM only when needed"""
         if self.llm is None:
             self.llm = ChatOllama(
-                model=keyword_extractor_model,
+                model=ModelDefinitions.KEYWORD_EXTRACTOR,
                 temperature=0.0,  # Use 0 temperature for consistent results
                 base_url="http://localhost:11434",
                 system=KEYWORD_EXTRACTOR_SYSTEM_PROMPT

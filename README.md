@@ -1,82 +1,67 @@
 # 3D Modelling with Generative AI
 
-A Python-based tool that uses various Large Language Models (LLMs) to generate OpenSCAD code for 3D models based on text descriptions. The system employs intelligent example validation, ChromaDB-powered semantic search, and maintains a curated knowledge base to improve generation quality.
+An intelligent Python-based system that leverages Large Language Models (LLMs) to generate OpenSCAD code for 3D models based on textual descriptions. The system employs Retrieval-Augmented Generation (RAG), semantic vector search, step-back analysis, and a comprehensive knowledge base to create high-quality 3D models.
 
-## Features
+## Key Features
 
-- **Multiple LLM Provider Support**:
-  - Anthropic (Claude-3-Sonnet)
-  - OpenAI (O1-Mini)
-  - Gemma (via Ollama)
-  - DeepSeek (via Ollama)
+### Multi-Provider LLM Support
+- **Anthropic Claude-3-Sonnet**: Primary model for high-quality generation
+- **OpenAI O1-Mini**: Alternative provider with optimized performance
+- **Ollama Integration**: Local models support through Gemma and DeepSeek
 
-- **Enhanced Knowledge Base with ChromaDB**:
-  - Vector-based semantic search for better example matching
-  - Persistent storage of examples with automatic deduplication
-  - Multi-factor ranking system combining:
-    - Semantic similarity (25%)
-    - Step-back analysis matching (25%)
-    - Component matching (25%)
-    - Metadata matching (15%)
-    - Complexity scoring (10%)
-  - Configurable similarity thresholds
-  - Efficient incremental updates
+### Intelligent Generation Process
+- **Step-Back Analysis**: Deep technical analysis of requirements before generation
+- **Component-Based Understanding**: Breaks down objects into fundamental components
+- **Keyword Extraction**: Automated identification of core object types and modifiers
+- **Multi-Stage Validation**: User confirmation at critical steps in the workflow
 
-- **Smart Example Management**:
-  - Advanced component-based filtering
-  - Sophisticated complexity scoring system
-  - Automatic metadata extraction
-  - Clear validation feedback in debug logs
+### Vector-Based Knowledge Management
+- **ChromaDB Integration**: Semantic search for finding relevant example models
+- **Auto-Deduplication**: Smart detection and handling of duplicate examples
+- **Progressive Learning**: System improves with each successful generation
+- **Intelligent Example Selection**: Weighted matching based on multiple factors
 
-- **Category and Property System**:
-  - Hierarchical categorization of objects
-  - Standardized properties for filtering
-  - Multi-level category matching
-  - Property-based refinement
-  - Similar object suggestions
+### Smart Ranking System
+- **Multi-Factor Scoring**: Combines multiple metrics to find the most relevant examples
+  - Semantic similarity (25%)
+  - Step-back analysis matching (25%)
+  - Component matching (25%)
+  - Metadata matching (15%)
+  - Complexity scoring (10%)
+- **Code Complexity Analysis**: Evaluates nesting levels, operations used, and more
+- **Geometric Property Matching**: Matches models based on spatial characteristics
 
-- **Step-Back Analysis Integration**:
-  - Structured parsing of technical requirements
-  - Core principles extraction
-  - Shape component analysis
-  - Implementation step planning
-  - Enhanced example matching
-
-- **Debugging Support**:
-  - Comprehensive debug logs in `debug.txt`
-  - Detailed similarity score breakdowns
-  - Component matching analysis
-  - Complexity score calculations
-  - Tracks API interactions and validation decisions
-
-## Prerequisites
-
-1. Python 3.x
-2. OpenSCAD installed on your system
-3. API keys for Anthropic and/or OpenAI (if using those providers)
-4. Ollama installed (required for example validation and optional LLM providers)
+### Comprehensive Debugging
+- **Detailed Logging**: Extensive debug logs in multiple formats
+- **Similarity Score Breakdowns**: Complete analysis of example matching
+- **API Interaction Tracking**: Records communication with LLM providers
+- **Validation Decision Tracking**: Documents the quality assessment process
 
 ## Installation
 
-1. Clone the repository:
+1. **Clone the repository**:
 ```bash
-git clone https://github.com/yourusername/3D-Modelling-with-Generative-AI.git
+git clone https://github.com/Hercules03/3D-Modelling-with-Generative-AI.git
 cd 3D-Modelling-with-Generative-AI
 ```
 
-2. Install required packages:
+2. **Install dependencies**:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up environment variables:
-```bash
-export ANTHROPIC_API_KEY=your_anthropic_key
-export OPENAI_API_KEY=your_openai_key
+3. **Set up API keys**:
+Create a `.env` file in the project root with your API keys:
+```
+ANTHROPIC_API_KEY=your_anthropic_key
+OPENAI_API_KEY=your_openai_key
 ```
 
-4. Install Ollama and required models:
+4. **Install Ollama and required models** (for example validation and optional providers):
 ```bash
+# Install Ollama from https://ollama.ai/
+# Then pull required models:
+
 # Required for example validation
 ollama pull gemma3:1b
 
@@ -87,26 +72,31 @@ ollama pull deepseek-r1:7b
 
 ## Usage
 
-Run the main script:
+Run the main application:
 ```bash
 python rag_3d_modeler.py
 ```
 
-### Options:
-1. Generate a 3D object
-2. Input knowledge manually
-3. Delete knowledge
-4. Quit
+### Workflow
 
-When generating a 3D object:
-1. Select your preferred LLM provider
-2. Enter your object description
-3. System retrieves and validates relevant examples
-4. Review the generated OpenSCAD code
-5. Optionally save successful generations to the knowledge base
+1. **Generate a 3D object**:
+   - Select your preferred LLM provider
+   - Describe the object you want to model
+   - Review and approve keyword extraction
+   - Confirm step-back technical analysis
+   - System retrieves and ranks relevant examples
+   - Review the generated OpenSCAD code
+   - Optionally save to knowledge base
 
-### Example:
-```bash
+2. **Knowledge Management**:
+   - Add examples manually
+   - Delete outdated examples
+   - Browse the knowledge base
+   - Filter by categories, complexity, and features
+
+### Example Session
+
+```
 $ python rag_3d_modeler.py
 Welcome to the 3D Model Generator!
 
@@ -114,9 +104,10 @@ Select an option:
 1. Generate a 3D object
 2. Input knowledge manually
 3. Delete knowledge
-4. Quit
+4. View knowledge base
+5. Quit
 
-Enter your choice (1-4): 1
+Enter your choice (1-5): 1
 
 Available LLM Providers:
 1. Anthropic (Claude-3-Sonnet)
@@ -126,93 +117,132 @@ Available LLM Providers:
 
 Select LLM provider (1-4, default is 1): 1
 
-What would you like to model? A simple chair
+What would you like to model? A coffee mug with a hexagonal pattern and a curved handle
 
-Retrieving knowledge from SCAD knowledge base...
-Searching for examples related to: chair
+=== STEP 1: KEYWORD EXTRACTION ===
+Analyzing description...
 
-Validating usefulness of 3 examples using Gemma3 1B...
-[Example validation details will be shown here]
+Keyword Analysis Results:
+------------------------------
+Core Type: mug
+Modifiers: [coffee, hexagonal, pattern, curved, handle]
+Compound Type: coffee mug
+------------------------------
+
+Do you accept these keywords? (yes/no): yes
+
+=== STEP 2: TECHNICAL ANALYSIS ===
+Performing step-back analysis...
+
+Core Principles:
+- Cylindrical container with appropriate dimensions for fluid containment
+- Ergonomic handle design with curved form for comfortable grip
+- Hexagonal tessellation pattern as a decorative and structural element
+- Balance between aesthetics and functional usability
+
+Shape Components:
+- Cylindrical body with hollow interior
+- Curved handle with attachment points
+- Hexagonal pattern on exterior surface
+- Solid base for stability
+
+Implementation Steps:
+1. Create cylindrical container with appropriate dimensions
+2. Design curved handle and position it relative to the mug body
+3. Generate hexagonal pattern and apply it to the mug's exterior
+4. Add finishing details like base reinforcement and rim
+5. Combine all elements with proper boolean operations
+
+Do you accept this technical analysis? (yes/no): yes
+
+=== STEP 3: FINDING SIMILAR EXAMPLES ===
+Searching knowledge base...
+
+Found 2 relevant examples (threshold: 0.7):
+
+Example (Score: 0.87):
+ID: container_a4f7e9b2
+Score Breakdown:
+  component_match: 0.92
+  step_back_match: 0.88
+  geometric_match: 0.85
+  feature_match: 0.81
+
+Example (Score: 0.76):
+ID: mug_f3e1c8b7
+Score Breakdown:
+  component_match: 0.79
+  step_back_match: 0.74
+  geometric_match: 0.82
+  feature_match: 0.71
+
+=== STEP 4: GENERATING SCAD CODE ===
+Generating OpenSCAD code...
+Thinking.....................
+
+OpenSCAD code has been generated and saved to 'output.scad'
+
+Generated Code:
+----------------------------------------
+// Coffee Mug with Hexagonal Pattern and Curved Handle
+// Author: Generated by 3D Modelling with Generative AI
+
+// Parameters
+$fn = 100; // Smoothness
+mug_height = 95; // Height of mug
+mug_radius = 40; // Radius of mug
+wall_thickness = 3; // Thickness of the mug wall
+handle_thickness = 7; // Thickness of the handle
+...
+----------------------------------------
+
+Would you like to add this example to the knowledge base? (y/n): y
+Example added to knowledge base!
 ```
 
 ## Project Structure
 
-- `rag_3d_modeler.py`: Main application file
-- `enhanced_scad_knowledge_base.py`: Enhanced knowledge base with ChromaDB integration
+- `rag_3d_modeler.py`: Main application interface
 - `OpenSCAD_Generator.py`: Core generation logic
+- `enhanced_scad_knowledge_base.py`: Vector-based knowledge management
 - `LLM.py`: LLM provider management
-- `ExampleValidator.py`: Intelligent example validation
+- `KeywordExtractor.py`: Extracts core concepts from descriptions
+- `metadata_extractor.py`: Analyzes models for metadata
+- `conversation_logger.py`: Tracks interactions for future improvement
 - `prompts.py`: System prompts and templates
 - `constant.py`: System constants and configurations
 
-## Advanced Features
+## Example Output Renders
 
-### Complexity Scoring
-The system uses a sophisticated scoring mechanism that evaluates:
-- Code structure (70%):
-  - Operations and functions
-  - Nesting levels
-  - Variables and modules
-  - Geometric operations
-- Metadata attributes (30%):
-  - Declared complexity level
-  - Printability assessment
-  - Support requirements
+![Example 1](https://i.imgur.com/example1.png)
+![Example 2](https://i.imgur.com/example2.png)
 
-### Component-Based Filtering
-Implements intelligent component matching:
-- Extracts components from queries and examples
-- Analyzes geometric primitives and operations
-- Matches based on technical requirements
-- Provides detailed component compatibility scores
+## Requirements
 
-### Result Ranking
-Multi-factor ranking system combining:
-- Base semantic similarity
-- Step-back analysis matching
-- Component compatibility
-- Metadata alignment
-- Complexity appropriateness
-
-## Debug Information
-
-The system now provides enhanced debugging information including:
-- Similarity score breakdowns
-- Component matching details
-- Complexity calculations
-- Step-back analysis results
-- ChromaDB query analytics
-
-### Example Debug Output
-```
-=== SEARCH RESULTS ANALYSIS ===
-Query: "Complex coffee mug with decorative handle"
---------------------------------------------------
-Top Match Scores:
-- Final Score: 0.85
-  - Semantic Similarity: 0.92
-  - Step-back Match: 0.88
-  - Component Match: 0.85
-  - Metadata Match: 0.78
-  - Complexity Score: 0.70
---------------------------------------------------
-Component Analysis:
-- Required: ['cylinder', 'handle', 'boolean_ops']
-- Found: ['cylinder', 'handle', 'difference']
-- Match Rate: 100%
-==================================================
-```
+- Python 3.8+
+- OpenSCAD installed for rendering models
+- API keys for Anthropic and/or OpenAI (optional)
+- Ollama installed (for example validation and local models)
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit pull requests.
+Contributions are welcome! Please feel free to submit pull requests or open issues for bugs, feature requests, or improvements.
+
+### Areas for Future Development
+
+- Integration with 3D printing services
+- Advanced visualization capabilities
+- Expanded material property support
+- UI/UX improvements
+- Enhanced version control for models
 
 ## License
 
-[Your chosen license]
+[MIT License](LICENSE)
 
 ## Acknowledgments
 
 - OpenSCAD community
-- LLM providers (Anthropic, OpenAI, Google, DeepSeek)
-- Ollama project
+- Anthropic and OpenAI for their LLM APIs
+- Ollama project for local model support
+- The ChromaDB team for their vector database implementation

@@ -7,7 +7,7 @@ from KeywordExtractor import KeywordExtractor
 from conversation_logger import ConversationLogger
 from datetime import datetime
 from prompts import KEYWORD_EXTRACTOR_PROMPT, CATEGORY_ANALYSIS_PROMPT, STEP_BACK_PROMPT_TEMPLATE
-from LLM import LLMProvider
+from llm_management import LLMProvider
 from metadata_extractor import MetadataExtractor
 import re
 import hashlib

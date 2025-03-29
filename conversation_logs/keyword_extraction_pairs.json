@@ -921,5 +921,23 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "I want a camera",
+      "timestamp": "2025-03-29T17:03:28.205058"
+    },
+    "response": {
+      "core_type": "camera",
+      "modifiers": [
+        "camera"
+      ],
+      "compound_type": "camera"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]

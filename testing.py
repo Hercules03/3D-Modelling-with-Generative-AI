@@ -1,6 +1,7 @@
 from langchain_openai import ChatOpenAI
 from langchain_community.chat_models import ChatOllama
 from langchain.schema.messages import HumanMessage
+from llm_management import ModelDefinitions
 from myAPI import *
 
 
@@ -14,7 +15,7 @@ def test_claude():
     try:
         # Initialize ChatOpenAI for Claude
         chat = ChatOpenAI(
-            model="claude-3-5-sonnet-20240620",
+            model=ModelDefinitions.ANTHROPIC,
             temperature=0.7,
             openai_api_key=api_key,
             base_url=testing_base_url
