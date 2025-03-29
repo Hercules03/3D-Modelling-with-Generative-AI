@@ -683,37 +683,14 @@ class EnhancedSCADKnowledgeBase:
     def _extract_metadata(self, description: str, code: str = "") -> Dict:
         """Extract metadata from description and code"""
         try:
-            # First get keyword data
-            keyword_data = self.keyword_extractor.extract_keyword(description)
-            
             # Get metadata from extractor
-            metadata = self.metadata_extractor.extract_metadata(description, code)
+            metadata = self.metadata_extractor.extract_metadata(
+                description=description,
+                code=code
+            )
+            
             if not metadata:
                 logger.error("Failed to extract metadata")
-                return None
-            
-            # Add keyword data to metadata
-            metadata['object_type'] = keyword_data.get('compound_type') or keyword_data.get('core_type', '')
-            metadata['features'] = metadata.get('features', []) + keyword_data.get('modifiers', [])
-            
-            # Ensure required fields exist with default values if missing
-            metadata.setdefault('materials', [])
-            metadata.setdefault('dimensions', {})
-            metadata.setdefault('use_case', [])
-            metadata.setdefault('geometric_properties', [])
-            metadata.setdefault('technical_requirements', [])
-            
-            # Ensure step-back analysis exists
-            if 'step_back_analysis' not in metadata:
-                metadata['step_back_analysis'] = {
-                    'principles': [],
-                    'abstractions': [],
-                    'approach': []
-                }
-            
-            # Validate metadata
-            if not self._validate_metadata(metadata):
-                logger.error("Invalid metadata structure")
                 return None
             
             return metadata
@@ -810,164 +787,6 @@ class EnhancedSCADKnowledgeBase:
                 "similar_objects": []
             }
     
-    def _analyze_code_metadata(self, code: str) -> dict:
-        """Analyze OpenSCAD code to extract additional metadata"""
-        metadata = {}
-        
-        try:
-            # Calculate complexity score
-            complexity_score = self._calculate_complexity_score(code, {})
-            if complexity_score < 30:
-                metadata["complexity"] = "SIMPLE"
-            elif complexity_score < 70:
-                metadata["complexity"] = "MEDIUM"
-            else:
-                metadata["complexity"] = "COMPLEX"
-            
-            # Analyze components
-            components = self._analyze_components(code)
-            metadata["components"] = components
-            
-            # Extract geometric properties
-            geometric_props = []
-            if any(c["name"] == "sphere" for c in components):
-                geometric_props.append("spherical")
-            if any(c["name"] == "cube" for c in components):
-                geometric_props.append("angular")
-            if any(c["name"] == "cylinder" for c in components):
-                geometric_props.append("cylindrical")
-            if any(c["type"] == "boolean" for c in components):
-                geometric_props.append("compound")
-            metadata["geometric_properties"] = geometric_props
-            
-            # Analyze technical requirements
-            tech_reqs = []
-            if len([c for c in components if c["type"] == "boolean"]) > 2:
-                tech_reqs.append("complex_boolean_operations")
-            if len([c for c in components if c["type"] == "transformation"]) > 3:
-                tech_reqs.append("multiple_transformations")
-            if any(c["type"] == "module" for c in components):
-                tech_reqs.append("modular_design")
-            metadata["technical_requirements"] = tech_reqs
-            
-        except Exception as e:
-            print(f"Error analyzing code metadata: {str(e)}")
-        
-        return metadata 
-
-    def _calculate_complexity_score(self, code, metadata):
-        """Calculate complexity score based on code analysis and metadata"""
-        score = 0
-        
-        # Code-based complexity factors
-        try:
-            # Count number of operations/functions
-            operations = len([line for line in code.split('\n') 
-                            if any(op in line.lower() for op in ['union', 'difference', 'intersection', 'translate', 'rotate', 'scale'])])
-            score += min(operations * 2, 30)  # Max 30 points for operations
-            
-            # Count nested levels
-            max_nesting = 0
-            current_nesting = 0
-            for line in code.split('\n'):
-                if '{' in line:
-                    current_nesting += 1
-                    max_nesting = max(max_nesting, current_nesting)
-                if '}' in line:
-                    current_nesting -= 1
-            score += min(max_nesting * 5, 20)  # Max 20 points for nesting
-            
-            # Count variables and modules
-            variables = len([line for line in code.split('\n') if '=' in line and not line.strip().startswith('//')])
-            modules = len([line for line in code.split('\n') if 'module' in line])
-            score += min((variables + modules) * 2, 20)  # Max 20 points for variables/modules
-            
-            # Analyze geometric complexity
-            geometric_ops = len([line for line in code.split('\n') 
-                               if any(shape in line.lower() for shape in ['sphere', 'cube', 'cylinder', 'polyhedron'])])
-            score += min(geometric_ops * 3, 15)  # Max 15 points for geometric operations
-            
-        except Exception as e:
-            print(f"Error calculating code complexity: {str(e)}")
-        
-        # Metadata-based complexity factors
-        try:
-            # Consider declared complexity
-            if metadata.get('properties_complexity') == 'intricate':
-                score += 15
-            elif metadata.get('properties_complexity') == 'complex':
-                score += 10
-            elif metadata.get('properties_complexity') == 'moderate':
-                score += 5
-            
-            # Consider printability
-            if metadata.get('properties_printability') == 'challenging':
-                score += 10
-            elif metadata.get('properties_printability') == 'requires_support':
-                score += 5
-            
-            # Consider support needed
-            if metadata.get('properties_support_needed') == 'extensive':
-                score += 10
-            elif metadata.get('properties_support_needed') == 'moderate':
-                score += 5
-            
-        except Exception as e:
-            print(f"Error calculating metadata complexity: {str(e)}")
-        
-        # Normalize score to 0-100 range
-        normalized_score = min(max(score, 0), 100)
-        return normalized_score
-
-    def _analyze_components(self, code):
-        """Analyze and extract components from SCAD code"""
-        components = []
-        try:
-            # Extract modules (reusable components)
-            module_pattern = r'module\s+(\w+)\s*\([^)]*\)\s*{'
-            modules = re.findall(module_pattern, code)
-            for module in modules:
-                components.append({
-                    'type': 'module',
-                    'name': module,
-                    'reusable': True
-                })
-            
-            # Extract main geometric shapes
-            shape_pattern = r'(sphere|cube|cylinder|polyhedron)\s*\('
-            shapes = re.findall(shape_pattern, code)
-            for shape in shapes:
-                components.append({
-                    'type': 'primitive',
-                    'name': shape,
-                    'reusable': False
-                })
-            
-            # Extract transformations
-            transform_pattern = r'(translate|rotate|scale|mirror)\s*\('
-            transformations = re.findall(transform_pattern, code)
-            for transform in transformations:
-                components.append({
-                    'type': 'transformation',
-                    'name': transform,
-                    'reusable': False
-                })
-            
-            # Extract boolean operations
-            bool_pattern = r'(union|difference|intersection)\s*\('
-            booleans = re.findall(bool_pattern, code)
-            for boolean in booleans:
-                components.append({
-                    'type': 'boolean',
-                    'name': boolean,
-                    'reusable': False
-                })
-            
-        except Exception as e:
-            print(f"Error analyzing components: {str(e)}")
-        
-        return components
-
     def _rank_results(self, query_metadata, results):
         """
         Rank and filter search results based on metadata similarity.
