@@ -3,7 +3,7 @@ import json
 from datetime import datetime
 from prompts import METADATA_EXTRACTION_PROMPT, KEYWORD_EXTRACTOR_PROMPT, CATEGORY_ANALYSIS_PROMPT
 from conversation_logger import ConversationLogger
-from LLMPromptLogger import LLMPromptLogger
+from llm_prompt_logger import LLMPromptLogger
 from constant import BASIC_KNOWLEDGE
 
 class MetadataExtractor:

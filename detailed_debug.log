@@ -1,61 +1,61 @@
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: clear_logs
 Message: Logs cleared for new generation
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
 Message: Starting 3D Model Generator
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
-Message: Time: 2025-03-29T17:03:00.526817
+Message: Time: 2025-03-29T17:11:57.177561
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
 Message: Configuration:
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
 Message:   - Max Generation Attempts: 3
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
 Message:   - Similarity Threshold: 0.70
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
 Message:   - Output Directory: output
 -------------------
 
-2025-03-29 17:03:00,526 - __main__ - INFO
+2025-03-29 17:11:57,177 - __main__ - INFO
 Function: main
 Message: ==================================================
 -------------------
 
-2025-03-29 17:03:03,005 - __main__ - INFO
+2025-03-29 17:12:00,280 - __main__ - INFO
 Function: main
 Message: Initializing generator with provider: anthropic
 -------------------
 
-2025-03-29 17:03:03,005 - __main__ - DEBUG
+2025-03-29 17:12:00,281 - __main__ - DEBUG
 Function: update_stage
 Message: Stage Start: Initialization
-  Time: 2025-03-29T17:03:03.005841
+  Time: 2025-03-29T17:12:00.281521
   Initial Message: Initializing generator
 -------------------
 
-2025-03-29 17:03:03,006 - __main__ - DEBUG
+2025-03-29 17:12:00,281 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0.5
@@ -64,17 +64,17 @@ Message: Progress Calculation:
   Total Progress: 55.0%
 -------------------
 
-2025-03-29 17:03:03,006 - __main__ - DEBUG
+2025-03-29 17:12:00,281 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Initialization
   Stage Progress: 50.0%
   Total Progress: 55.0%
   Message: Initializing generator
-  Time: 2025-03-29T17:03:03.006116
+  Time: 2025-03-29T17:12:00.281947
 -------------------
 
-2025-03-29 17:03:03,006 - __main__ - DEBUG
+2025-03-29 17:12:00,282 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 55.0%
@@ -83,7 +83,7 @@ Message: Progress Bar:
   Bar: ================--------------
 -------------------
 
-2025-03-29 17:03:09,564 - __main__ - DEBUG
+2025-03-29 17:12:06,750 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0.5
@@ -92,17 +92,17 @@ Message: Progress Calculation:
   Total Progress: 60.0%
 -------------------
 
-2025-03-29 17:03:09,565 - __main__ - DEBUG
+2025-03-29 17:12:06,750 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Initialization
   Stage Progress: 100.0%
   Total Progress: 60.0%
   Message: Generator initialized
-  Time: 2025-03-29T17:03:09.565008
+  Time: 2025-03-29T17:12:06.750402
 -------------------
 
-2025-03-29 17:03:09,565 - __main__ - DEBUG
+2025-03-29 17:12:06,750 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 60.0%
@@ -111,26 +111,26 @@ Message: Progress Bar:
   Bar: ==================------------
 -------------------
 
-2025-03-29 17:03:15,140 - __main__ - INFO
+2025-03-29 17:12:15,105 - __main__ - INFO
 Function: main
-Message: Generating model for: I want a camera
+Message: Generating model for: I want a lunch box
 -------------------
 
-2025-03-29 17:03:15,141 - __main__ - DEBUG
+2025-03-29 17:12:15,106 - __main__ - DEBUG
 Function: update_stage
 Message: Stage Complete: Initialization
-  Duration: 12.14s
+  Duration: 14.82s
   Final Progress: 100.0%
 -------------------
 
-2025-03-29 17:03:15,142 - __main__ - DEBUG
+2025-03-29 17:12:15,106 - __main__ - DEBUG
 Function: update_stage
 Message: Stage Start: Code Generation
-  Time: 2025-03-29T17:03:15.142051
+  Time: 2025-03-29T17:12:15.106376
   Initial Message: Generation attempt 1
 -------------------
 
-2025-03-29 17:03:15,142 - __main__ - DEBUG
+2025-03-29 17:12:15,106 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0
@@ -139,17 +139,17 @@ Message: Progress Calculation:
   Total Progress: 0.0%
 -------------------
 
-2025-03-29 17:03:15,142 - __main__ - DEBUG
+2025-03-29 17:12:15,106 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Code Generation
   Stage Progress: 0.0%
   Total Progress: 0.0%
   Message: Generation attempt 1
-  Time: 2025-03-29T17:03:15.142530
+  Time: 2025-03-29T17:12:15.106576
 -------------------
 
-2025-03-29 17:03:15,142 - __main__ - DEBUG
+2025-03-29 17:12:15,106 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 0.0%
@@ -158,7 +158,7 @@ Message: Progress Bar:
   Bar: ------------------------------
 -------------------
 
-2025-03-29 17:07:16,007 - __main__ - DEBUG
+2025-03-29 17:15:14,971 - __main__ - DEBUG
 Function: _calculate_total_progress
 Message: Progress Calculation:
   Completed Weight: 0
@@ -167,17 +167,17 @@ Message: Progress Calculation:
   Total Progress: 30.0%
 -------------------
 
-2025-03-29 17:07:16,012 - __main__ - DEBUG
+2025-03-29 17:15:14,976 - __main__ - DEBUG
 Function: update_stage
 Message: Progress Update:
   Stage: Code Generation
   Stage Progress: 100.0%
   Total Progress: 30.0%
   Message: Generation complete
-  Time: 2025-03-29T17:07:16.012520
+  Time: 2025-03-29T17:15:14.976361
 -------------------
 
-2025-03-29 17:07:16,013 - __main__ - DEBUG
+2025-03-29 17:15:14,976 - __main__ - DEBUG
 Function: _create_progress_bar
 Message: Progress Bar:
   Progress: 30.0%
@@ -186,33 +186,57 @@ Message: Progress Bar:
   Bar: =========---------------------
 -------------------
 
-2025-03-29 17:07:16,013 - __main__ - INFO
+2025-03-29 17:15:14,977 - __main__ - INFO
 Function: main
 Message: 
 Generation Summary:
 -------------------
 
-2025-03-29 17:07:16,013 - __main__ - INFO
+2025-03-29 17:15:14,977 - __main__ - INFO
 Function: main
-Message:   Description: I want a camera
+Message:   Description: I want a lunch box
 -------------------
 
-2025-03-29 17:07:16,014 - __main__ - INFO
+2025-03-29 17:15:14,978 - __main__ - INFO
 Function: main
 Message:   Provider: anthropic
 -------------------
 
-2025-03-29 17:07:16,014 - __main__ - INFO
+2025-03-29 17:15:14,978 - __main__ - INFO
 Function: main
 Message:   Attempts: 1
 -------------------
 
-2025-03-29 17:07:16,034 - __main__ - INFO
+2025-03-29 17:15:15,001 - __main__ - INFO
 Function: main
 Message:   Stage Summary:
 Stage Duration Summary:
-  Initialization: 12.14s
+  Initialization: 14.82s
 
-Total Duration: 12.14s
+Total Duration: 14.82s
+-------------------
+
+2025-03-29 17:15:38,005 - __main__ - INFO
+Function: main
+Message: 
+Session Summary:
+-------------------
+
+2025-03-29 17:15:38,007 - __main__ - INFO
+Function: main
+Message: Stage Duration Summary:
+  Initialization: 14.82s
+
+Total Duration: 14.82s
+-------------------
+
+2025-03-29 17:15:38,007 - __main__ - INFO
+Function: main
+Message: Session ended at: 2025-03-29T17:15:38.007508
+-------------------
+
+2025-03-29 17:15:38,007 - __main__ - INFO
+Function: main
+Message: ==================================================
 -------------------
 

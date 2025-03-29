@@ -20,10 +20,13 @@ class LLMPromptLogger:
         self.scad_gen_log = os.path.join(log_dir, "scad_generation_conversations.json")
         self.validation_log = os.path.join(log_dir, "validation_conversations.json")
         self.keyword_log = os.path.join(log_dir, "keyword_extraction_pairs.json")
+        self.metadata_log = os.path.join(log_dir, "metadata_extraction.json")
+        self.category_log = os.path.join(log_dir, "category_analysis.json")
         
         # Create log files if they don't exist
         for log_file in [self.step_back_log, self.scad_gen_log, 
-                        self.validation_log, self.keyword_log]:
+                        self.validation_log, self.keyword_log,
+                        self.metadata_log, self.category_log]:
             if not os.path.exists(log_file):
                 with open(log_file, 'w') as f:
                     json.dump([], f)
@@ -52,6 +55,17 @@ class LLMPromptLogger:
         """
         with open(log_file, 'w') as f:
             json.dump(data, f, indent=2)
+
+    def _calculate_tokens(self, text: str) -> int:
+        """Calculate approximate token count from text.
+        
+        Args:
+            text: Text to count tokens for.
+            
+        Returns:
+            Approximate token count.
+        """
+        return len(str(text).split())
 
     def log_step_back(self, description: str, analysis: Dict[str, Any]) -> None:
         """Log a step-back analysis conversation.
@@ -123,6 +137,58 @@ class LLMPromptLogger:
         logs.append(log_entry)
         self._write_log(self.keyword_log, logs)
 
+    def log_metadata_extraction(self, query: str, code: str, response: Dict[str, Any]) -> None:
+        """Log metadata extraction prompt-response pair.
+        
+        Args:
+            query: The input query.
+            code: The SCAD code.
+            response: The extracted metadata.
+        """
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "input": {
+                "description": query,
+                "code": code
+            },
+            "output": response,
+            "tokens": {
+                "input_tokens": self._calculate_tokens(query) + self._calculate_tokens(code),
+                "output_tokens": sum(self._calculate_tokens(v) for v in response.values())
+            }
+        }
+        
+        logs = self._read_log(self.metadata_log)
+        logs.append(log_entry)
+        self._write_log(self.metadata_log, logs)
+        print(f"Logged metadata extraction")
+
+    def log_category_analysis(self, query: str, code: str, response: Dict[str, Any]) -> None:
+        """Log category analysis prompt-response pair.
+        
+        Args:
+            query: The input query.
+            code: The SCAD code.
+            response: The category analysis results.
+        """
+        log_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "input": {
+                "description": query,
+                "code": code
+            },
+            "output": response,
+            "tokens": {
+                "input_tokens": self._calculate_tokens(query) + self._calculate_tokens(code),
+                "output_tokens": sum(self._calculate_tokens(v) for v in response.values())
+            }
+        }
+        
+        logs = self._read_log(self.category_log)
+        logs.append(log_entry)
+        self._write_log(self.category_log, logs)
+        print(f"Logged category analysis: {json.dumps(log_entry, indent=2)}")
+
     def get_all_logs(self) -> Dict[str, list]:
         """Get all logs from all log files.
         
@@ -133,7 +199,9 @@ class LLMPromptLogger:
             "step_back": self._read_log(self.step_back_log),
             "scad_generation": self._read_log(self.scad_gen_log),
             "validation": self._read_log(self.validation_log),
-            "keyword_extraction": self._read_log(self.keyword_log)
+            "keyword_extraction": self._read_log(self.keyword_log),
+            "metadata_extraction": self._read_log(self.metadata_log),
+            "category_analysis": self._read_log(self.category_log)
         }
 
     def get_log_by_type(self, log_type: str) -> list:
@@ -141,7 +209,8 @@ class LLMPromptLogger:
         
         Args:
             log_type: Type of log to retrieve ("step_back", "scad_generation", 
-                     "validation", or "keyword_extraction").
+                     "validation", "keyword_extraction", "metadata_extraction",
+                     or "category_analysis").
                      
         Returns:
             List of log entries for the specified type.
@@ -153,7 +222,9 @@ class LLMPromptLogger:
             "step_back": self.step_back_log,
             "scad_generation": self.scad_gen_log,
             "validation": self.validation_log,
-            "keyword_extraction": self.keyword_log
+            "keyword_extraction": self.keyword_log,
+            "metadata_extraction": self.metadata_log,
+            "category_analysis": self.category_log
         }
         
         if log_type not in log_files:

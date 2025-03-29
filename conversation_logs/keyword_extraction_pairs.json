@@ -939,5 +939,24 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "I want a lunch box",
+      "timestamp": "2025-03-29T17:12:22.443826"
+    },
+    "response": {
+      "core_type": "lunch box",
+      "modifiers": [
+        "lunch",
+        "box"
+      ],
+      "compound_type": "lunch box"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]
