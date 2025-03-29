@@ -1,239 +1,129 @@
-// Parametric Lunch Box with Lid
-// Author: OpenSCAD Expert
-// Description: A simple lunch box with lid and compartments
+// Computer Mouse Model
+// A simple ergonomic computer mouse with primary and secondary buttons, scroll wheel, and curved body
 
-/* Main Parameters */
-// Box dimensions
-box_length = 180;
-box_width = 120;
-box_height = 60;
-wall_thickness = 2.5;
-corner_radius = 10;
+// Main Parameters
+mouse_length = 120;
+mouse_width = 70;
+mouse_height = 40;
+mouse_curve = 0.6; // Controls the curvature of the mouse body (0-1)
+roundness = 8;     // Controls the overall roundness of edges
 
-// Lid parameters
-lid_height = 15;
-lid_overlap = 5;
-lid_tolerance = 0.5;
+// Button Parameters
+primary_button_length = 40;
+primary_button_width = 30;
+secondary_button_length = 35;
+secondary_button_width = 25;
+button_height = 2;
+button_gap = 1;
 
-// Compartment parameters
-use_compartments = true;
-compartment_wall = 2;
+// Scroll Wheel Parameters
+wheel_diameter = 12;
+wheel_width = 8;
+wheel_position = 35; // Distance from front
 
-// Hinge parameters
-hinge_diameter = 5;
-hinge_segments = 30;
-hinge_gap = 0.5;
+// Colors
+body_color = "darkgray";
+button_color = "lightgray";
+wheel_color = "gray";
 
-// Latch parameters
-latch_width = 20;
-latch_height = 10;
-latch_thickness = 3;
-
-// Resolution parameters
-$fn = 40;
-
-/* Main Modules */
-
-// Create the lunch box
-module lunch_box() {
+// Main mouse body module
+module mouse_body() {
     difference() {
-        // Outer shell
-        rounded_box(box_length, box_width, box_height, corner_radius);
+        // Base shape - rounded hull
+        hull() {
+            // Bottom corners
+            translate([roundness, roundness, 0])
+                cylinder(r=roundness, h=1, $fn=30);
+            translate([mouse_length-roundness, roundness, 0])
+                cylinder(r=roundness, h=1, $fn=30);
+            translate([mouse_length-roundness, mouse_width-roundness, 0])
+                cylinder(r=roundness, h=1, $fn=30);
+            translate([roundness, mouse_width-roundness, 0])
+                cylinder(r=roundness, h=1, $fn=30);
+                
+            // Top shape - curved profile
+            scale([1, 1, 0.8]) translate([mouse_length/2, mouse_width/2, mouse_height])
+                sphere(r=min(mouse_length, mouse_width)/2 * mouse_curve, $fn=50);
+        }
         
-        // Inner hollow
-        translate([0, 0, wall_thickness])
-            rounded_box(
-                box_length - wall_thickness * 2, 
-                box_width - wall_thickness * 2, 
-                box_height, 
-                corner_radius - wall_thickness
-            );
-        
-        // Cut off top for hinge area
-        translate([box_length/2 - 25, -box_width/2 - 1, box_height - 5])
-            cube([50, box_width + 2, 10]);
+        // Cut out the bottom to create a hollow shell
+        translate([0, 0, -1])
+            cube([mouse_length, mouse_width, 1]);
+            
+        // Button cutouts
+        translate([button_gap, mouse_width/2 - primary_button_width/2 - button_gap/2, mouse_height/2])
+            button_cutout(primary_button_length, primary_button_width);
+            
+        translate([button_gap, mouse_width/2 + button_gap/2, mouse_height/2])
+            button_cutout(secondary_button_length, secondary_button_width);
+            
+        // Scroll wheel cutout
+        translate([wheel_position, mouse_width/2, mouse_height/2 + 5])
+            rotate([90, 0, 0])
+                cylinder(d=wheel_diameter+2, h=wheel_width+2, center=true, $fn=30);
     }
-    
-    // Add compartments if enabled
-    if (use_compartments) {
-        translate([0, 0, wall_thickness]) 
-            compartments();
-    }
-    
-    // Add hinge parts
-    translate([box_length/2, -box_width/2, box_height - hinge_diameter/2])
-        hinge_parts();
 }
 
-// Create the lid
-module lid() {
+// Button cutout shape
+module button_cutout(length, width) {
+    hull() {
+        translate([0, 0, 0])
+            cube([length, width, 1]);
+        translate([length/5, width/5, mouse_height/2])
+            cube([length*0.6, width*0.6, 1]);
+    }
+}
+
+// Button module
+module button(length, width) {
+    hull() {
+        cube([length, width, 1]);
+        translate([length/5, width/5, button_height])
+            cube([length*0.6, width*0.6, 0.01]);
+    }
+}
+
+// Scroll wheel module
+module scroll_wheel() {
     difference() {
         union() {
-            // Main lid body
-            rounded_box(
-                box_length, 
-                box_width, 
-                lid_height, 
-                corner_radius
-            );
+            // Main wheel
+            cylinder(d=wheel_diameter, h=wheel_width, center=true, $fn=30);
             
-            // Inner lip for secure closure
-            translate([0, 0, lid_height - lid_overlap])
-                difference() {
-                    rounded_box(
-                        box_length - wall_thickness * 2 + lid_tolerance * 2, 
-                        box_width - wall_thickness * 2 + lid_tolerance * 2, 
-                        lid_overlap, 
-                        corner_radius - wall_thickness
-                    );
-                    
-                    translate([0, 0, -0.5])
-                        rounded_box(
-                            box_length - wall_thickness * 4, 
-                            box_width - wall_thickness * 4, 
-                            lid_overlap + 1, 
-                            corner_radius - wall_thickness * 2
-                        );
-                }
+            // Texture rings
+            for (i = [-wheel_width/2+1.5 : 1.5 : wheel_width/2-1]) {
+                translate([0, 0, i])
+                    rotate_extrude($fn=30)
+                        translate([wheel_diameter/2-0.5, 0, 0])
+                            circle(r=0.5, $fn=10);
+            }
         }
         
-        // Hollow out the lid
-        translate([0, 0, wall_thickness])
-            rounded_box(
-                box_length - wall_thickness * 2, 
-                box_width - wall_thickness * 2, 
-                lid_height, 
-                corner_radius - wall_thickness
-            );
-        
-        // Cut off bottom for hinge area
-        translate([box_length/2 - 25, -box_width/2 - 1, -1])
-            cube([50, box_width + 2, 10]);
-    }
-    
-    // Add lid handle/knob
-    translate([0, 0, lid_height])
-        lid_handle();
-    
-    // Add hinge parts
-    translate([box_length/2, -box_width/2, hinge_diameter/2])
-        rotate([0, 0, 180])
-            hinge_parts(is_lid = true);
-    
-    // Add latch
-    translate([0, box_width/2, lid_height/2])
-        lid_latch();
-}
-
-// Create a rounded box shape
-module rounded_box(length, width, height, radius) {
-    hull() {
-        for (x = [-1, 1]) {
-            for (y = [-1, 1]) {
-                translate([
-                    x * (length/2 - radius),
-                    y * (width/2 - radius),
-                    0
-                ])
-                cylinder(r = radius, h = height);
-            }
-        }
+        // Axle hole
+        cylinder(d=3, h=wheel_width+1, center=true, $fn=20);
     }
 }
 
-// Create compartments inside the box
-module compartments() {
-    comp_length = (box_length - wall_thickness * 4 - compartment_wall) / 2;
-    comp_width = box_width - wall_thickness * 2 - compartment_wall;
-    comp_height = box_height - wall_thickness * 2;
+// Assemble the mouse
+module assemble_mouse() {
+    color(body_color) mouse_body();
     
-    // Compartment divider
-    translate([0, 0, comp_height/2])
-        cube([compartment_wall, comp_width, comp_height], center = true);
+    // Primary button
+    color(button_color)
+        translate([button_gap, mouse_width/2 - primary_button_width/2 - button_gap/2, mouse_height/2])
+            button(primary_button_length, primary_button_width);
     
-    // Optional additional compartment divider
-    translate([-comp_length/2 - compartment_wall/2, 0, comp_height/2])
-        cube([comp_length, compartment_wall, comp_height], center = true);
+    // Secondary button
+    color(button_color)
+        translate([button_gap, mouse_width/2 + button_gap/2, mouse_height/2])
+            button(secondary_button_length, secondary_button_width);
+    
+    // Scroll wheel
+    color(wheel_color)
+        translate([wheel_position, mouse_width/2, mouse_height/2 + 5])
+            rotate([90, 0, 0])
+                scroll_wheel();
 }
 
-// Create hinge parts
-module hinge_parts(is_lid = false) {
-    hinge_length = 50;
-    hinge_segments = 5;
-    segment_length = hinge_length / hinge_segments;
-    
-    for (i = [0:2:hinge_segments-1]) {
-        translate([i * segment_length, 0, 0])
-            rotate([0, 90, 0])
-                cylinder(d = hinge_diameter, h = segment_length - hinge_gap);
-    }
-    
-    if (is_lid) {
-        for (i = [1:2:hinge_segments-1]) {
-            translate([i * segment_length, 0, 0])
-                rotate([0, 90, 0])
-                    cylinder(d = hinge_diameter, h = segment_length - hinge_gap);
-        }
-    }
-}
-
-// Create lid handle/knob
-module lid_handle() {
-    handle_width = 40;
-    handle_height = 10;
-    
-    translate([0, 0, 0]) {
-        difference() {
-            union() {
-                // Base of handle
-                scale([1, 0.8, 0.3])
-                    sphere(r = handle_width / 2);
-                
-                // Flat bottom to attach to lid
-                translate([0, 0, -handle_height/2])
-                    cylinder(r = handle_width/3, h = handle_height/4);
-            }
-            
-            // Cut off bottom half of sphere
-            translate([0, 0, -handle_width/2])
-                cube([handle_width * 2, handle_width * 2, handle_width], center = true);
-        }
-    }
-}
-
-// Create lid latch
-module lid_latch() {
-    translate([0, 0, 0])
-        difference() {
-            union() {
-                // Latch base
-                cube([latch_width, latch_thickness, latch_height], center = true);
-                
-                // Latch hook
-                translate([0, latch_thickness/2 + 2, -latch_height/2 + 2])
-                    rotate([90, 0, 0])
-                        cylinder(r = 2, h = 4);
-            }
-            
-            // Cutout for flexibility
-            translate([0, 0, latch_height/4])
-                cube([latch_width - 6, latch_thickness/2, latch_height/2], center = true);
-        }
-}
-
-/* Main Assembly */
-// Uncomment the desired part to render
-
-// Render the box
-lunch_box();
-
-// Render the lid (translate it up to see separately)
-translate([0, 0, box_height + 20])
-    lid();
-
-// Render the full assembly
-// lunch_box();
-// translate([0, 0, box_height])
-//     rotate([0, 180, 0])
-//         translate([0, 0, -lid_height])
-//             lid();
+// Create the mouse
+assemble_mouse();

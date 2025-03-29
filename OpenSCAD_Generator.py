@@ -1,8 +1,9 @@
-from prompts import OPENSCAD_GNERATOR_PROMPT_TEMPLATE, STEP_BACK_PROMPT_TEMPLATE, BASIC_KNOWLEDGE
+from prompts import OPENSCAD_GNERATOR_PROMPT_TEMPLATE, BASIC_KNOWLEDGE
 from constant import *
 from KeywordExtractor import KeywordExtractor
 from llm_management import LLMProvider
 from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
+from step_back_analyzer import StepBackAnalyzer
 from langchain.prompts import ChatPromptTemplate
 import datetime
 from conversation_logger import ConversationLogger
@@ -29,11 +30,13 @@ class OpenSCADGenerator:
         print("- Knowledge base initialized")
         print("- Conversation logger initialized")
         
+        # Initialize step-back analyzer
+        self.step_back_analyzer = StepBackAnalyzer(llm=self.llm, logger=self.logger)
+        print("- Step-back analyzer initialized")
+        
         # Load prompts
         print("\nLoading prompts...")
-        self.step_back_prompt = STEP_BACK_PROMPT_TEMPLATE
         self.main_prompt = OPENSCAD_GNERATOR_PROMPT_TEMPLATE
-        print("- Step-back prompt loaded")
         print("- Main generation prompt loaded")
         
         # Initialize debug log
@@ -53,60 +56,19 @@ class OpenSCADGenerator:
         except Exception as e:
             print(f"Error saving debug log: {e}")
     
-    def perform_step_back(self, query):
-        """Perform step-back prompting and get user validation"""
-        while True:
-            try:
-                # Get step-back analysis with focused description from knowledge base
-                analysis_result = self.knowledge_base.perform_step_back(query)
-                if not analysis_result:
-                    msg = "Step-back analysis failed. Proceeding with basic generation..."
-                    print(msg)
-                    self.write_debug(f"{msg}\n\n")
-                    return None
-
-                # Extract the focused description and analysis components
-                focused_description = analysis_result.get('focused_description', query)
-                original_query = analysis_result.get('original_query', query)
-                
-                print("\nStep-back Analysis Results:")
-                print(f"Original Query: {original_query}")
-                print(f"Focused Description: {focused_description}")
-                print("\nCore Principles:")
-                for principle in analysis_result.get('principles', []):
-                    print(f"- {principle}")
-                print("\nShape Components:")
-                for component in analysis_result.get('abstractions', []):
-                    print(f"- {component}")
-                print("\nImplementation Steps:")
-                for step in analysis_result.get('approach', []):
-                    print(f"- {step}")
-
-                # Get user validation
-                print("\nDoes this analysis look correct? (y/n): ")
-                valid = input().lower().strip()
-                
-                if valid == 'y':
-                    # Only log step-back conversation if user accepts it
-                    self.logger.log_step_back(focused_description, analysis_result)
-                    return analysis_result
-                else:
-                    print("\nLet's try the step-back analysis again...")
-                    self.write_debug("Retrying step-back analysis...\n\n")
-                    
-            except Exception as e:
-                error_msg = f"Error in step-back analysis: {str(e)}"
-                print(f"\n{error_msg}")
-                # Add error to debug log
-                self.write_debug(
-                    "\n=== STEP-BACK ERROR ===\n",
-                    f"{error_msg}\n",
-                    "=" * 50 + "\n\n"
-                )
-                retry = input("Would you like to retry? (y/n): ").lower().strip()
-                if retry != 'y':
-                    return None
+    def perform_step_back_analysis(self, description: str, keyword_data: dict, max_retries: int = 3) -> Optional[dict]:
+        """Perform step-back analysis with approved keywords.
         
+        Args:
+            description: The description to analyze
+            keyword_data: The extracted keyword data
+            max_retries: Maximum number of retry attempts
+            
+        Returns:
+            Dictionary containing step-back analysis if successful, None otherwise
+        """
+        return self.step_back_analyzer.perform_analysis(description, keyword_data, max_retries)
+
     def perform_keyword_extraction(self, description: str, max_retries: int = 3) -> Optional[dict]:
         """Perform keyword extraction and get user confirmation.
         
@@ -186,103 +148,6 @@ class OpenSCADGenerator:
                     description = f"{description}\nConsider these adjustments: {user_feedback}"
             else:
                 print("\nMaximum keyword extraction attempts reached.")
-                print("Please try again with a different description.")
-        
-        return None
-
-    def perform_step_back_analysis(self, description: str, keyword_data: dict, max_retries: int = 3) -> Optional[dict]:
-        """Perform step-back analysis with approved keywords.
-        
-        Args:
-            description: The description to analyze
-            keyword_data: The extracted keyword data
-            max_retries: Maximum number of retry attempts
-            
-        Returns:
-            Dictionary containing step-back analysis if successful, None otherwise
-        """
-        retry_count = 0
-        
-        while retry_count < max_retries:
-            # Log step-back analysis query and prompt
-            step_back_prompt_value = self.step_back_prompt.format(
-                Object=keyword_data.get('compound_type', '') or keyword_data.get('core_type', ''),
-                Type=keyword_data.get('core_type', ''),
-                Modifiers=', '.join(keyword_data.get('modifiers', []))
-            )
-            
-            self.write_debug(
-                "=== STEP-BACK ANALYSIS ===\n",
-                f"Attempt {retry_count + 1}/{max_retries}\n",
-                "Query:\n",
-                f"{description}\n\n",
-                "Keyword Data:\n",
-                f"Core Type: {keyword_data.get('core_type', '')}\n",
-                f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}\n",
-                f"Compound Type: {keyword_data.get('compound_type', '')}\n\n",
-                "Full Prompt Sent to LLM:\n",
-                f"{step_back_prompt_value}\n\n"
-            )
-            
-            step_back_result = self.knowledge_base.perform_step_back(description, keyword_data)
-            if not step_back_result:
-                msg = "Step-back analysis failed. Proceeding with basic generation..."
-                print(msg)
-                self.write_debug(f"{msg}\n\n")
-                return None
-            
-            # Log step-back analysis results
-            self.write_debug(
-                "Response:\n",
-                "Core Principles:\n",
-                "\n".join(f"- {p}" for p in step_back_result.get('principles', [])) + "\n\n",
-                "Shape Components:\n",
-                "\n".join(f"- {a}" for a in step_back_result.get('abstractions', [])) + "\n\n",
-                "Implementation Steps:\n",
-                "\n".join(f"{i+1}. {s}" for i, s in enumerate(step_back_result.get('approach', []))) + "\n",
-                "=" * 50 + "\n\n"
-            )
-            
-            # Ask for user confirmation
-            user_input = input("\nDo you accept this technical analysis? (yes/no): ").lower().strip()
-            
-            # Log user's step-back decision
-            self.write_debug(
-                "=== USER STEP-BACK DECISION ===\n",
-                f"User accepted step-back analysis: {user_input == 'yes'}\n",
-                "=" * 50 + "\n\n"
-            )
-            
-            if user_input == 'yes':
-                # Log the approved step-back analysis
-                self.logger.log_step_back_analysis({
-                    "query": {
-                        "input": description,
-                        "timestamp": datetime.datetime.now().isoformat()
-                    },
-                    "response": {
-                        "principles": step_back_result.get('principles', []),
-                        "abstractions": step_back_result.get('abstractions', []),
-                        "approach": step_back_result.get('approach', [])
-                    },
-                    "metadata": {
-                        "success": True,
-                        "error": None,
-                        "user_approved": True
-                    }
-                })
-                return step_back_result
-            
-            retry_count += 1
-            if retry_count < max_retries:
-                print("\nRetrying step-back analysis...")
-                # Ask user for refinement suggestions
-                print("Please provide any suggestions to improve the step-back analysis (or press Enter to retry):")
-                user_feedback = input().strip()
-                if user_feedback:
-                    description = f"{description}\nConsider these aspects in your analysis: {user_feedback}"
-            else:
-                print("\nMaximum step-back analysis attempts reached.")
                 print("Please try again with a different description.")
         
         return None

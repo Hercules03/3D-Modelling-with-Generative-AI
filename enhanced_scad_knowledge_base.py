@@ -9,6 +9,7 @@ from datetime import datetime
 from prompts import KEYWORD_EXTRACTOR_PROMPT, CATEGORY_ANALYSIS_PROMPT, STEP_BACK_PROMPT_TEMPLATE
 from llm_management import LLMProvider
 from metadata_extractor import MetadataExtractor
+from step_back_analyzer import StepBackAnalyzer
 import re
 import hashlib
 from typing import Dict, List
@@ -114,15 +115,15 @@ class EnhancedSCADKnowledgeBase:
         print("\nInitializing LLM provider...")
         self.llm = LLMProvider.get_llm()
         self.metadata_extractor = MetadataExtractor()
+        self.step_back_analyzer = StepBackAnalyzer(llm=self.llm, logger=self.logger)
         print("- LLM provider initialized")
         print("- Metadata extractor initialized")
+        print("- Step-back analyzer initialized")
         
-        # Set up prompts
-        print("\nInitializing prompts...")
-        self.keyword_extractor = KeywordExtractor()  # Initialize the keyword extractor
-        self.keyword_prompt = KEYWORD_EXTRACTOR_PROMPT  # Initialize the keyword prompt
+        # Set up prompts and extractors
+        print("\nInitializing extractors...")
+        self.keyword_extractor = KeywordExtractor()
         print("- Keyword extractor initialized")
-        print("- Keyword prompt initialized")
         
         # Initialize ChromaDB
         print("\nInitializing ChromaDB...")
@@ -652,122 +653,25 @@ class EnhancedSCADKnowledgeBase:
             traceback.print_exc()
             return []
             
-    def _extract_object_type(self, description):
-        """Extract the main object type and modifiers from a description.
-        
-        Args:
-            description (str): The input description to analyze
-            
-        Returns:
-            str: The extracted object type (either compound or core type)
-        """
-        print("\n=== Starting Keyword Extraction ===")
-        print(f"Input description: {description}")
-        
-        try:
-            # Create timestamp for the query
-            timestamp = datetime.now().isoformat()
-            print(f"Created timestamp: {timestamp}")
-            
-            # Get the response from LLM
-            print("Calling LLM with keyword prompt...")
-            response = self.llm.invoke(self.keyword_prompt.format(description=description))
-            response_content = response.content.strip()
-            print(f"LLM Response: {response_content}")
-            
-            try:
-                # Parse the JSON response
-                print("Attempting to parse JSON response...")
-                parsed_response = json.loads(response_content)
-                print(f"Parsed response: {json.dumps(parsed_response, indent=2)}")
-                
-                # Create the full analysis object
-                analysis = {
-                    "query": {
-                        "input": description,
-                        "timestamp": timestamp
-                    },
-                    "response": {
-                        "core_type": parsed_response.get("core_type", ""),
-                        "modifiers": parsed_response.get("modifiers", []),
-                        "compound_type": parsed_response.get("compound_type", "")
-                    },
-                    "metadata": {
-                        "success": True,
-                        "error": None
-                    }
-                }
-                print(f"Created analysis object: {json.dumps(analysis, indent=2)}")
-                
-            except json.JSONDecodeError:
-                print("Failed to parse JSON response")
-                # Handle case where response is not valid JSON
-                analysis = {
-                    "query": {
-                        "input": description,
-                        "timestamp": timestamp
-                    },
-                    "response": {
-                        "raw_content": response_content
-                    },
-                    "metadata": {
-                        "success": False,
-                        "error": "Failed to parse JSON response"
-                    }
-                }
-            
-            # Store the analysis for reference
-            self.last_object_analysis = analysis
-            print("Stored analysis in last_object_analysis")
-            
-            # Log the query-response pair
-            print("Attempting to log query-response pair...")
-            self.logger.log_keyword_extraction(analysis)
-            print("Successfully logged query-response pair")
-            
-            # Return the appropriate type (compound if available, otherwise core)
-            if analysis["metadata"]["success"]:
-                result = (analysis["response"]["compound_type"] 
-                       if analysis["response"]["compound_type"] 
-                       else analysis["response"]["core_type"])
-                print(f"Returning result: {result}")
-                return result
-            else:
-                print(f"Returning raw response: {response_content.strip()}")
-                return response_content.strip()
-                
-        except Exception as e:
-            print(f"Error in keyword extraction: {str(e)}")
-            error_analysis = {
-                "query": {
-                    "input": description,
-                    "timestamp": datetime.now().isoformat()
-                },
-                "response": {
-                    "raw_content": str(e)
-                },
-                "metadata": {
-                    "success": False,
-                    "error": f"Exception during extraction: {str(e)}"
-                }
-            }
-            self.last_object_analysis = error_analysis
-            print("Attempting to log error analysis...")
-            self.logger.log_keyword_extraction(error_analysis)
-            print("Successfully logged error analysis")
-            return description.strip()
-    
     def _generate_base_name(self, description):
         """Generate a base name for the example"""
-        # Convert to lowercase and split into words
-        words = description.lower().split()
+        # First try to get a meaningful name using keyword extraction
+        try:
+            keyword_data = self.keyword_extractor.extract_keyword(description)
+            if keyword_data and keyword_data.get('core_type'):
+                return ''.join(c for c in keyword_data['core_type'] if c.isalnum())
+        except Exception as e:
+            print(f"Warning: Keyword extraction failed for base name generation: {e}")
         
-        # Common words to ignore
+        # Fall back to simple word filtering if keyword extraction fails
         stop_words = {
             'a', 'an', 'the', 'this', 'that', 'create', 'make', 'generate', 
             'model', 'design', 'want', 'need', 'please', 'would', 'like', 'can', 
             'you', 'me', 'build', 'draw', 'sketch', 'i', 'we', 'they', 'he', 'she'
         }
+        
+        # Convert to lowercase and split into words
+        words = description.lower().split()
         
         # Find first meaningful word
         for word in words:
@@ -775,7 +679,182 @@ class EnhancedSCADKnowledgeBase:
                 return ''.join(c for c in word if c.isalnum())
         
         return 'example'
+
+    def _extract_metadata(self, description: str, code: str = "") -> Dict:
+        """Extract metadata from description and code"""
+        try:
+            # First get keyword data
+            keyword_data = self.keyword_extractor.extract_keyword(description)
+            
+            # Get metadata from extractor
+            metadata = self.metadata_extractor.extract_metadata(description, code)
+            if not metadata:
+                logger.error("Failed to extract metadata")
+                return None
+            
+            # Add keyword data to metadata
+            metadata['object_type'] = keyword_data.get('compound_type') or keyword_data.get('core_type', '')
+            metadata['features'] = metadata.get('features', []) + keyword_data.get('modifiers', [])
+            
+            # Ensure required fields exist with default values if missing
+            metadata.setdefault('materials', [])
+            metadata.setdefault('dimensions', {})
+            metadata.setdefault('use_case', [])
+            metadata.setdefault('geometric_properties', [])
+            metadata.setdefault('technical_requirements', [])
+            
+            # Ensure step-back analysis exists
+            if 'step_back_analysis' not in metadata:
+                metadata['step_back_analysis'] = {
+                    'principles': [],
+                    'abstractions': [],
+                    'approach': []
+                }
+            
+            # Validate metadata
+            if not self._validate_metadata(metadata):
+                logger.error("Invalid metadata structure")
+                return None
+            
+            return metadata
+            
+        except Exception as e:
+            logger.error(f"Error extracting metadata: {str(e)}")
+            logger.error(f"Stack trace: {traceback.format_exc()}")
+            return None
     
+    def analyze_categories(self, description: str, code: str) -> dict:
+        """Analyze and categorize the object using standardized categories"""
+        try:
+            # First get the object type from metadata
+            metadata = self.metadata_extractor.extract_metadata(description)
+            object_type = metadata.get('object_type', 'unknown')
+            
+            # Format the categories and properties info
+            categories_info = "\n".join(
+                f"- {cat}: {info['description']} (e.g., {', '.join(info['examples'])})"
+                for cat, info in self.STANDARD_CATEGORIES.items()
+            )
+            
+            properties_info = "\n".join(
+                f"- {prop}: {', '.join(values)}"
+                for prop, values in self.STANDARD_PROPERTIES.items()
+            )
+            
+            # Use the category analysis prompt
+            prompt = CATEGORY_ANALYSIS_PROMPT.format(
+                object_type=object_type,
+                description=description,
+                categories_info=categories_info,
+                properties_info=properties_info
+            )
+            
+            # Get response from LLM
+            response = self.llm.invoke(prompt)
+            
+            # Parse the JSON response
+            try:
+                # Clean up the response to ensure it's valid JSON
+                json_str = response.content.strip()
+                if json_str.startswith("```json"):
+                    json_str = json_str.split("```json")[1]
+                if json_str.endswith("```"):
+                    json_str = json_str.rsplit("```", 1)[0]
+                json_str = json_str.strip()
+                
+                result = json.loads(json_str)
+                
+                # Validate and clean the response
+                cleaned_result = {
+                    "categories": [
+                        cat for cat in result.get("categories", [])
+                        if cat in self.STANDARD_CATEGORIES
+                    ],
+                    "properties": {
+                        prop: value
+                        for prop, value in result.get("properties", {}).items()
+                        if prop in self.STANDARD_PROPERTIES
+                        and value in self.STANDARD_PROPERTIES[prop]
+                    },
+                    "similar_objects": [
+                        obj for obj in result.get("similar_objects", [])
+                        if any(obj in cat_info["examples"]
+                              for cat_info in self.STANDARD_CATEGORIES.values())
+                    ]
+                }
+                
+                # Ensure at least one category is assigned
+                if not cleaned_result["categories"]:
+                    cleaned_result["categories"] = ["other"]
+                
+                # Log the analysis results
+                print("\nCategory Analysis Results:")
+                print(json.dumps(cleaned_result, indent=2))
+                
+                return cleaned_result
+                
+            except json.JSONDecodeError as e:
+                print(f"Error parsing LLM response as JSON: {str(e)}")
+                print(f"Raw response: {json_str}")
+                return {
+                    "categories": ["other"],
+                    "properties": {},
+                    "similar_objects": []
+                }
+                
+        except Exception as e:
+            print(f"Error analyzing categories: {str(e)}")
+            return {
+                "categories": ["other"],
+                "properties": {},
+                "similar_objects": []
+            }
+    
+    def _analyze_code_metadata(self, code: str) -> dict:
+        """Analyze OpenSCAD code to extract additional metadata"""
+        metadata = {}
+        
+        try:
+            # Calculate complexity score
+            complexity_score = self._calculate_complexity_score(code, {})
+            if complexity_score < 30:
+                metadata["complexity"] = "SIMPLE"
+            elif complexity_score < 70:
+                metadata["complexity"] = "MEDIUM"
+            else:
+                metadata["complexity"] = "COMPLEX"
+            
+            # Analyze components
+            components = self._analyze_components(code)
+            metadata["components"] = components
+            
+            # Extract geometric properties
+            geometric_props = []
+            if any(c["name"] == "sphere" for c in components):
+                geometric_props.append("spherical")
+            if any(c["name"] == "cube" for c in components):
+                geometric_props.append("angular")
+            if any(c["name"] == "cylinder" for c in components):
+                geometric_props.append("cylindrical")
+            if any(c["type"] == "boolean" for c in components):
+                geometric_props.append("compound")
+            metadata["geometric_properties"] = geometric_props
+            
+            # Analyze technical requirements
+            tech_reqs = []
+            if len([c for c in components if c["type"] == "boolean"]) > 2:
+                tech_reqs.append("complex_boolean_operations")
+            if len([c for c in components if c["type"] == "transformation"]) > 3:
+                tech_reqs.append("multiple_transformations")
+            if any(c["type"] == "module" for c in components):
+                tech_reqs.append("modular_design")
+            metadata["technical_requirements"] = tech_reqs
+            
+        except Exception as e:
+            print(f"Error analyzing code metadata: {str(e)}")
+        
+        return metadata 
+
     def _calculate_complexity_score(self, code, metadata):
         """Calculate complexity score based on code analysis and metadata"""
         score = 0
@@ -963,14 +1042,10 @@ class EnhancedSCADKnowledgeBase:
                     metadata['step_back_analysis'].setdefault('shape_components', [])
                     metadata['step_back_analysis'].setdefault('implementation_steps', [])
 
-                # print(f"\nProcessing example {result.get('id', 'unknown')}:")
-                # print("-" * 30)
-
                 # Calculate component match score
                 result_components = result_metadata['step_back_analysis'].get('shape_components', [])
                 query_components = query_metadata['step_back_analysis'].get('shape_components', [])
                 component_match = self._calculate_text_similarity(query_components, result_components)
-                # print(f"Component Match Score: {component_match:.3f}")
 
                 # Calculate step-back analysis score
                 principles_score = self._calculate_text_similarity(
@@ -986,36 +1061,28 @@ class EnhancedSCADKnowledgeBase:
                     result_metadata['step_back_analysis']['implementation_steps']
                 )
                 step_back_score = (principles_score + components_score + steps_score) / 3
-                # print(f"Step-back Analysis Score: {step_back_score:.3f}")
-                # print(f"- Principles Score: {principles_score:.3f}")
-                # print(f"- Components Score: {components_score:.3f}")
-                # print(f"- Steps Score: {steps_score:.3f}")
 
                 # Calculate geometric properties match
                 geometric_score = self._calculate_text_similarity(
                     query_metadata['geometric_properties'],
                     result_metadata['geometric_properties']
                 )
-                # print(f"Geometric Properties Score: {geometric_score:.3f}")
 
                 # Calculate feature match
                 feature_score = self._calculate_text_similarity(
                     query_metadata['features'],
                     result_metadata['features']
                 )
-                # print(f"Feature Match Score: {feature_score:.3f}")
 
                 # Calculate style match
                 query_style = str(query_metadata['style']).lower()
                 result_style = str(result_metadata['style']).lower()
                 style_score = fuzz.ratio(query_style, result_style) / 100.0
-                # print(f"Style Match Score: {style_score:.3f}")
 
                 # Calculate complexity match
                 query_complexity = str(query_metadata['complexity']).upper()
                 result_complexity = str(result_metadata['complexity']).upper()
                 complexity_score = 1.0 if query_complexity == result_complexity else 0.0
-                # print(f"Complexity Match Score: {complexity_score:.3f}")
 
                 # Calculate final score with weights
                 weights = {
@@ -1035,15 +1102,6 @@ class EnhancedSCADKnowledgeBase:
                     weights['style_match'] * style_score +
                     weights['complexity_match'] * complexity_score
                 )
-
-                # print(f"\nFinal Score: {final_score:.3f}")
-                # print("Score Breakdown:")
-                # print(f"- Component Match (35%): {component_match:.3f}")
-                # print(f"- Geometric Match (25%): {geometric_score:.3f}")
-                # print(f"- Step-back Match (20%): {step_back_score:.3f}")
-                # print(f"- Feature Match (15%): {feature_score:.3f}")
-                #print(f"- Style Match (3%): {style_score:.3f}")
-                # print(f"- Complexity Match (2%): {complexity_score:.3f}")
 
                 # Create score breakdown
                 score_breakdown = {
@@ -1171,208 +1229,6 @@ class EnhancedSCADKnowledgeBase:
                 return False
 
         return True
-
-    def _extract_metadata(self, description: str, code: str = "") -> Dict:
-        """Extract metadata from description and code"""
-        try:
-            # Get metadata from extractor
-            metadata = self.metadata_extractor.extract_metadata(description, code)
-            if not metadata:
-                logger.error("Failed to extract metadata")
-                return None
-            
-            # Ensure required fields exist with default values if missing
-            metadata.setdefault('materials', [])
-            metadata.setdefault('dimensions', {})
-            metadata.setdefault('features', [])
-            metadata.setdefault('use_case', [])
-            metadata.setdefault('geometric_properties', [])
-            metadata.setdefault('technical_requirements', [])
-            
-            # Ensure step-back analysis exists
-            if 'step_back_analysis' not in metadata:
-                metadata['step_back_analysis'] = {
-                    'principles': [],
-                    'abstractions': [],
-                    'approach': []
-                }
-            
-            # Validate metadata
-            if not self._validate_metadata(metadata):
-                logger.error("Invalid metadata structure")
-                return None
-            
-            return metadata
-            
-        except Exception as e:
-            logger.error(f"Error extracting metadata: {str(e)}")
-            logger.error(f"Stack trace: {traceback.format_exc()}")
-            return None
-    
-    def analyze_categories(self, description: str, code: str) -> dict:
-        """Analyze and categorize the object using standardized categories"""
-        try:
-            # First get the object type from metadata
-            metadata = self.metadata_extractor.extract_metadata(description)
-            object_type = metadata.get('object_type', 'unknown')
-            
-            # Format the categories and properties info
-            categories_info = "\n".join(
-                f"- {cat}: {info['description']} (e.g., {', '.join(info['examples'])})"
-                for cat, info in self.STANDARD_CATEGORIES.items()
-            )
-            
-            properties_info = "\n".join(
-                f"- {prop}: {', '.join(values)}"
-                for prop, values in self.STANDARD_PROPERTIES.items()
-            )
-            
-            # Use the category analysis prompt
-            prompt = CATEGORY_ANALYSIS_PROMPT.format(
-                object_type=object_type,
-                description=description,
-                categories_info=categories_info,
-                properties_info=properties_info
-            )
-            
-            # Get response from LLM
-            response = self.llm.invoke(prompt)
-            
-            # Parse the JSON response
-            try:
-                # Clean up the response to ensure it's valid JSON
-                json_str = response.content.strip()
-                if json_str.startswith("```json"):
-                    json_str = json_str.split("```json")[1]
-                if json_str.endswith("```"):
-                    json_str = json_str.rsplit("```", 1)[0]
-                json_str = json_str.strip()
-                
-                result = json.loads(json_str)
-                
-                # Validate and clean the response
-                cleaned_result = {
-                    "categories": [
-                        cat for cat in result.get("categories", [])
-                        if cat in self.STANDARD_CATEGORIES
-                    ],
-                    "properties": {
-                        prop: value
-                        for prop, value in result.get("properties", {}).items()
-                        if prop in self.STANDARD_PROPERTIES
-                        and value in self.STANDARD_PROPERTIES[prop]
-                    },
-                    "similar_objects": [
-                        obj for obj in result.get("similar_objects", [])
-                        if any(obj in cat_info["examples"]
-                              for cat_info in self.STANDARD_CATEGORIES.values())
-                    ]
-                }
-                
-                # Ensure at least one category is assigned
-                if not cleaned_result["categories"]:
-                    cleaned_result["categories"] = ["other"]
-                
-                # Log the analysis results
-                print("\nCategory Analysis Results:")
-                print(json.dumps(cleaned_result, indent=2))
-                
-                return cleaned_result
-                
-            except json.JSONDecodeError as e:
-                print(f"Error parsing LLM response as JSON: {str(e)}")
-                print(f"Raw response: {json_str}")
-                return {
-                    "categories": ["other"],
-                    "properties": {},
-                    "similar_objects": []
-                }
-                
-        except Exception as e:
-            print(f"Error analyzing categories: {str(e)}")
-            return {
-                "categories": ["other"],
-                "properties": {},
-                "similar_objects": []
-            }
-    
-    def _analyze_code_metadata(self, code: str) -> dict:
-        """Analyze OpenSCAD code to extract additional metadata"""
-        metadata = {}
-        
-        try:
-            # Calculate complexity score
-            complexity_score = self._calculate_complexity_score(code, {})
-            if complexity_score < 30:
-                metadata["complexity"] = "SIMPLE"
-            elif complexity_score < 70:
-                metadata["complexity"] = "MEDIUM"
-            else:
-                metadata["complexity"] = "COMPLEX"
-            
-            # Analyze components
-            components = self._analyze_components(code)
-            metadata["components"] = components
-            
-            # Extract geometric properties
-            geometric_props = []
-            if any(c["name"] == "sphere" for c in components):
-                geometric_props.append("spherical")
-            if any(c["name"] == "cube" for c in components):
-                geometric_props.append("angular")
-            if any(c["name"] == "cylinder" for c in components):
-                geometric_props.append("cylindrical")
-            if any(c["type"] == "boolean" for c in components):
-                geometric_props.append("compound")
-            metadata["geometric_properties"] = geometric_props
-            
-            # Analyze technical requirements
-            tech_reqs = []
-            if len([c for c in components if c["type"] == "boolean"]) > 2:
-                tech_reqs.append("complex_boolean_operations")
-            if len([c for c in components if c["type"] == "transformation"]) > 3:
-                tech_reqs.append("multiple_transformations")
-            if any(c["type"] == "module" for c in components):
-                tech_reqs.append("modular_design")
-            metadata["technical_requirements"] = tech_reqs
-            
-        except Exception as e:
-            print(f"Error analyzing code metadata: {str(e)}")
-        
-        return metadata 
-
-    def _calculate_component_match(self, query_components, result_components):
-        """Calculate similarity score based on OpenSCAD component matching"""
-        total_score = 0.0
-        for query_item in query_components:
-            best_match = max(
-                (self._fuzzy_match(query_item['name'], result_item['name'])
-                 for result_item in result_components),
-                default=0.0
-            )
-            if best_match > 0.6:  # Threshold for considering it a match
-                total_score += best_match
-        
-        return total_score / max(len(query_components), len(result_components)) if query_components else 0.0
-
-    def _fuzzy_match(self, str1: str, str2: str) -> float:
-        """Calculate fuzzy match similarity between two strings"""
-        # Remove punctuation and convert to lowercase
-        str1 = ''.join(c.lower() for c in str1 if c.isalnum() or c.isspace())
-        str2 = ''.join(c.lower() for c in str2 if c.isalnum() or c.isspace())
-        
-        # Split into words
-        words1 = set(str1.split())
-        words2 = set(str2.split())
-        
-        # Calculate Jaccard similarity for word sets
-        intersection = len(words1.intersection(words2))
-        union = len(words1.union(words2))
-        
-        if union == 0:
-            return 0.0
-            
-        return intersection / union
 
     def _example_exists(self, example_id):
         """Check if an example with the given ID already exists"""
@@ -1542,83 +1398,12 @@ class EnhancedSCADKnowledgeBase:
                 print("Error: No approved keywords provided")
                 return None
             
-            # Perform step-back analysis with the focused description
-            print("\nPerforming technical analysis...")
-            step_back_prompt = STEP_BACK_PROMPT_TEMPLATE.format(
-                Object=approved_keywords.get('compound_type', '') or approved_keywords.get('core_type', ''),
-                Type=approved_keywords.get('core_type', ''),
-                Modifiers=', '.join(approved_keywords.get('modifiers', []))
-            )
+            return self.step_back_analyzer.perform_analysis(query, approved_keywords)
             
-            # Log the complete prompt for debugging
-            self.write_debug(
-                "\n=== STEP-BACK ANALYSIS PROMPT ===\n",
-                f"Query: {approved_keywords}\n",
-                f"Full Prompt Sent to LLM:\n{step_back_prompt}\n",
-                "=" * 50 + "\n"
-            )
-            
-            # Invoke LLM with the prompt
-            step_back_response = self.llm.invoke(step_back_prompt)
-            technical_analysis = step_back_response.content
-            
-            # Log the response
-            self.write_debug(
-                "\n=== STEP-BACK ANALYSIS RESPONSE ===\n",
-                f"Response:\n{technical_analysis}\n",
-                "=" * 50 + "\n"
-            )
-
-            # Parse step-back analysis
-            principles = []
-            abstractions = []
-            approach = []
-            
-            current_section = None
-            for line in technical_analysis.split('\n'):
-                line = line.strip()
-                if 'CORE PRINCIPLES:' in line:
-                    current_section = 'principles'
-                elif 'SHAPE COMPONENTS:' in line:
-                    current_section = 'abstractions'
-                elif 'IMPLEMENTATION STEPS:' in line:
-                    current_section = 'approach'
-                elif line and line[0] in ['-', '•', '*'] and current_section == 'principles':
-                    principles.append(line[1:].strip())
-                elif line and line[0] in ['-', '•', '*'] and current_section == 'abstractions':
-                    abstractions.append(line[1:].strip())
-                elif line and line[0].isdigit() and current_section == 'approach':
-                    approach.append(line[line.find('.')+1:].strip())
-
-            # Create the complete analysis result
-            analysis_result = {
-                'principles': principles,
-                'abstractions': abstractions,
-                'approach': approach,
-                'original_query': query,
-                'keyword_analysis': approved_keywords
-            }
-
-            # Display the complete analysis
-            print("\nStep-back Analysis Results:")
-            print("-" * 30)
-            print("Core Principles:")
-            for p in principles:
-                print(f"- {p}")
-            print("\nShape Components:")
-            for a in abstractions:
-                print(f"- {a}")
-            print("\nImplementation Steps:")
-            for i, s in enumerate(approach, 1):
-                print(f"{i}. {s}")
-            print("-" * 30)
-
-            return analysis_result
-
         except Exception as e:
             logger.error(f"Error in step-back analysis: {str(e)}")
             logger.error(traceback.format_exc())
-            return None 
+            return None
 
     def get_similar_examples(self, description: str, step_back_result: Dict = None, keyword_data: Dict = None, similarity_threshold: float = 0.7, return_metadata: bool = False) -> List[Dict]:
         """

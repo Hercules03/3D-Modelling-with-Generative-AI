@@ -958,5 +958,77 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "I want a charger",
+      "timestamp": "2025-03-29T17:31:34.248901"
+    },
+    "response": {
+      "core_type": "charger",
+      "modifiers": [
+        "charger"
+      ],
+      "compound_type": "charger"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a fork",
+      "timestamp": "2025-03-29T17:40:10.193935"
+    },
+    "response": {
+      "core_type": "fork",
+      "modifiers": [
+        "fork"
+      ],
+      "compound_type": "fork"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a spoon",
+      "timestamp": "2025-03-29T17:46:49.743486"
+    },
+    "response": {
+      "core_type": "spoon",
+      "modifiers": [
+        "spoon"
+      ],
+      "compound_type": "spoon"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a mouse",
+      "timestamp": "2025-03-29T17:57:02.585899"
+    },
+    "response": {
+      "core_type": "mouse",
+      "modifiers": [
+        "mouse"
+      ],
+      "compound_type": "mouse"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]

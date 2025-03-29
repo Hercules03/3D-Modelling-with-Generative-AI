@@ -16,7 +16,6 @@ import time
 # Import ModelDefinitions first since other modules depend on it
 from llm_management import ModelDefinitions
 
-from myAPI import *
 from langchain_community.vectorstores import Chroma
 from openpyscad import *
 from constant import *
