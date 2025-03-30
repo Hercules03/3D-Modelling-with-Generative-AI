@@ -681,12 +681,14 @@ class EnhancedSCADKnowledgeBase:
         return 'example'
 
     def _extract_metadata(self, description: str, code: str = "") -> Dict:
-        """Extract metadata from description and code"""
+        """Extract metadata from description and code using MetadataExtractor"""
         try:
             # Get metadata from extractor
             metadata = self.metadata_extractor.extract_metadata(
                 description=description,
-                code=code
+                code=code,
+                step_back_result=None,  # Will be added if needed
+                keyword_data=self.keyword_extractor.extract_keyword(description)
             )
             
             if not metadata:
@@ -699,85 +701,13 @@ class EnhancedSCADKnowledgeBase:
             logger.error(f"Error extracting metadata: {str(e)}")
             logger.error(f"Stack trace: {traceback.format_exc()}")
             return None
-    
+
     def analyze_categories(self, description: str, code: str) -> dict:
-        """Analyze and categorize the object using standardized categories"""
+        """Analyze and categorize the object using MetadataExtractor"""
         try:
-            # First get the object type from metadata
-            metadata = self.metadata_extractor.extract_metadata(description)
-            object_type = metadata.get('object_type', 'unknown')
-            
-            # Format the categories and properties info
-            categories_info = "\n".join(
-                f"- {cat}: {info['description']} (e.g., {', '.join(info['examples'])})"
-                for cat, info in self.STANDARD_CATEGORIES.items()
-            )
-            
-            properties_info = "\n".join(
-                f"- {prop}: {', '.join(values)}"
-                for prop, values in self.STANDARD_PROPERTIES.items()
-            )
-            
-            # Use the category analysis prompt
-            prompt = CATEGORY_ANALYSIS_PROMPT.format(
-                object_type=object_type,
-                description=description,
-                categories_info=categories_info,
-                properties_info=properties_info
-            )
-            
-            # Get response from LLM
-            response = self.llm.invoke(prompt)
-            
-            # Parse the JSON response
-            try:
-                # Clean up the response to ensure it's valid JSON
-                json_str = response.content.strip()
-                if json_str.startswith("```json"):
-                    json_str = json_str.split("```json")[1]
-                if json_str.endswith("```"):
-                    json_str = json_str.rsplit("```", 1)[0]
-                json_str = json_str.strip()
-                
-                result = json.loads(json_str)
-                
-                # Validate and clean the response
-                cleaned_result = {
-                    "categories": [
-                        cat for cat in result.get("categories", [])
-                        if cat in self.STANDARD_CATEGORIES
-                    ],
-                    "properties": {
-                        prop: value
-                        for prop, value in result.get("properties", {}).items()
-                        if prop in self.STANDARD_PROPERTIES
-                        and value in self.STANDARD_PROPERTIES[prop]
-                    },
-                    "similar_objects": [
-                        obj for obj in result.get("similar_objects", [])
-                        if any(obj in cat_info["examples"]
-                              for cat_info in self.STANDARD_CATEGORIES.values())
-                    ]
-                }
-                
-                # Ensure at least one category is assigned
-                if not cleaned_result["categories"]:
-                    cleaned_result["categories"] = ["other"]
-                
-                # Log the analysis results
-                print("\nCategory Analysis Results:")
-                print(json.dumps(cleaned_result, indent=2))
-                
-                return cleaned_result
-                
-            except json.JSONDecodeError as e:
-                print(f"Error parsing LLM response as JSON: {str(e)}")
-                print(f"Raw response: {json_str}")
-                return {
-                    "categories": ["other"],
-                    "properties": {},
-                    "similar_objects": []
-                }
+            # Get metadata first to ensure we have the object type
+            metadata = self.metadata_extractor.extract_metadata(description, code)
+            return self.metadata_extractor.analyze_categories(description, metadata)
                 
         except Exception as e:
             print(f"Error analyzing categories: {str(e)}")
@@ -786,7 +716,124 @@ class EnhancedSCADKnowledgeBase:
                 "properties": {},
                 "similar_objects": []
             }
-    
+
+    def _analyze_code_metadata(self, code: str) -> dict:
+        """Analyze OpenSCAD code to extract additional metadata using MetadataExtractor"""
+        return self.metadata_extractor.analyze_code_metadata(code)
+
+    def _calculate_complexity_score(self, code, metadata):
+        """Calculate complexity score based on code analysis and metadata"""
+        score = 0
+        
+        # Code-based complexity factors
+        try:
+            # Count number of operations/functions
+            operations = len([line for line in code.split('\n') 
+                            if any(op in line.lower() for op in ['union', 'difference', 'intersection', 'translate', 'rotate', 'scale'])])
+            score += min(operations * 2, 30)  # Max 30 points for operations
+            
+            # Count nested levels
+            max_nesting = 0
+            current_nesting = 0
+            for line in code.split('\n'):
+                if '{' in line:
+                    current_nesting += 1
+                    max_nesting = max(max_nesting, current_nesting)
+                if '}' in line:
+                    current_nesting -= 1
+            score += min(max_nesting * 5, 20)  # Max 20 points for nesting
+            
+            # Count variables and modules
+            variables = len([line for line in code.split('\n') if '=' in line and not line.strip().startswith('//')])
+            modules = len([line for line in code.split('\n') if 'module' in line])
+            score += min((variables + modules) * 2, 20)  # Max 20 points for variables/modules
+            
+            # Analyze geometric complexity
+            geometric_ops = len([line for line in code.split('\n') 
+                               if any(shape in line.lower() for shape in ['sphere', 'cube', 'cylinder', 'polyhedron'])])
+            score += min(geometric_ops * 3, 15)  # Max 15 points for geometric operations
+            
+        except Exception as e:
+            print(f"Error calculating code complexity: {str(e)}")
+        
+        # Metadata-based complexity factors
+        try:
+            # Consider declared complexity
+            if metadata.get('properties_complexity') == 'intricate':
+                score += 15
+            elif metadata.get('properties_complexity') == 'complex':
+                score += 10
+            elif metadata.get('properties_complexity') == 'moderate':
+                score += 5
+            
+            # Consider printability
+            if metadata.get('properties_printability') == 'challenging':
+                score += 10
+            elif metadata.get('properties_printability') == 'requires_support':
+                score += 5
+            
+            # Consider support needed
+            if metadata.get('properties_support_needed') == 'extensive':
+                score += 10
+            elif metadata.get('properties_support_needed') == 'moderate':
+                score += 5
+            
+        except Exception as e:
+            print(f"Error calculating metadata complexity: {str(e)}")
+        
+        # Normalize score to 0-100 range
+        normalized_score = min(max(score, 0), 100)
+        return normalized_score
+
+    def _analyze_components(self, code):
+        """Analyze and extract components from SCAD code"""
+        components = []
+        try:
+            # Extract modules (reusable components)
+            module_pattern = r'module\s+(\w+)\s*\([^)]*\)\s*{'
+            modules = re.findall(module_pattern, code)
+            for module in modules:
+                components.append({
+                    'type': 'module',
+                    'name': module,
+                    'reusable': True
+                })
+            
+            # Extract main geometric shapes
+            shape_pattern = r'(sphere|cube|cylinder|polyhedron)\s*\('
+            shapes = re.findall(shape_pattern, code)
+            for shape in shapes:
+                components.append({
+                    'type': 'primitive',
+                    'name': shape,
+                    'reusable': False
+                })
+            
+            # Extract transformations
+            transform_pattern = r'(translate|rotate|scale|mirror)\s*\('
+            transformations = re.findall(transform_pattern, code)
+            for transform in transformations:
+                components.append({
+                    'type': 'transformation',
+                    'name': transform,
+                    'reusable': False
+                })
+            
+            # Extract boolean operations
+            bool_pattern = r'(union|difference|intersection)\s*\('
+            booleans = re.findall(bool_pattern, code)
+            for boolean in booleans:
+                components.append({
+                    'type': 'boolean',
+                    'name': boolean,
+                    'reusable': False
+                })
+            
+        except Exception as e:
+            print(f"Error analyzing components: {str(e)}")
+        
+        return components
+
     def _rank_results(self, query_metadata, results):
         """
         Rank and filter search results based on metadata similarity.

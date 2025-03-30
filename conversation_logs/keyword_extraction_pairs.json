@@ -1030,5 +1030,113 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "i want a polaroid\nConsider these adjustments: I want a polaroid",
+      "timestamp": "2025-03-30T00:12:23.147927"
+    },
+    "response": {
+      "core_type": "Polaroid",
+      "modifiers": [
+        "polaroid"
+      ],
+      "compound_type": "Polaroid"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a polaroid\nConsider these adjustments: i want a polaroid",
+      "timestamp": "2025-03-30T00:15:08.659854"
+    },
+    "response": {
+      "core_type": "polaroid",
+      "modifiers": [
+        "a"
+      ],
+      "compound_type": "polaroid"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a camera",
+      "timestamp": "2025-03-30T00:19:30.158646"
+    },
+    "response": {
+      "core_type": "camera",
+      "modifiers": [
+        "camera"
+      ],
+      "compound_type": "camera"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a camera",
+      "timestamp": "2025-03-30T00:22:20.688264"
+    },
+    "response": {
+      "core_type": "camera",
+      "modifiers": [
+        "camera"
+      ],
+      "compound_type": "camera"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a Digital camera",
+      "timestamp": "2025-03-30T00:26:55.653657"
+    },
+    "response": {
+      "core_type": "camera",
+      "modifiers": [
+        "digital camera"
+      ],
+      "compound_type": "digital camera"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a clip",
+      "timestamp": "2025-03-30T10:48:55.947525"
+    },
+    "response": {
+      "core_type": "clip",
+      "modifiers": [
+        "clip"
+      ],
+      "compound_type": "clip"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]
