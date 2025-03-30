@@ -2,121 +2,66 @@
 Decision: User chose to generate a new 3D model
 Model Provider: anthropic
 Model Name: claude-3-7-sonnet-20250219
-Raw Query: I want a camera lens
+Raw Query: I want a propeller
 ==================================================
 
 === KEYWORD EXTRACTION ===
 Attempt 1/3
 Query:
-I want a camera lens
+I want a propeller
 
-Full Prompt Sent to LLM:
-Analyze this description and extract the core object type and its key modifiers:
-I want a camera lens
-
-Instructions:
-1. Identify the main object type 
-2. Identify any important modifiers that describe what the part belongs to 
-3. Consider compound objects where both parts are essential 
-
-Return a JSON object in this format:
-{
-    "core_type": "main object type",
-    "modifiers": ["list of important modifiers"],
-    "compound_type": "full compound type if applicable"
-}
-
-Example 1:
-Input: "I want a rim of a car"
-Output: {
-    "core_type": "rim",
-    "modifiers": ["car"],
-    "compound_type": "car rim"
-}
-
-Example 2:
-Input: "Create a bicycle gear"
-Output: {
-    "core_type": "gear",
-    "modifiers": ["bicycle"],
-    "compound_type": "bicycle gear"
-}
-
-Return ONLY the JSON object, no additional text.
+Extracting keywords from description...
 
 Response:
-Core Type: camera lens
-Modifiers: camera, lens
-Compound Type: camera lens
+Core Type: propeller
+Modifiers: propeller
+Compound Type: propeller
 ==================================================
 
 === USER KEYWORD DECISION ===
 User accepted keywords: True
 ==================================================
 
-=== EXAMPLE RETRIEVAL ===
-Query:
-Description: I want a camera lens
-Filters from Step-back Analysis:
-- Principles: Optical axis symmetry: All lens elements must be perfectly aligned along central axis, Parametric relationships: Focal length determines overall lens length and element positioning, Material distinction: Different optical properties for glass elements vs. mechanical housing, Precision tolerances: Sub-millimeter accuracy required for functional appearance, Nested cylindrical hierarchy: Components must fit within each other with proper clearances
-- Components: Primary cylinder for outer lens barrel with precise diameter-to-length ratio, Nested internal cylinders for lens element housing and focus mechanism, Curved glass elements with varying convex/concave profiles based on lens type, Knurled rings for focus and aperture control with regular geometric patterns, Connector mount with bayonet or screw thread pattern matching camera body standards
-
-Keyword Data for Filtering:
-Core Type: camera lens
-Modifiers: camera, lens
-Compound Type: camera lens
-
-Search Parameters:
-Similarity Threshold: 0.7
-
-Retrieved Examples:
-Total Examples Found: 0
-
-=== RE-RANKING RESULTS ===
-Number of examples after re-ranking: 0
-
-Final Ranked Examples:
-==================================================
-
 === SCAD CODE GENERATION ===
 Query:
-Description: I want a camera lens
-Number of Examples Used: 0
+Description: I want a propeller
+Number of Examples Used: 1
 Step-back Analysis Used: Yes
 
 Full Prompt Sent to LLM:
 You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user's description.
 
 BASIC KNOWLEDGE:
-        {'categories': ['Furniture', 'Storage', 'Decoration', 'Utility', 'Tableware', 'Lighting', 'Accessories', 'Tools', 'Display', 'Organization'], 'properties': {'style': ['Modern', 'Traditional', 'Industrial', 'Minimalist', 'Art Deco', 'Victorian', 'Steampunk', 'Oriental', 'Scandinavian', 'Medieval'], 'complexity': ['SIMPLE', 'MEDIUM', 'COMPLEX'], 'use_case': ['Functional', 'Decorative', 'Storage', 'Display', 'Utility', 'Entertainment', 'Organization'], 'geometric_properties': ['Symmetrical', 'Asymmetrical', 'Angular', 'Curved', 'Organic', 'Regular', 'Irregular', 'Modular', 'Nested', 'Layered']}}
+{'categories': ['Furniture', 'Storage', 'Decoration', 'Utility', 'Tableware', 'Lighting', 'Accessories', 'Tools', 'Display', 'Organization'], 'properties': {'style': ['Modern', 'Traditional', 'Industrial', 'Minimalist', 'Art Deco', 'Victorian', 'Steampunk', 'Oriental', 'Scandinavian', 'Medieval'], 'complexity': ['SIMPLE', 'MEDIUM', 'COMPLEX'], 'use_case': ['Functional', 'Decorative', 'Storage', 'Display', 'Utility', 'Entertainment', 'Organization'], 'geometric_properties': ['Symmetrical', 'Asymmetrical', 'Angular', 'Curved', 'Organic', 'Regular', 'Irregular', 'Modular', 'Nested', 'Layered']}}
 
 RELEVANT EXAMPLES:
-        []
+[{'example': {'id': 'unknown_0c41abcf', 'metadata': {'code': '// Propeller Design\n// Parameters for customization\n$fn = 100;  // Resolution for circular objects\n\n// Main parameters\nnum_blades = 3;         // Number of propeller blades\nhub_radius = 10;        // Radius of central hub\nhub_height = 15;        // Height of central hub\nshaft_radius = 3;       // Radius of shaft hole\nblade_length = 50;      // Length of each blade\nblade_width = 15;       // Maximum width of blade\nblade_thickness = 3;    // Maximum thickness at blade root\ntwist_angle = 30;       // Twist angle from root to tip (degrees)\nairfoil_camber = 0.1;   // Camber ratio for airfoil shape\n\n// Module for creating a single propeller blade with twist and airfoil profile\nmodule blade() {\n    linear_extrude(height = blade_length, twist = -twist_angle, slices = 40, scale = 0.5) {\n        union() {\n            // Airfoil shape\n            translate([-blade_width/4, 0, 0])\n                scale([1, blade_thickness/blade_width, 1])\n                    ellipse(blade_width/2, blade_width/2);\n                \n            // Add slight camber for improved aerodynamics\n            translate([0, -blade_thickness * airfoil_camber, 0])\n                scale([0.8, 0.2, 1])\n                    circle(blade_width/2);\n        }\n    }\n}\n\n// Module for creating an ellipse\nmodule ellipse(width, height) {\n    scale([width, height, 1]) circle(1);\n}\n\n// Module for creating the central hub with shaft hole\nmodule hub() {\n    difference() {\n        union() {\n            // Main hub cylinder\n            cylinder(r1 = hub_radius, r2 = hub_radius * 0.8, h = hub_height);\n            \n            // Hub base (for strength)\n            cylinder(r = hub_radius * 1.2, h = hub_height * 0.2);\n            \n            // Hub top cap\n            translate([0, 0, hub_height])\n                cylinder(r1 = hub_radius * 0.8, r2 = hub_radius * 0.5, h = hub_height * 0.2);\n        }\n        \n        // Shaft hole through center\n        translate([0, 0, -1])\n            cylinder(r = shaft_radius, h = hub_height + 2);\n            \n        // Setscrew hole\n        translate([0, 0, hub_height/2])\n            rotate([0, 90, 0])\n                cylinder(r = shaft_radius/2, h = hub_radius + 1);\n    }\n}\n\n// Assemble the propeller\nmodule propeller() {\n    // Central hub\n    color("SlateGray") hub();\n    \n    // Blades\n    color("LightSteelBlue")\n    for (i = [0:num_blades-1]) {\n        rotate([0, 0, i * 360 / num_blades])\n            translate([hub_radius * 0.8, 0, hub_height * 0.6])\n                rotate([0, 90, 0])\n                    blade();\n    }\n}\n\n// Create the propeller\npropeller();', 'complexity': 'SIMPLE', 'description': 'I want a propeller', 'features': ['propeller'], 'geometric_properties': [], 'materials': '[]', 'object_type': 'propeller', 'step_back_analysis': {'core_principles': ['Helical geometry for blade surfaces with proper twist gradients', 'Rotational symmetry for balanced force distribution', 'Airfoil cross-sections with proper camber and thickness distribution', 'Conservation of angular momentum principles for proper blade pitch', 'Material thickness constraints for structural integrity'], 'shape_components': ['Central hub (cylindrical or ellipsoidal primitive)', 'Blades (NURBS surfaces or modified primitives with twist deformation)', 'Shaft connector (cylindrical with boolean operations for mounting)', 'Fillets and edge transitions (for reducing turbulence and stress concentrations)', 'Control knob structure (compound object with ergonomic considerations)'], 'implementation_steps': ['Create central hub and shaft axis with appropriate diameter ratios', 'Generate single blade profile with proper airfoil cross-section and twist gradient', 'Apply array modifier or circular pattern to replicate blades with proper angular spacing', 'Build connection fillets between hub and blade roots for stress distribution', 'Construct control knob with ergonomic grips and connection to shaft']}, 'style': 'Modern', 'technical_requirements': '[]', 'timestamp': '2025-03-30T19:15:49.549422', 'type': 'scad_generation', 'use_case': '[]', 'user_accepted': True}, 'distance': 0.0}, 'score': 0.764, 'score_breakdown': {'final_score': 0.764, 'component_scores': {'component_match': 0.0, 'step_back_match': 0.0, 'geometric_match': 0.0, 'feature_match': 0.32, 'object_type_match': 1.0, 'style_match': 0.0, 'complexity_match': 0.0}, 'step_back_details': {'principles': 0.0, 'abstractions': 0.0, 'approach': 0.0}}}]
 
 Analysis to consider:
 CORE PRINCIPLES:
-                - Optical axis symmetry: All lens elements must be perfectly aligned along central axis
-- Parametric relationships: Focal length determines overall lens length and element positioning
-- Material distinction: Different optical properties for glass elements vs. mechanical housing
-- Precision tolerances: Sub-millimeter accuracy required for functional appearance
-- Nested cylindrical hierarchy: Components must fit within each other with proper clearances
+                - Radial symmetry and rotational distribution of blades around a central axis
+- Airfoil cross-sectional geometry for blade efficiency (camber, thickness, angle of attack)
+- Helical geometry with pitch angle variation from hub to tip for optimal thrust
+- Conservation of material thickness for structural integrity
+- Parametric relationships between blade count, pitch, and hub diameter
                 
                 SHAPE COMPONENTS:
-                - Primary cylinder for outer lens barrel with precise diameter-to-length ratio
-- Nested internal cylinders for lens element housing and focus mechanism
-- Curved glass elements with varying convex/concave profiles based on lens type
-- Knurled rings for focus and aperture control with regular geometric patterns
-- Connector mount with bayonet or screw thread pattern matching camera body standards
+                - Central hub/knob: Cylindrical or ellipsoidal base with potential tapered front
+- Blades: Curved surfaces with airfoil cross-sections and helical twist
+- Fillets: Smooth transitions between hub and blade roots for stress distribution
+- Boss/mounting hardware: Cylindrical protrusion or recessed cavity for attachment
+- Optional spinner cap: Conical or hemispherical element for aerodynamic finishing
                 
                 IMPLEMENTATION STEPS:
-                1. Create basic cylindrical barrel with proper proportions and diameter based on lens type
-2. Model internal lens element groups with appropriate curvatures and spacing
-3. Develop mechanical control rings with proper knurling patterns and rotation constraints
-4. Add surface details including focus distance markings, aperture values, and branding
-5. Apply appropriate materials and textures to distinguish metal, glass, and rubber components
+                1. Create central hub geometry with appropriate diameter and profile curve
+2. Develop a single master blade with correct airfoil profile, twist angle, and taper
+3. Apply array/radial modifier to duplicate blades symmetrically around the rotation axis
+4. Create transitional fillets between blade roots and hub for structural integrity
+5. Add mounting features (shaft hole, mounting bosses, etc.) based on application requirements
+6. Apply smoothing and optimization for final surface quality
 
 USER REQUEST:
-I want a camera lens
+I want a propeller
 
 Please generate OpenSCAD code that satisfies the user's request. Follow these guidelines:
 1. Use clear variable names and comments
@@ -131,365 +76,171 @@ OpenSCAD code:
 
 Response:
 ```scad
-// Camera Lens Model
-// Author: OpenSCAD Expert
-// Description: A parametric DSLR camera lens with realistic details
+// Propeller Design
+// Customizable parameters
+$fn = 100;  // Resolution for circular objects
 
 // Main parameters
-lens_diameter = 70;      // Outer diameter of the lens barrel
-lens_length = 100;       // Total length of the lens
-mount_diameter = 65;     // Diameter of the lens mount
-front_element_diameter = 58; // Diameter of the front glass element
-focus_ring_width = 25;   // Width of the focus ring
-focus_ring_depth = 3;    // Depth of the knurling on the focus ring
-aperture_ring_width = 15; // Width of the aperture ring
-aperture_ring_depth = 2; // Depth of the knurling on the aperture ring
-knurl_count = 60;        // Number of knurls around the rings
+num_blades = 3;         // Number of propeller blades
+hub_radius = 10;        // Radius of central hub
+hub_height = 15;        // Height of central hub
+shaft_radius = 3;       // Radius of shaft hole
+blade_length = 50;      // Length of each blade
+blade_width = 15;       // Maximum width of blade
+blade_thickness = 3;    // Maximum thickness at blade root
+twist_angle = 30;       // Twist angle from root to tip (degrees)
+airfoil_camber = 0.1;   // Camber ratio for airfoil shape
 
-// Colors
-color_barrel = [0.2, 0.2, 0.2];    // Black lens barrel
-color_ring = [0.25, 0.25, 0.25];   // Dark gray rings
-color_glass = [0.8, 0.9, 0.95, 0.6]; // Slightly blue transparent glass
-color_mount = [0.3, 0.3, 0.3];     // Dark gray mount
-color_red = [0.8, 0.2, 0.2];       // Red accent color for lens markings
-
-// Module for creating the lens barrel
-module lens_barrel() {
-    color(color_barrel)
-    difference() {
-        cylinder(h=lens_length, d=lens_diameter, $fn=100);
-        translate([0, 0, -1])
-            cylinder(h=lens_length+2, d=lens_diameter-4, $fn=100);
-    }
-}
-
-// Module for lens glass elements
-module lens_element(diameter, curvature, thickness) {
-    color(color_glass)
-    translate([0, 0, 0])
-    union() {
-        // Main cylindrical part of the element
-        cylinder(h=thickness, d=diameter, $fn=100);
-        
-        // Convex front part
-        translate([0, 0, thickness])
-            scale([1, 1, curvature])
-            sphere(d=diameter, $fn=100);
-    }
-}
-
-// Module for creating knurled rings (focus and aperture)
-module knurled_ring(diameter, width, depth, knurls) {
-    color(color_ring)
-    difference() {
-        cylinder(h=width, d=diameter, $fn=100);
-        
-        // Create the knurling pattern
-        for(i = [0 : knurls - 1]) {
-            rotate([0, 0, i * (360 / knurls)])
-            translate([diameter/2 - depth/2, 0, -1])
-            rotate([0, 0, 45])
-            cube([depth, depth, width+2]);
-        }
-        
-        // Hollow out the inside
-        translate([0, 0, -1])
-            cylinder(h=width+2, d=diameter-8, $fn=100);
-    }
-}
-
-// Module for lens mount (bayonet style)
-module lens_mount() {
-    color(color_mount)
-    difference() {
-        cylinder(h=10, d=mount_diameter, $fn=100);
-        
-        // Hollow out the inside
-        translate([0, 0, -1])
-            cylinder(h=12, d=mount_diameter-8, $fn=100);
-        
-        // Create bayonet notches
-        for(i = [0 : 2]) {
-            rotate([0, 0, i * 120])
-            translate([mount_diameter/2 - 4, 0, 5])
-            cube([10, 8, 5], center=true);
+// Module for creating a single propeller blade with twist and airfoil profile
+module blade() {
+    linear_extrude(height = blade_length, twist = -twist_angle, slices = 40, scale = 0.5) {
+        union() {
+            // Airfoil shape
+            translate([-blade_width/4, 0, 0])
+                scale([1, blade_thickness/blade_width, 1])
+                    ellipse(blade_width/2, blade_width/2);
+                
+            // Add slight camber for improved aerodynamics
+            translate([0, -blade_thickness * airfoil_camber, 0])
+                scale([0.8, 0.2, 1])
+                    circle(blade_width/2);
         }
     }
-    
-    // Add mounting pins
-    for(i = [0 : 2]) {
-        rotate([0, 0, i * 120 + 60])
-        translate([mount_diameter/2 - 5, 0, 3])
-        rotate([90, 0, 0])
-        cylinder(h=3, d=4, center=true, $fn=20);
-    }
 }
 
-// Module for front lens cap
-module lens_cap() {
-    color([0.15, 0.15, 0.15])
+// Module for creating an ellipse
+module ellipse(width, height) {
+    scale([width, height, 1]) circle(1);
+}
+
+// Module for creating the central hub with shaft hole
+module hub() {
     difference() {
         union() {
-            cylinder(h=3, d=lens_diameter+2, $fn=100);
-            cylinder(h=8, d=front_element_diameter+6, $fn=100);
+            // Main hub cylinder
+            cylinder(r1 = hub_radius, r2 = hub_radius * 0.8, h = hub_height);
+            
+            // Hub base (for strength)
+            cylinder(r = hub_radius * 1.2, h = hub_height * 0.2);
+            
+            // Hub top cap
+            translate([0, 0, hub_height])
+                cylinder(r1 = hub_radius * 0.8, r2 = hub_radius * 0.5, h = hub_height * 0.2);
         }
         
+        // Shaft hole through center
         translate([0, 0, -1])
-            cylinder(h=10, d=front_element_diameter+2, $fn=100);
+            cylinder(r = shaft_radius, h = hub_height + 2);
+            
+        // Setscrew hole
+        translate([0, 0, hub_height/2])
+            rotate([0, 90, 0])
+                cylinder(r = shaft_radius/2, h = hub_radius + 1);
     }
 }
 
-// Module for branding details
-module branding() {
-    // Red dot (brand logo)
-    color(color_red)
-    translate([lens_diameter/2 - 1.5, 0, lens_length - 15])
-    rotate([0, 90, 0])
-    cylinder(h=3, d=5, $fn=20);
+// Assemble the propeller
+module propeller() {
+    // Central hub
+    color("SlateGray") hub();
     
-    // Lens markings (simplified)
-    color([0.9, 0.9, 0.9])
-    for(i = [0 : 5]) {
-        rotate([0, 0, i * 60])
-        translate([lens_diameter/2 - 0.5, 0, lens_length - focus_ring_width - 10])
-        cube([1, 1, 3]);
+    // Blades
+    color("LightSteelBlue")
+    for (i = [0:num_blades-1]) {
+        rotate([0, 0, i * 360 / num_blades])
+            translate([hub_radius * 0.8, 0, hub_height * 0.6])
+                rotate([0, 90, 0])
+                    blade();
     }
 }
 
-// Module for aperture label
-module aperture_label() {
-    color([0.9, 0.9, 0.9])
-    for(i = [0 : 4]) {
-        angle = i * 20;
-        rotate([0, 0, angle])
-        translate([lens_diameter/2 - 0.5, 0, 50])
-        cube([1, 1.5, 2]);
-        
-        // f-numbers
-        rotate([0, 0, angle + 10])
-        translate([lens_diameter/2 - 0.5, 0, 50])
-        cube([1, 0.5, 2]);
-    }
-}
-
-// Assemble the complete lens
-module camera_lens() {
-    // Main components
-    lens_barrel();
-    
-    // Front glass element
-    translate([0, 0, lens_length - 5])
-        lens_element(front_element_diameter, 0.2, 3);
-    
-    // Secondary glass element
-    translate([0, 0, lens_length - 20])
-        lens_element(front_element_diameter - 10, -0.15, 2);
-    
-    // Focus ring
-    translate([0, 0, lens_length - focus_ring_width - 20])
-        knurled_ring(lens_diameter, focus_ring_width, focus_ring_depth, knurl_count);
-    
-    // Aperture ring
-    translate([0, 0, lens_length - focus_ring_width - aperture_ring_width - 25])
-        knurled_ring(lens_diameter - 5, aperture_ring_width, aperture_ring_depth, knurl_count);
-    
-    // Lens mount at the back
-    translate([0, 0, 0])
-        lens_mount();
-    
-    // Branding and labels
-    branding();
-    aperture_label();
-}
-
-// Render the lens
-camera_lens();
-
-// Uncomment to show the lens cap
-// translate([0, 0, lens_length])
-//     lens_cap();
+// Create the propeller
+propeller();
 ```
 
 ==================================================
 
 === GENERATED SCAD CODE ===
-// Camera Lens Model
-// Author: OpenSCAD Expert
-// Description: A parametric DSLR camera lens with realistic details
+// Propeller Design
+// Customizable parameters
+$fn = 100;  // Resolution for circular objects
 
 // Main parameters
-lens_diameter = 70;      // Outer diameter of the lens barrel
-lens_length = 100;       // Total length of the lens
-mount_diameter = 65;     // Diameter of the lens mount
-front_element_diameter = 58; // Diameter of the front glass element
-focus_ring_width = 25;   // Width of the focus ring
-focus_ring_depth = 3;    // Depth of the knurling on the focus ring
-aperture_ring_width = 15; // Width of the aperture ring
-aperture_ring_depth = 2; // Depth of the knurling on the aperture ring
-knurl_count = 60;        // Number of knurls around the rings
+num_blades = 3;         // Number of propeller blades
+hub_radius = 10;        // Radius of central hub
+hub_height = 15;        // Height of central hub
+shaft_radius = 3;       // Radius of shaft hole
+blade_length = 50;      // Length of each blade
+blade_width = 15;       // Maximum width of blade
+blade_thickness = 3;    // Maximum thickness at blade root
+twist_angle = 30;       // Twist angle from root to tip (degrees)
+airfoil_camber = 0.1;   // Camber ratio for airfoil shape
 
-// Colors
-color_barrel = [0.2, 0.2, 0.2];    // Black lens barrel
-color_ring = [0.25, 0.25, 0.25];   // Dark gray rings
-color_glass = [0.8, 0.9, 0.95, 0.6]; // Slightly blue transparent glass
-color_mount = [0.3, 0.3, 0.3];     // Dark gray mount
-color_red = [0.8, 0.2, 0.2];       // Red accent color for lens markings
-
-// Module for creating the lens barrel
-module lens_barrel() {
-    color(color_barrel)
-    difference() {
-        cylinder(h=lens_length, d=lens_diameter, $fn=100);
-        translate([0, 0, -1])
-            cylinder(h=lens_length+2, d=lens_diameter-4, $fn=100);
-    }
-}
-
-// Module for lens glass elements
-module lens_element(diameter, curvature, thickness) {
-    color(color_glass)
-    translate([0, 0, 0])
-    union() {
-        // Main cylindrical part of the element
-        cylinder(h=thickness, d=diameter, $fn=100);
-        
-        // Convex front part
-        translate([0, 0, thickness])
-            scale([1, 1, curvature])
-            sphere(d=diameter, $fn=100);
-    }
-}
-
-// Module for creating knurled rings (focus and aperture)
-module knurled_ring(diameter, width, depth, knurls) {
-    color(color_ring)
-    difference() {
-        cylinder(h=width, d=diameter, $fn=100);
-        
-        // Create the knurling pattern
-        for(i = [0 : knurls - 1]) {
-            rotate([0, 0, i * (360 / knurls)])
-            translate([diameter/2 - depth/2, 0, -1])
-            rotate([0, 0, 45])
-            cube([depth, depth, width+2]);
-        }
-        
-        // Hollow out the inside
-        translate([0, 0, -1])
-            cylinder(h=width+2, d=diameter-8, $fn=100);
-    }
-}
-
-// Module for lens mount (bayonet style)
-module lens_mount() {
-    color(color_mount)
-    difference() {
-        cylinder(h=10, d=mount_diameter, $fn=100);
-        
-        // Hollow out the inside
-        translate([0, 0, -1])
-            cylinder(h=12, d=mount_diameter-8, $fn=100);
-        
-        // Create bayonet notches
-        for(i = [0 : 2]) {
-            rotate([0, 0, i * 120])
-            translate([mount_diameter/2 - 4, 0, 5])
-            cube([10, 8, 5], center=true);
+// Module for creating a single propeller blade with twist and airfoil profile
+module blade() {
+    linear_extrude(height = blade_length, twist = -twist_angle, slices = 40, scale = 0.5) {
+        union() {
+            // Airfoil shape
+            translate([-blade_width/4, 0, 0])
+                scale([1, blade_thickness/blade_width, 1])
+                    ellipse(blade_width/2, blade_width/2);
+                
+            // Add slight camber for improved aerodynamics
+            translate([0, -blade_thickness * airfoil_camber, 0])
+                scale([0.8, 0.2, 1])
+                    circle(blade_width/2);
         }
     }
-    
-    // Add mounting pins
-    for(i = [0 : 2]) {
-        rotate([0, 0, i * 120 + 60])
-        translate([mount_diameter/2 - 5, 0, 3])
-        rotate([90, 0, 0])
-        cylinder(h=3, d=4, center=true, $fn=20);
-    }
 }
 
-// Module for front lens cap
-module lens_cap() {
-    color([0.15, 0.15, 0.15])
+// Module for creating an ellipse
+module ellipse(width, height) {
+    scale([width, height, 1]) circle(1);
+}
+
+// Module for creating the central hub with shaft hole
+module hub() {
     difference() {
         union() {
-            cylinder(h=3, d=lens_diameter+2, $fn=100);
-            cylinder(h=8, d=front_element_diameter+6, $fn=100);
+            // Main hub cylinder
+            cylinder(r1 = hub_radius, r2 = hub_radius * 0.8, h = hub_height);
+            
+            // Hub base (for strength)
+            cylinder(r = hub_radius * 1.2, h = hub_height * 0.2);
+            
+            // Hub top cap
+            translate([0, 0, hub_height])
+                cylinder(r1 = hub_radius * 0.8, r2 = hub_radius * 0.5, h = hub_height * 0.2);
         }
         
+        // Shaft hole through center
         translate([0, 0, -1])
-            cylinder(h=10, d=front_element_diameter+2, $fn=100);
+            cylinder(r = shaft_radius, h = hub_height + 2);
+            
+        // Setscrew hole
+        translate([0, 0, hub_height/2])
+            rotate([0, 90, 0])
+                cylinder(r = shaft_radius/2, h = hub_radius + 1);
     }
 }
 
-// Module for branding details
-module branding() {
-    // Red dot (brand logo)
-    color(color_red)
-    translate([lens_diameter/2 - 1.5, 0, lens_length - 15])
-    rotate([0, 90, 0])
-    cylinder(h=3, d=5, $fn=20);
+// Assemble the propeller
+module propeller() {
+    // Central hub
+    color("SlateGray") hub();
     
-    // Lens markings (simplified)
-    color([0.9, 0.9, 0.9])
-    for(i = [0 : 5]) {
-        rotate([0, 0, i * 60])
-        translate([lens_diameter/2 - 0.5, 0, lens_length - focus_ring_width - 10])
-        cube([1, 1, 3]);
+    // Blades
+    color("LightSteelBlue")
+    for (i = [0:num_blades-1]) {
+        rotate([0, 0, i * 360 / num_blades])
+            translate([hub_radius * 0.8, 0, hub_height * 0.6])
+                rotate([0, 90, 0])
+                    blade();
     }
 }
 
-// Module for aperture label
-module aperture_label() {
-    color([0.9, 0.9, 0.9])
-    for(i = [0 : 4]) {
-        angle = i * 20;
-        rotate([0, 0, angle])
-        translate([lens_diameter/2 - 0.5, 0, 50])
-        cube([1, 1.5, 2]);
-        
-        // f-numbers
-        rotate([0, 0, angle + 10])
-        translate([lens_diameter/2 - 0.5, 0, 50])
-        cube([1, 0.5, 2]);
-    }
-}
-
-// Assemble the complete lens
-module camera_lens() {
-    // Main components
-    lens_barrel();
-    
-    // Front glass element
-    translate([0, 0, lens_length - 5])
-        lens_element(front_element_diameter, 0.2, 3);
-    
-    // Secondary glass element
-    translate([0, 0, lens_length - 20])
-        lens_element(front_element_diameter - 10, -0.15, 2);
-    
-    // Focus ring
-    translate([0, 0, lens_length - focus_ring_width - 20])
-        knurled_ring(lens_diameter, focus_ring_width, focus_ring_depth, knurl_count);
-    
-    // Aperture ring
-    translate([0, 0, lens_length - focus_ring_width - aperture_ring_width - 25])
-        knurled_ring(lens_diameter - 5, aperture_ring_width, aperture_ring_depth, knurl_count);
-    
-    // Lens mount at the back
-    translate([0, 0, 0])
-        lens_mount();
-    
-    // Branding and labels
-    branding();
-    aperture_label();
-}
-
-// Render the lens
-camera_lens();
-
-// Uncomment to show the lens cap
-// translate([0, 0, lens_length])
-//     lens_cap();
+// Create the propeller
+propeller();
 ==================================================
 
 === USER DECISION ===

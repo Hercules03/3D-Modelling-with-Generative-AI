@@ -1,7 +1,6 @@
 from langchain_ollama import ChatOllama
-from langchain.prompts import ChatPromptTemplate
 from prompts import KEYWORD_EXTRACTOR_SYSTEM_PROMPT, KEYWORD_EXTRACTOR_PROMPT
-from llm_management import ModelDefinitions
+from LLM import ModelDefinitions
 import json
 
 class KeywordExtractor:

@@ -1,22 +1,29 @@
 from typing import Optional, Dict
-from llm_management import LLMProvider
+from LLM import LLMProvider
 from conversation_logger import ConversationLogger
 from prompts import STEP_BACK_PROMPT_TEMPLATE
 import datetime
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 class StepBackAnalyzer:
-    def __init__(self, llm=None, logger=None):
+    def __init__(self, llm, conversation_logger):
         """Initialize the step-back analyzer.
         
         Args:
             llm: Optional LLM provider instance. If not provided, will create a new one.
             logger: Optional conversation logger instance. If not provided, will create a new one.
         """
-        self.llm = llm or LLMProvider.get_llm()
-        self.logger = logger or ConversationLogger()
+        print("Step-back analyzer initialising...")
+        logger.info("Step-back analyzer initialising...")
+        self.llm = llm
+        self.conversation_logger = conversation_logger
         self.step_back_prompt = STEP_BACK_PROMPT_TEMPLATE
         self.debug_log = []
+        logger.info("Step-back analyzer initialised")
+        print("Step-back analyzer initialised")
 
     def write_debug(self, *messages):
         """Write messages to debug log"""
@@ -40,7 +47,7 @@ class StepBackAnalyzer:
             try:
                 # Format the step-back prompt with keyword data
                 step_back_prompt_value = self.step_back_prompt.format(
-                    Object=keyword_data.get('compound_type', '') or keyword_data.get('core_type', ''),
+                    Object=keyword_data.get('compound_type', ''),
                     Type=keyword_data.get('core_type', ''),
                     Modifiers=', '.join(keyword_data.get('modifiers', []))
                 )
@@ -131,7 +138,7 @@ class StepBackAnalyzer:
                 
                 if user_input == 'yes':
                     # Log the approved analysis
-                    self.logger.log_step_back_analysis({
+                    self.conversation_logger.log_step_back_analysis({
                         "query": {
                             "input": description,
                             "timestamp": datetime.datetime.now().isoformat()

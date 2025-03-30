@@ -1,11 +1,14 @@
 import json
 import os
 from datetime import datetime
+import logging
+logger = logging.getLogger(__name__)
 
 class ConversationLogger:
+    logger.info("Working on ConversationLogger Class")
     def __init__(self):
         """Initialize the conversation logger"""
-        print("\n=== Initializing Conversation Logger ===")
+        logger.info("Initializing Conversation Logger...")
         self.log_dir = "conversation_logs"
         self.step_back_file = os.path.join(self.log_dir, "step_back_conversations.json")
         self.scad_gen_file = os.path.join(self.log_dir, "scad_generation_conversations.json")
@@ -17,17 +20,22 @@ class ConversationLogger:
     def _init_log_files(self):
         """Initialize log files if they don't exist"""
         print("Initializing log files...")
+        logger.info("Initializing log files...")
         os.makedirs(self.log_dir, exist_ok=True)
         print(f"- Using log directory: {self.log_dir}")
+        logger.info(f"- Using log directory: {self.log_dir}")
         
         # Initialize each file with empty array if it doesn't exist
         for file_path in [self.step_back_file, self.scad_gen_file, self.validation_file, self.keyword_extraction_file]:
             if not os.path.exists(file_path):
+                logger.info("log file not found, creating new log file")
                 with open(file_path, 'w') as f:
                     json.dump([], f)
                 print(f"- Created new log file: {os.path.basename(file_path)}")
             else:
+                logger.info("log file found, using existing log file")
                 print(f"- Using existing log file: {os.path.basename(file_path)}")
+                logger.info(f"- Using existing log file: {os.path.basename(file_path)}")
     
     def _append_to_json(self, file_path, new_data):
         """Append new data to existing JSON file"""
@@ -198,36 +206,33 @@ class ConversationLogger:
     def get_scad_generation_logs(self):
         """Read and return all SCAD generation logs"""
         print("\n=== Reading SCAD Generation Logs ===")
+        logger.info("Reading SCAD Generation Logs...")
         try:
             with open(self.scad_gen_file, 'r') as f:
                 logs = json.load(f)
                 # Convert the logs to the format expected by the knowledge base
                 formatted_logs = []
                 for log in logs:
-                    # Only include entries marked as user_accepted
-                    if log.get('user_accepted', False):
-                        timestamp = log.get('timestamp', datetime.now().isoformat())
-                        # Get request from the log or extract from prompt if needed
-                        request = log.get('request', '')
-                        if not request and 'prompt' in log:
-                            # Try to extract description from prompt
-                            prompt = log['prompt']
-                            parts = prompt.split("USER REQUEST:", 1)
-                            if len(parts) > 1:
-                                request = parts[1].split("\n\n", 1)[0].strip()
-                        
-                        # Create a properly formatted log entry
-                        entry = {
-                            'request': request,  # The description/query
-                            'code': log.get('scad_code', ''),   # The generated SCAD code
-                            'timestamp': timestamp,
-                            'type': 'scad_generation',
-                            'user_accepted': True
-                        }
-                        formatted_logs.append(entry)
-                        print(f"- Found user-accepted example from {timestamp}")
+                    timestamp = log.get('timestamp', datetime.now().isoformat())
+                    # Get request from the log or extract from prompt if needed
+                    request = log.get('request', '')
+                    if not request and 'prompt' in log:
+                        # Try to extract description from prompt
+                        prompt = log['prompt']
+                        parts = prompt.split("USER REQUEST:", 1)
+                        if len(parts) > 1:
+                            request = parts[1].split("\n\n", 1)[0].strip()
+                    
+                    # Create a properly formatted log entry
+                    entry = {
+                        'request': request,  # The description/query
+                        'code': log.get('scad_code', ''),   # The generated SCAD code
+                        'timestamp': timestamp
+                    }
+                    formatted_logs.append(entry)
+                    print(f"- Found example from {timestamp}")
                 
-                print(f"- Successfully read {len(formatted_logs)} user-accepted SCAD generation logs out of {len(logs)} total")
+                print(f"- Successfully read {len(formatted_logs)} SCAD generation logs")
                 print("=== SCAD Generation Logs Read Complete ===\n")
                 return formatted_logs
         except (FileNotFoundError, json.JSONDecodeError) as e:

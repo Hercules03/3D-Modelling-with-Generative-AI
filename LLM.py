@@ -4,10 +4,18 @@ LLM Management Module - Consolidates LLM provider and model definitions
 
 import os
 import time
+import subprocess
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
 from typing import Optional, Literal
 from dotenv import load_dotenv
+import logging
+import json
+from pathlib import Path
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
 
 # Load environment variables
 load_dotenv()
@@ -41,10 +49,62 @@ class ModelDefinitions:
         }
         return provider_map.get(provider.lower())
 
+
+class ModelGeneratorConfig:
+    """Configuration class for the 3D Model Generator"""
+    def __init__(self, GenerationSettings):
+        logger.info("Working on ModelGeneratorConfig Class")
+        self.quit_words = ['quit', 'exit', 'bye', 'q']
+        self.llm_providers = {
+            "1": {"name": "anthropic", "model": ModelDefinitions.ANTHROPIC},
+            "2": {"name": "openai", "model": ModelDefinitions.OPENAI},
+            "3": {"name": "gemma", "model": ModelDefinitions.GEMMA},
+            "4": {"name": "deepseek", "model": ModelDefinitions.DEEPSEEK}
+        }
+        self.settings = GenerationSettings
+        self.output_dir = Path("output")
+        self.output_dir.mkdir(exist_ok=True)
+
+class OllamaManager:
+    """Manager class for Ollama-related operations"""
+    logger.info("Working on OllamaManager Class")
+    @staticmethod
+    def check_ollama(llm_provider: str) -> bool:
+        """Check if Ollama is installed and running"""
+        try:
+            response = subprocess.run(
+                ['curl', '-s', 'http://localhost:11434/api/tags'],
+                capture_output=True,
+                text=True
+            )
+            
+            if response.returncode != 0:
+                logger.error("Failed to connect to Ollama")
+                return False
+                
+            model_name = {
+                "gemma": ModelDefinitions.GEMMA,
+                "deepseek": ModelDefinitions.DEEPSEEK
+            }.get(llm_provider, ModelDefinitions.GEMMA)
+            
+            model_list = json.loads(response.stdout)
+            if not any(model['name'] == model_name for model in model_list['models']):
+                logger.warning(f"{model_name} not found. Please run: ollama pull {model_name}")
+                return False
+            print(f"Ollama is running and {model_name} is available")
+            logger.info(f"Ollama is running and {model_name} is available")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error checking Ollama: {str(e)}")
+        return False
+
+
 class LLMProvider:
     """Enhanced LLM provider management"""
-    
+    logger.info("Working on LLMProvider Class")
     def __init__(self):
+        logger.info("Initializing LLM Provider...")
         self.models = ModelDefinitions()
     
     @staticmethod

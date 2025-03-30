@@ -1,9 +1,7 @@
-from llm_management import LLMProvider, ModelDefinitions
+from LLM import LLMProvider, ModelDefinitions
 import json
 from datetime import datetime
 from prompts import METADATA_EXTRACTION_PROMPT, KEYWORD_EXTRACTOR_PROMPT, CATEGORY_ANALYSIS_PROMPT
-from conversation_logger import ConversationLogger
-from LLMPromptLogger import LLMPromptLogger
 from constant import BASIC_KNOWLEDGE
 import re
 from typing import Dict, List, Union, Optional
@@ -91,21 +89,33 @@ class MetadataExtractor:
         "purpose": ["practical", "decorative", "educational", "prototype"]
     }
 
-    def __init__(self, llm_provider="gemma"):
+    def __init__(self, llm_provider, conversation_logger, prompt_logger):
         """Initialize the metadata extractor with an LLM provider"""
+        logger.info("Initializing Metadata Extractor...")
         print("\nInitializing Metadata Extractor...")
-        # Main LLM for metadata extraction (using Gemma)
-        print("- Using gemma3:4b-it-q8_0 for metadata extraction")
+        # Main LLM for metadata extraction
+        print(f"- Using {llm_provider} for metadata extraction")
+        # Get the appropriate model based on the provider
+        model = None
+        if llm_provider == "anthropic":
+            model = ModelDefinitions.ANTHROPIC
+        elif llm_provider == "openai":
+            model = ModelDefinitions.OPENAI
+        elif llm_provider == "gemma":
+            model = ModelDefinitions.GEMMA
+        elif llm_provider == "deepseek":
+            model = ModelDefinitions.DEEPSEEK
+        
         self.llm = LLMProvider.get_llm(
-            provider="gemma",
+            provider=llm_provider,
             temperature=0.7,
-            model=ModelDefinitions.GEMMA  # Explicitly use 4b model for main extraction
+            model=model
         )
-        print("- Main LLM provider initialized")
+        print("- Metadata Extractor LLM provider initialized")
         
         self.extraction_prompt = METADATA_EXTRACTION_PROMPT
-        self.logger = ConversationLogger()
-        self.prompt_logger = LLMPromptLogger()  # Add LLMPromptLogger
+        self.logger = conversation_logger
+        self.prompt_logger = prompt_logger
         
         # Define required metadata fields
         self.required_fields = {
@@ -508,12 +518,30 @@ class MetadataExtractor:
         """
         if not list1 or not list2:
             return 0.0
+            
+        # Convert to lists if strings
+        if isinstance(list1, str):
+            list1 = [list1]
+        if isinstance(list2, str):
+            list2 = [list2]
         
         # Keywords that indicate mechanical/automotive relevance
         mechanical_keywords = {
             'circular', 'cylindrical', 'rotational', 'symmetric', 'concentric',
             'wheel', 'rim', 'hub', 'spoke', 'bolt', 'mounting', 'automotive',
-            'vehicle', 'car', 'truck', 'axle', 'bearing'
+            'vehicle', 'car', 'truck', 'axle', 'bearing', 'blade', 'propeller'
+        }
+        
+        # Object type pairs with high similarity
+        object_type_similarities = {
+            ('propeller', 'blade'): 0.8,
+            ('wheel', 'rim'): 0.7,
+            ('container', 'box'): 0.6,
+            ('fan', 'propeller'): 0.7,
+            ('bottle', 'container'): 0.6,
+            ('cup', 'container'): 0.5,
+            ('sword', 'blade'): 0.5,
+            ('knife', 'blade'): 0.6
         }
         
         total_score = 0
@@ -521,24 +549,43 @@ class MetadataExtractor:
         
         for item1 in list1:
             item_scores = []
-            item1_words = set(str(item1).lower().split())
+            item1_str = str(item1).lower()
+            item1_words = set(item1_str.split())
             
             # Check for mechanical/automotive relevance
             mechanical_relevance = len(item1_words.intersection(mechanical_keywords)) > 0
             
             for item2 in list2:
-                item2_words = set(str(item2).lower().split())
+                item2_str = str(item2).lower()
+                item2_words = set(item2_str.split())
                 
-                # Basic word overlap score
-                overlap_score = len(item1_words.intersection(item2_words)) / len(item1_words.union(item2_words))
+                # Check object type similarities for special cases
+                object_pair_score = 0
+                for (obj1, obj2), score in object_type_similarities.items():
+                    if (obj1 in item1_str and obj2 in item2_str) or (obj2 in item1_str and obj1 in item2_str):
+                        object_pair_score = score
+                        break
+                
+                # Basic word overlap score (if words exist)
+                if item1_words and item2_words:
+                    overlap_score = len(item1_words.intersection(item2_words)) / len(item1_words.union(item2_words))
+                else:
+                    overlap_score = 0
                 
                 # Fuzzy match score
-                fuzzy_score = fuzz.ratio(str(item1).lower(), str(item2).lower()) / 100.0
+                fuzzy_score = fuzz.ratio(item1_str, item2_str) / 100.0
+                
+                # Token sort ratio for handling word order differences
+                token_sort_score = fuzz.token_sort_ratio(item1_str, item2_str) / 100.0
                 
                 # Combined score with mechanical relevance bonus
-                combined_score = (overlap_score * 0.6 + fuzzy_score * 0.4)
+                combined_score = max(
+                    (overlap_score * 0.3 + fuzzy_score * 0.4 + token_sort_score * 0.3),
+                    object_pair_score
+                )
+                
                 if mechanical_relevance and len(item2_words.intersection(mechanical_keywords)) > 0:
-                    combined_score *= 1.5  # 50% bonus for mechanical matches
+                    combined_score *= 1.2  # 20% bonus for mechanical matches
                 
                 item_scores.append(combined_score)
             

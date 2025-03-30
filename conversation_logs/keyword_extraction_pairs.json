@@ -1175,5 +1175,257 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "I want a lamp",
+      "timestamp": "2025-03-30T11:57:43.733785"
+    },
+    "response": {
+      "core_type": "lamp",
+      "modifiers": [
+        "lamp"
+      ],
+      "compound_type": "lamp"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a phone charger",
+      "timestamp": "2025-03-30T16:15:41.947705"
+    },
+    "response": {
+      "core_type": "phone charger",
+      "modifiers": [
+        "phone"
+      ],
+      "compound_type": "phone charger"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a CD",
+      "timestamp": "2025-03-30T16:23:50.504792"
+    },
+    "response": {
+      "core_type": "CD",
+      "modifiers": [
+        "CD"
+      ],
+      "compound_type": "CD"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a boat",
+      "timestamp": "2025-03-30T18:01:13.616804"
+    },
+    "response": {
+      "core_type": "boat",
+      "modifiers": [
+        "boat"
+      ],
+      "compound_type": "boat"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a student desk",
+      "timestamp": "2025-03-30T18:04:34.275940"
+    },
+    "response": {
+      "core_type": "desk",
+      "modifiers": [
+        "student"
+      ],
+      "compound_type": "student desk"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a desk",
+      "timestamp": "2025-03-30T18:11:43.091358"
+    },
+    "response": {
+      "core_type": "desk",
+      "modifiers": [
+        "desk"
+      ],
+      "compound_type": "desk"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller",
+      "timestamp": "2025-03-30T19:04:59.960158"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "propeller"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller",
+      "timestamp": "2025-03-30T19:12:22.953046"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "propeller"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller with 4 blades",
+      "timestamp": "2025-03-30T19:38:50.757029"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "4 blades"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller with 4 blades",
+      "timestamp": "2025-03-30T19:49:27.922939"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "4 blades"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller with 2 blades",
+      "timestamp": "2025-03-30T20:22:28.542271"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "2 blades"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller with 5 blades",
+      "timestamp": "2025-03-30T20:40:47.307756"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "5 blades"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a blade of propeller",
+      "timestamp": "2025-03-30T20:46:47.570821"
+    },
+    "response": {
+      "core_type": "blade",
+      "modifiers": [
+        "propeller"
+      ],
+      "compound_type": "blade of propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a propeller",
+      "timestamp": "2025-03-30T20:50:39.750576"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "propeller"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]

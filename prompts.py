@@ -137,10 +137,10 @@ Please maintain the XML-style tags and structured format shown above."""
 OPENSCAD_GNERATOR_PROMPT_TEMPLATE = """You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user's description.
 
 BASIC KNOWLEDGE:
-        {basic_knowledge}
+{basic_knowledge}
 
 RELEVANT EXAMPLES:
-        {examples}
+{examples}
 
 Analysis to consider:
 {step_back_analysis}

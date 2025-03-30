@@ -1,291 +1,175 @@
-2025-03-30 11:25:59,590 - __main__ - INFO - Logs cleared for new generation
-2025-03-30 11:25:59,591 - __main__ - INFO - ==================================================
-2025-03-30 11:25:59,591 - __main__ - INFO - Starting 3D Model Generator
-2025-03-30 11:25:59,591 - __main__ - INFO - Time: 2025-03-30T11:25:59.591085
-2025-03-30 11:25:59,591 - __main__ - INFO - Configuration:
-2025-03-30 11:25:59,591 - __main__ - INFO -   - Max Generation Attempts: 3
-2025-03-30 11:25:59,591 - __main__ - INFO -   - Similarity Threshold: 0.70
-2025-03-30 11:25:59,591 - __main__ - INFO -   - Output Directory: output
-2025-03-30 11:25:59,591 - __main__ - INFO - ==================================================
-2025-03-30 11:26:01,778 - __main__ - INFO - Initializing generator with provider: anthropic
-2025-03-30 11:26:01,778 - __main__ - DEBUG - Stage Start: Initialization
-  Time: 2025-03-30T11:26:01.778749
-  Initial Message: Initializing generator
-2025-03-30 11:26:01,778 - __main__ - DEBUG - Progress Calculation:
-  Completed Weight: 0.5
-  Current Stage Weight: 0.1
-  Current Progress: 50.0%
-  Total Progress: 55.0%
-2025-03-30 11:26:01,778 - __main__ - DEBUG - Progress Update:
-  Stage: Initialization
-  Stage Progress: 50.0%
-  Total Progress: 55.0%
-  Message: Initializing generator
-  Time: 2025-03-30T11:26:01.778866
-2025-03-30 11:26:01,778 - __main__ - DEBUG - Progress Bar:
-  Progress: 55.0%
-  Width: 30
-  Filled: 16
-  Bar: ================--------------
-2025-03-30 11:26:01,846 - urllib3.util.retry - DEBUG - Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
-2025-03-30 11:26:01,850 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
-2025-03-30 11:26:01,948 - chromadb.config - DEBUG - Starting component System
-2025-03-30 11:26:01,948 - chromadb.config - DEBUG - Starting component Posthog
-2025-03-30 11:26:01,948 - chromadb.config - DEBUG - Starting component OpenTelemetryClient
-2025-03-30 11:26:01,948 - chromadb.config - DEBUG - Starting component SqliteDB
-2025-03-30 11:26:01,953 - chromadb.config - DEBUG - Starting component SimpleQuotaEnforcer
-2025-03-30 11:26:01,954 - chromadb.config - DEBUG - Starting component SimpleRateLimitEnforcer
-2025-03-30 11:26:01,954 - chromadb.config - DEBUG - Starting component LocalSegmentManager
-2025-03-30 11:26:01,954 - chromadb.config - DEBUG - Starting component LocalExecutor
-2025-03-30 11:26:01,954 - chromadb.config - DEBUG - Starting component SegmentAPI
-2025-03-30 11:26:02,465 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): us.i.posthog.com:443
-2025-03-30 11:26:03,540 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-30 11:26:04,755 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: all-MiniLM-L6-v2
-2025-03-30 11:26:04,757 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): huggingface.co:443
-2025-03-30 11:26:05,024 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
-2025-03-30 11:26:05,255 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json HTTP/1.1" 200 0
-2025-03-30 11:26:05,574 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md HTTP/1.1" 200 0
-2025-03-30 11:26:05,801 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
-2025-03-30 11:26:06,030 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json HTTP/1.1" 200 0
-2025-03-30 11:26:06,262 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json HTTP/1.1" 404 0
-2025-03-30 11:26:06,897 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json HTTP/1.1" 200 0
-2025-03-30 11:26:07,294 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
-2025-03-30 11:26:07,583 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2/revision/main HTTP/1.1" 200 6759
-2025-03-30 11:26:13,258 - urllib3.connectionpool - DEBUG - https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2 HTTP/1.1" 200 6759
-2025-03-30 11:26:13,311 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=11434 local_address=None timeout=None socket_options=None
-2025-03-30 11:26:13,312 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1637738c0>
-2025-03-30 11:26:13,312 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:13,312 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:13,312 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:13,312 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:13,312 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:15,439 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:15 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:15,442 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:15,443 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:15,990 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:15,991 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:15,991 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:16,001 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:16,001 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:16,001 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:16,001 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:16,001 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:16,191 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:16 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:16,191 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:16,191 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:16,524 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-30 11:26:16,764 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:16,764 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:16,764 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:16,770 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:16,770 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:16,770 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:16,770 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:16,771 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:16,953 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:16 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:16,953 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:16,954 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:17,482 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:17,483 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:17,483 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:17,489 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:17,489 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:17,489 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:17,489 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:17,489 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:17,676 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:17 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:17,676 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:17,676 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:18,243 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:18,244 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:18,244 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:18,248 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:18,249 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:18,249 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:18,249 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:18,249 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:18,430 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:18 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:18,430 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:18,430 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:18,947 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:18,947 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:18,947 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:18,951 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:18,951 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:18,951 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:18,951 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:18,951 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:19,133 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:19 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:19,134 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:19,134 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:19,652 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:19,652 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:19,652 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:19,657 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:19,657 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:19,657 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:19,657 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:19,657 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:19,839 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:19 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:19,839 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:19,839 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:20,399 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:20,399 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:20,399 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:20,519 - chromadb.config - DEBUG - Starting component PersistentLocalHnswSegment
-2025-03-30 11:26:20,524 - chromadb.segment.impl.vector.local_persistent_hnsw - WARNING - Add of existing embedding ID: modern_4c42c67f
-2025-03-30 11:26:20,530 - __main__ - DEBUG - Progress Calculation:
-  Completed Weight: 0.5
-  Current Stage Weight: 0.1
-  Current Progress: 100.0%
-  Total Progress: 60.0%
-2025-03-30 11:26:20,530 - __main__ - DEBUG - Progress Update:
-  Stage: Initialization
-  Stage Progress: 100.0%
-  Total Progress: 60.0%
-  Message: Generator initialized
-  Time: 2025-03-30T11:26:20.530897
-2025-03-30 11:26:20,530 - __main__ - DEBUG - Progress Bar:
-  Progress: 60.0%
-  Width: 30
-  Filled: 18
-  Bar: ==================------------
-2025-03-30 11:26:20,934 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-30 11:26:42,640 - __main__ - INFO - Generating model for: I want a camera lens
-2025-03-30 11:26:42,641 - __main__ - DEBUG - Stage Complete: Initialization
-  Duration: 40.86s
-  Final Progress: 100.0%
-2025-03-30 11:26:42,642 - __main__ - DEBUG - Stage Start: Code Generation
-  Time: 2025-03-30T11:26:42.642152
-  Initial Message: Generation attempt 1
-2025-03-30 11:26:42,642 - __main__ - DEBUG - Progress Calculation:
-  Completed Weight: 0
-  Current Stage Weight: 0.3
-  Current Progress: 0.0%
-  Total Progress: 0.0%
-2025-03-30 11:26:42,642 - __main__ - DEBUG - Progress Update:
-  Stage: Code Generation
-  Stage Progress: 0.0%
-  Total Progress: 0.0%
-  Message: Generation attempt 1
-  Time: 2025-03-30T11:26:42.642579
-2025-03-30 11:26:42,642 - __main__ - DEBUG - Progress Bar:
-  Progress: 0.0%
-  Width: 30
-  Filled: 0
-  Bar: ------------------------------
-2025-03-30 11:26:42,669 - httpcore.connection - DEBUG - close.started
-2025-03-30 11:26:42,669 - httpcore.connection - DEBUG - close.complete
-2025-03-30 11:26:42,669 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=11434 local_address=None timeout=None socket_options=None
-2025-03-30 11:26:42,670 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1637fa5d0>
-2025-03-30 11:26:42,670 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:42,670 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:42,671 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:42,671 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:42,671 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:42,992 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:26:42 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:26:42,993 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:26:42,994 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:26:43,609 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:26:43,609 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:26:43,609 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:26:46,370 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'When creating a 3D model for "camera lens"(a camera lens-type device with camera, lens modifiers and a knob compound structure), what are the fundamental principles and high-level concepts I should consider before implementation?\n\nPlease provide a structured technical analysis in this format:\n\n<think>\nConsider:\n- Core geometric and mathematical principles\n- Essential spatial relationships\n- Fundamental design patterns in 3D modeling\n- Practical constraints and requirements\n</think>\n\n<analysis>\nBased on these principles, let me develop a structured implementation plan:\n\nCORE PRINCIPLES:\n- [List 3-5 key geometric and mathematical concepts that apply to this specific model]\n- [Include relevant physical or material properties]\n- [Note critical design constraints]\n\nSHAPE COMPONENTS:\n- [List primary geometric primitives needed]\n- [Describe spatial relationships]\n- [Note required transformations and operations]\n\nIMPLEMENTATION STEPS:\n1. [Initial setup and base components]\n2. [Component creation and positioning]\n3. [Assembly and transformations]\n4. [Final adjustments and optimization]\n\nMEASUREMENT CONSIDERATIONS:\n- [Key proportions and ratios]\n- [Critical dimensions]\n- [Scale factors]\n</analysis>\n\nPlease maintain the XML-style tags and structured format shown above.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-30 11:26:46,395 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-30 11:26:46,395 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-30 11:26:46,440 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1637f9810>
-2025-03-30 11:26:46,441 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x1115d70b0> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-30 11:26:46,452 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1637f2fd0>
-2025-03-30 11:26:46,452 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:46,452 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:26:46,452 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:26:46,452 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:26:46,452 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:26:47,711 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sun, 30 Mar 2025 03:26:47 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'202503301126464717749753V1gClqW'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-30 11:26:47,712 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-30 11:26:47,712 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sun, 30 Mar 2025 03:26:47 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '202503301126464717749753V1gClqW', 'strict-transport-security': 'max-age=31536000'})
-2025-03-30 11:26:47,712 - openai._base_client - DEBUG - request_id: None
-2025-03-30 11:26:47,712 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:27:00,746 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:27:00,748 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:27:00,748 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:27:17,028 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=11434 local_address=None timeout=None socket_options=None
-2025-03-30 11:27:17,030 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1637f2780>
-2025-03-30 11:27:17,030 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:27:17,030 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:27:17,030 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:27:17,030 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:27:17,030 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:27:39,622 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:27:39 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:27:39,651 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:27:39,660 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:28:02,272 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:28:02,296 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:28:02,296 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:28:02,377 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:28:02,377 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:28:02,377 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:28:02,377 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:28:02,377 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:28:03,572 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 03:28:03 GMT'), (b'Transfer-Encoding', b'chunked')])
-2025-03-30 11:28:03,573 - httpx - INFO - HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
-2025-03-30 11:28:03,575 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:28:08,214 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:28:08,217 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:28:08,217 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:28:08,860 - openai._base_client - DEBUG - Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': "You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user's description.\n\nBASIC KNOWLEDGE:\n        {'categories': ['Furniture', 'Storage', 'Decoration', 'Utility', 'Tableware', 'Lighting', 'Accessories', 'Tools', 'Display', 'Organization'], 'properties': {'style': ['Modern', 'Traditional', 'Industrial', 'Minimalist', 'Art Deco', 'Victorian', 'Steampunk', 'Oriental', 'Scandinavian', 'Medieval'], 'complexity': ['SIMPLE', 'MEDIUM', 'COMPLEX'], 'use_case': ['Functional', 'Decorative', 'Storage', 'Display', 'Utility', 'Entertainment', 'Organization'], 'geometric_properties': ['Symmetrical', 'Asymmetrical', 'Angular', 'Curved', 'Organic', 'Regular', 'Irregular', 'Modular', 'Nested', 'Layered']}}\n\nRELEVANT EXAMPLES:\n        []\n\nAnalysis to consider:\nCORE PRINCIPLES:\n                - Optical axis symmetry: All lens elements must be perfectly aligned along central axis\n- Parametric relationships: Focal length determines overall lens length and element positioning\n- Material distinction: Different optical properties for glass elements vs. mechanical housing\n- Precision tolerances: Sub-millimeter accuracy required for functional appearance\n- Nested cylindrical hierarchy: Components must fit within each other with proper clearances\n                \n                SHAPE COMPONENTS:\n                - Primary cylinder for outer lens barrel with precise diameter-to-length ratio\n- Nested internal cylinders for lens element housing and focus mechanism\n- Curved glass elements with varying convex/concave profiles based on lens type\n- Knurled rings for focus and aperture control with regular geometric patterns\n- Connector mount with bayonet or screw thread pattern matching camera body standards\n                \n                IMPLEMENTATION STEPS:\n                1. Create basic cylindrical barrel with proper proportions and diameter based on lens type\n2. Model internal lens element groups with appropriate curvatures and spacing\n3. Develop mechanical control rings with proper knurling patterns and rotation constraints\n4. Add surface details including focus distance markings, aperture values, and branding\n5. Apply appropriate materials and textures to distinguish metal, glass, and rubber components\n\nUSER REQUEST:\nI want a camera lens\n\nPlease generate OpenSCAD code that satisfies the user's request. Follow these guidelines:\n1. Use clear variable names and comments\n2. Break down complex shapes into modules\n. Use proper indentation and formatting\n4. Include helpful comments explaining the code\n5. Wrap the code in <code> tags or ```scad code blocks\n\nYour response should ONLY contain the OpenSCAD code, properly wrapped in tags. Do not include any explanations or additional text.\n\nOpenSCAD code:", 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
-2025-03-30 11:28:08,862 - openai._base_client - DEBUG - Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
-2025-03-30 11:28:08,863 - httpcore.connection - DEBUG - close.started
-2025-03-30 11:28:08,913 - httpcore.connection - DEBUG - close.complete
-2025-03-30 11:28:08,913 - httpcore.connection - DEBUG - connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
-2025-03-30 11:28:08,924 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x16365fe30>
-2025-03-30 11:28:08,924 - httpcore.connection - DEBUG - start_tls.started ssl_context=<ssl.SSLContext object at 0x1115d70b0> server_hostname='api2.qyfxw.cn' timeout=None
-2025-03-30 11:28:08,942 - httpcore.connection - DEBUG - start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x166f15ae0>
-2025-03-30 11:28:08,942 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
-2025-03-30 11:28:08,942 - httpcore.http11 - DEBUG - send_request_headers.complete
-2025-03-30 11:28:08,942 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
-2025-03-30 11:28:08,942 - httpcore.http11 - DEBUG - send_request_body.complete
-2025-03-30 11:28:08,942 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
-2025-03-30 11:28:09,224 - urllib3.connectionpool - DEBUG - Resetting dropped connection: us.i.posthog.com
-2025-03-30 11:28:09,732 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sun, 30 Mar 2025 03:28:09 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'2025033011280895814640966RTNqaQ'), (b'Strict-Transport-Security', b'max-age=31536000')])
-2025-03-30 11:28:09,732 - httpx - INFO - HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
-2025-03-30 11:28:09,732 - openai._base_client - DEBUG - HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sun, 30 Mar 2025 03:28:09 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '2025033011280895814640966RTNqaQ', 'strict-transport-security': 'max-age=31536000'})
-2025-03-30 11:28:09,732 - openai._base_client - DEBUG - request_id: None
-2025-03-30 11:28:09,735 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
-2025-03-30 11:28:10,124 - urllib3.connectionpool - DEBUG - https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
-2025-03-30 11:28:46,083 - httpcore.http11 - DEBUG - receive_response_body.complete
-2025-03-30 11:28:46,086 - httpcore.http11 - DEBUG - response_closed.started
-2025-03-30 11:28:46,086 - httpcore.http11 - DEBUG - response_closed.complete
-2025-03-30 11:29:34,530 - __main__ - DEBUG - Progress Calculation:
-  Completed Weight: 0
-  Current Stage Weight: 0.3
-  Current Progress: 100.0%
-  Total Progress: 30.0%
-2025-03-30 11:29:34,532 - __main__ - DEBUG - Progress Update:
-  Stage: Code Generation
-  Stage Progress: 100.0%
-  Total Progress: 30.0%
-  Message: Generation complete
-  Time: 2025-03-30T11:29:34.532049
-2025-03-30 11:29:34,532 - __main__ - DEBUG - Progress Bar:
-  Progress: 30.0%
-  Width: 30
-  Filled: 9
-  Bar: =========---------------------
-2025-03-30 11:29:34,532 - __main__ - INFO - 
+INFO:__main__:Logs cleared for new generation
+INFO:__main__:==================================================
+INFO:__main__:Starting 3D Model Generator
+INFO:__main__:Time: 2025-03-30T20:50:06.437004
+INFO:__main__:Configuration:
+INFO:__main__:  - Max Generation Attempts: 3
+INFO:__main__:  - Similarity Threshold: 0.70
+INFO:__main__:  - Output Directory: output
+INFO:__main__:==================================================
+INFO:__main__:Initializing generator with provider: anthropic
+INFO:conversation_logger:Initializing Conversation Logger...
+INFO:conversation_logger:Initializing log files...
+INFO:conversation_logger:- Using log directory: conversation_logs
+INFO:conversation_logger:log file found, using existing log file
+INFO:conversation_logger:- Using existing log file: step_back_conversations.json
+INFO:conversation_logger:log file found, using existing log file
+INFO:conversation_logger:- Using existing log file: scad_generation_conversations.json
+INFO:conversation_logger:log file found, using existing log file
+INFO:conversation_logger:- Using existing log file: validation_conversations.json
+INFO:conversation_logger:log file found, using existing log file
+INFO:conversation_logger:- Using existing log file: keyword_extraction_pairs.json
+INFO:metadata_extractor:Initializing Metadata Extractor...
+INFO:scad_knowledge_base:Initializing SCAD Knowledge Base...
+INFO:scad_knowledge_base:Persistence directory: /Users/hercules/GitHub/3D-Modelling-with-Generative-AI/scad_knowledge_base/chroma
+DEBUG:urllib3.util.retry:Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
+INFO:chromadb.telemetry.product.posthog:Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+DEBUG:chromadb.config:Starting component System
+DEBUG:chromadb.config:Starting component Posthog
+DEBUG:chromadb.config:Starting component OpenTelemetryClient
+DEBUG:chromadb.config:Starting component SqliteDB
+DEBUG:chromadb.config:Starting component SimpleQuotaEnforcer
+DEBUG:chromadb.config:Starting component SimpleRateLimitEnforcer
+DEBUG:chromadb.config:Starting component LocalSegmentManager
+DEBUG:chromadb.config:Starting component LocalExecutor
+DEBUG:chromadb.config:Starting component SegmentAPI
+INFO:scad_knowledge_base:ChromaDB client initialized
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): us.i.posthog.com:443
+DEBUG:urllib3.connectionpool:https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
+INFO:sentence_transformers.SentenceTransformer:Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): huggingface.co:443
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config_sentence_transformers.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/README.md HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/modules.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/sentence_bert_config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/adapter_config.json HTTP/1.1" 404 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "HEAD /sentence-transformers/all-MiniLM-L6-v2/resolve/main/tokenizer_config.json HTTP/1.1" 200 0
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2/revision/main HTTP/1.1" 200 6759
+DEBUG:urllib3.connectionpool:https://huggingface.co:443 "GET /api/models/sentence-transformers/all-MiniLM-L6-v2 HTTP/1.1" 200 6759
+INFO:scad_knowledge_base:Sentence transformer embedding function initialized
+INFO:scad_knowledge_base:Getting or creating collection...
+INFO:scad_knowledge_base:- Using existing collection 'scad_examples' with 39 examples
+INFO:OpenSCAD_Generator:Initializing OpenSCAD Generator...
+INFO:OpenSCAD_Generator:Setting up LLM...
+INFO:OpenSCAD_Generator:- Provider: anthropic
+INFO:OpenSCAD_Generator:- Model: claude-3-7-sonnet-20250219
+INFO:OpenSCAD_Generator:Setting up components...
+INFO:step_back_analyzer:Step-back analyzer initialising...
+INFO:step_back_analyzer:Step-back analyzer initialised
+INFO:OpenSCAD_Generator:Loading OpenSCAD Generator prompts...
+INFO:OpenSCAD_Generator:- Main generation prompt loaded
+INFO:__main__:Successfully initialized generator with provider: anthropic
+INFO:__main__:Generating model for: I want a propeller
+INFO:OpenSCAD_Generator:First attempt, clearing previous debug log...
+DEBUG:httpcore.connection:connect_tcp.started host='localhost' port=11434 local_address=None timeout=None socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x141207230>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Content-Type', b'application/x-ndjson'), (b'Date', b'Sun, 30 Mar 2025 12:50:36 GMT'), (b'Transfer-Encoding', b'chunked')])
+INFO:httpx:HTTP Request: POST http://localhost:11434/api/chat "HTTP/1.1 200 OK"
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'When creating a 3D model for "propeller"(a propeller-type device with propeller modifiers and a knob compound structure), what are the fundamental principles and high-level concepts I should consider before implementation?\n\nPlease provide a structured technical analysis in this format:\n\n<think>\nConsider:\n- Core geometric and mathematical principles\n- Essential spatial relationships\n- Fundamental design patterns in 3D modeling\n- Practical constraints and requirements\n</think>\n\n<analysis>\nBased on these principles, let me develop a structured implementation plan:\n\nCORE PRINCIPLES:\n- [List 3-5 key geometric and mathematical concepts that apply to this specific model]\n- [Include relevant physical or material properties]\n- [Note critical design constraints]\n\nSHAPE COMPONENTS:\n- [List primary geometric primitives needed]\n- [Describe spatial relationships]\n- [Note required transformations and operations]\n\nIMPLEMENTATION STEPS:\n1. [Initial setup and base components]\n2. [Component creation and positioning]\n3. [Assembly and transformations]\n4. [Final adjustments and optimization]\n\nMEASUREMENT CONSIDERATIONS:\n- [Key proportions and ratios]\n- [Critical dimensions]\n- [Scale factors]\n</analysis>\n\nPlease maintain the XML-style tags and structured format shown above.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+DEBUG:httpcore.connection:connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1412c8cd0>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x14113b410> server_hostname='api2.qyfxw.cn' timeout=None
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x1412c8e10>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sun, 30 Mar 2025 12:50:41 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250330205039921059041LKz9BzVK'), (b'Strict-Transport-Security', b'max-age=31536000')])
+INFO:httpx:HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:openai._base_client:HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sun, 30 Mar 2025 12:50:41 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250330205039921059041LKz9BzVK', 'strict-transport-security': 'max-age=31536000'})
+DEBUG:openai._base_client:request_id: None
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are an expert in 3D modeling and OpenSCAD. Analyze this 3D model description and extract key metadata.\n\nDescription: I want a propeller\n\nstep-back analysis:\n{\'principles\': [\'Radial symmetry and rotational distribution of blades around a central axis\', \'Airfoil cross-sectional geometry for blade efficiency (camber, thickness, angle of attack)\', \'Helical geometry with pitch angle variation from hub to tip for optimal thrust\', \'Conservation of material thickness for structural integrity\', \'Parametric relationships between blade count, pitch, and hub diameter\'], \'abstractions\': [\'Central hub/knob: Cylindrical or ellipsoidal base with potential tapered front\', \'Blades: Curved surfaces with airfoil cross-sections and helical twist\', \'Fillets: Smooth transitions between hub and blade roots for stress distribution\', \'Boss/mounting hardware: Cylindrical protrusion or recessed cavity for attachment\', \'Optional spinner cap: Conical or hemispherical element for aerodynamic finishing\'], \'approach\': [\'Create central hub geometry with appropriate diameter and profile curve\', \'Develop a single master blade with correct airfoil profile, twist angle, and taper\', \'Apply array/radial modifier to duplicate blades symmetrically around the rotation axis\', \'Create transitional fillets between blade roots and hub for structural integrity\', \'Add mounting features (shaft hole, mounting bosses, etc.) based on application requirements\', \'Apply smoothing and optimization for final surface quality\'], \'original_query\': \'I want a propeller\', \'keyword_analysis\': {\'core_type\': \'propeller\', \'modifiers\': [\'propeller\'], \'compound_type\': \'propeller\'}}\n\nThen, extract the following metadata and format it as a valid JSON object with these fields:\n1. "object_type": Main category/type of the object (e.g., "mug", "chair", "box")\n2. "dimensions": Dictionary of any mentioned measurements or proportions\n3. "features": List of key characteristics or components\n4. "materials": List of any specified or implied materials\n5. "complexity": One of ["SIMPLE", "MEDIUM", "COMPLEX"] based on features and structure\n6. "style": Design style (e.g., "Modern", "Traditional", "Industrial", "Minimalist")\n7. "use_case": Primary intended use or purpose\n8. "geometric_properties": List of key geometric characteristics (e.g., "symmetrical", "curved", "angular")\n9. "technical_requirements": List of specific technical considerations\n10. "step_back_analysis": {\n    "core_principles": ["list of fundamental principles and concepts"],\n    "shape_components": ["list of basic geometric shapes and parts"],\n    "implementation_steps": ["list of ordered steps for construction"]\n}\n\nExample response format:\n{\n    "object_type": "sword",\n    "dimensions": {\n        "length": "100cm",\n        "blade_width": "5cm"\n    },\n    "features": ["blade", "hilt", "guard", "pommel"],\n    "materials": ["metal", "leather"],\n    "complexity": "MEDIUM",\n    "style": "Fantasy",\n    "use_case": ["Role-playing", "Display", "Decoration"],\n    "geometric_properties": ["symmetrical", "tapered", "angular"],\n    "technical_requirements": ["boolean operations", "smooth transitions"],\n    "step_back_analysis": {\n        "core_principles": [\n            "Blade geometry follows historical sword designs",\n            "Guard provides hand protection",\n            "Weight distribution affects balance"\n        ],\n        "shape_components": [\n            "Elongated tapered cylinder for blade",\n            "Cross-shaped guard",\n            "Cylindrical grip",\n            "Spherical pommel"\n        ],\n        "implementation_steps": [\n            "Create blade using cylinder and scale",\n            "Add cross-guard using cube and transforms",\n            "Form grip with cylinder",\n            "Attach spherical pommel",\n            "Apply boolean operations for details"\n        ]\n    }\n}\n\nOnly include fields where information can be confidently extracted from the description.\nFormat numbers consistently (use metric units when possible).\nIf a field cannot be determined, omit it from the JSON rather than using placeholder values.\n\nReturn ONLY the JSON object, no additional text or explanation.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+DEBUG:httpcore.connection:connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x105f74050>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x10be86180> server_hostname='api2.qyfxw.cn' timeout=None
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x105f74180>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sun, 30 Mar 2025 12:51:01 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250330205059778942131PTYmeo03'), (b'Strict-Transport-Security', b'max-age=31536000')])
+INFO:httpx:HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:openai._base_client:HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sun, 30 Mar 2025 12:51:01 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250330205059778942131PTYmeo03', 'strict-transport-security': 'max-age=31536000'})
+DEBUG:openai._base_client:request_id: None
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'Analyze the following 3D object and categorize it using our standardized categories and properties.\n\nObject Type: propeller\nDescription: I want a propeller\n\nAvailable Categories:\n[\'Furniture\', \'Storage\', \'Decoration\', \'Utility\', \'Tableware\', \'Lighting\', \'Accessories\', \'Tools\', \'Display\', \'Organization\']\n\nAvailable Properties:\n{\'style\': [\'Modern\', \'Traditional\', \'Industrial\', \'Minimalist\', \'Art Deco\', \'Victorian\', \'Steampunk\', \'Oriental\', \'Scandinavian\', \'Medieval\'], \'complexity\': [\'SIMPLE\', \'MEDIUM\', \'COMPLEX\'], \'use_case\': [\'Functional\', \'Decorative\', \'Storage\', \'Display\', \'Utility\', \'Entertainment\', \'Organization\'], \'geometric_properties\': [\'Symmetrical\', \'Asymmetrical\', \'Angular\', \'Curved\', \'Organic\', \'Regular\', \'Irregular\', \'Modular\', \'Nested\', \'Layered\']}\n\nInstructions:\n1. Select the most appropriate categories from the list above (you can select multiple if applicable)\n2. For each selected property type, choose the most appropriate value from its predefined options\n3. Suggest similar objects from the examples in our standard categories\n\nRespond in JSON format:\n{\n    "categories": ["list of categories from standard categories only"],\n    "properties": {\n        "property_name": "value from predefined options only"\n    },\n    "similar_objects": ["list of similar objects from our standard examples only"]\n}\n\nEnsure all categories and property values exactly match the provided standard options.', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sun, 30 Mar 2025 12:51:10 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250330205109222302017XgSSIDT2'), (b'Strict-Transport-Security', b'max-age=31536000')])
+INFO:httpx:HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:openai._base_client:HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sun, 30 Mar 2025 12:51:10 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250330205109222302017XgSSIDT2', 'strict-transport-security': 'max-age=31536000'})
+DEBUG:openai._base_client:request_id: None
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+DEBUG:chromadb.config:Starting component PersistentLocalHnswSegment
+WARNING:chromadb.segment.impl.vector.local_persistent_hnsw:Add of existing embedding ID: modern_4c42c67f
+DEBUG:openai._base_client:Request options: {'method': 'post', 'url': '/chat/completions', 'files': None, 'json_data': {'messages': [{'content': 'You are an expert in OpenSCAD 3D modeling. Your task is to generate OpenSCAD code based on the user\'s description.\n\nBASIC KNOWLEDGE:\n{\'categories\': [\'Furniture\', \'Storage\', \'Decoration\', \'Utility\', \'Tableware\', \'Lighting\', \'Accessories\', \'Tools\', \'Display\', \'Organization\'], \'properties\': {\'style\': [\'Modern\', \'Traditional\', \'Industrial\', \'Minimalist\', \'Art Deco\', \'Victorian\', \'Steampunk\', \'Oriental\', \'Scandinavian\', \'Medieval\'], \'complexity\': [\'SIMPLE\', \'MEDIUM\', \'COMPLEX\'], \'use_case\': [\'Functional\', \'Decorative\', \'Storage\', \'Display\', \'Utility\', \'Entertainment\', \'Organization\'], \'geometric_properties\': [\'Symmetrical\', \'Asymmetrical\', \'Angular\', \'Curved\', \'Organic\', \'Regular\', \'Irregular\', \'Modular\', \'Nested\', \'Layered\']}}\n\nRELEVANT EXAMPLES:\n[{\'example\': {\'id\': \'unknown_0c41abcf\', \'metadata\': {\'code\': \'// Propeller Design\\n// Parameters for customization\\n$fn = 100;  // Resolution for circular objects\\n\\n// Main parameters\\nnum_blades = 3;         // Number of propeller blades\\nhub_radius = 10;        // Radius of central hub\\nhub_height = 15;        // Height of central hub\\nshaft_radius = 3;       // Radius of shaft hole\\nblade_length = 50;      // Length of each blade\\nblade_width = 15;       // Maximum width of blade\\nblade_thickness = 3;    // Maximum thickness at blade root\\ntwist_angle = 30;       // Twist angle from root to tip (degrees)\\nairfoil_camber = 0.1;   // Camber ratio for airfoil shape\\n\\n// Module for creating a single propeller blade with twist and airfoil profile\\nmodule blade() {\\n    linear_extrude(height = blade_length, twist = -twist_angle, slices = 40, scale = 0.5) {\\n        union() {\\n            // Airfoil shape\\n            translate([-blade_width/4, 0, 0])\\n                scale([1, blade_thickness/blade_width, 1])\\n                    ellipse(blade_width/2, blade_width/2);\\n                \\n            // Add slight camber for improved aerodynamics\\n            translate([0, -blade_thickness * airfoil_camber, 0])\\n                scale([0.8, 0.2, 1])\\n                    circle(blade_width/2);\\n        }\\n    }\\n}\\n\\n// Module for creating an ellipse\\nmodule ellipse(width, height) {\\n    scale([width, height, 1]) circle(1);\\n}\\n\\n// Module for creating the central hub with shaft hole\\nmodule hub() {\\n    difference() {\\n        union() {\\n            // Main hub cylinder\\n            cylinder(r1 = hub_radius, r2 = hub_radius * 0.8, h = hub_height);\\n            \\n            // Hub base (for strength)\\n            cylinder(r = hub_radius * 1.2, h = hub_height * 0.2);\\n            \\n            // Hub top cap\\n            translate([0, 0, hub_height])\\n                cylinder(r1 = hub_radius * 0.8, r2 = hub_radius * 0.5, h = hub_height * 0.2);\\n        }\\n        \\n        // Shaft hole through center\\n        translate([0, 0, -1])\\n            cylinder(r = shaft_radius, h = hub_height + 2);\\n            \\n        // Setscrew hole\\n        translate([0, 0, hub_height/2])\\n            rotate([0, 90, 0])\\n                cylinder(r = shaft_radius/2, h = hub_radius + 1);\\n    }\\n}\\n\\n// Assemble the propeller\\nmodule propeller() {\\n    // Central hub\\n    color("SlateGray") hub();\\n    \\n    // Blades\\n    color("LightSteelBlue")\\n    for (i = [0:num_blades-1]) {\\n        rotate([0, 0, i * 360 / num_blades])\\n            translate([hub_radius * 0.8, 0, hub_height * 0.6])\\n                rotate([0, 90, 0])\\n                    blade();\\n    }\\n}\\n\\n// Create the propeller\\npropeller();\', \'complexity\': \'SIMPLE\', \'description\': \'I want a propeller\', \'features\': [\'propeller\'], \'geometric_properties\': [], \'materials\': \'[]\', \'object_type\': \'propeller\', \'step_back_analysis\': {\'core_principles\': [\'Helical geometry for blade surfaces with proper twist gradients\', \'Rotational symmetry for balanced force distribution\', \'Airfoil cross-sections with proper camber and thickness distribution\', \'Conservation of angular momentum principles for proper blade pitch\', \'Material thickness constraints for structural integrity\'], \'shape_components\': [\'Central hub (cylindrical or ellipsoidal primitive)\', \'Blades (NURBS surfaces or modified primitives with twist deformation)\', \'Shaft connector (cylindrical with boolean operations for mounting)\', \'Fillets and edge transitions (for reducing turbulence and stress concentrations)\', \'Control knob structure (compound object with ergonomic considerations)\'], \'implementation_steps\': [\'Create central hub and shaft axis with appropriate diameter ratios\', \'Generate single blade profile with proper airfoil cross-section and twist gradient\', \'Apply array modifier or circular pattern to replicate blades with proper angular spacing\', \'Build connection fillets between hub and blade roots for stress distribution\', \'Construct control knob with ergonomic grips and connection to shaft\']}, \'style\': \'Modern\', \'technical_requirements\': \'[]\', \'timestamp\': \'2025-03-30T19:15:49.549422\', \'type\': \'scad_generation\', \'use_case\': \'[]\', \'user_accepted\': True}, \'distance\': 0.0}, \'score\': 0.764, \'score_breakdown\': {\'final_score\': 0.764, \'component_scores\': {\'component_match\': 0.0, \'step_back_match\': 0.0, \'geometric_match\': 0.0, \'feature_match\': 0.32, \'object_type_match\': 1.0, \'style_match\': 0.0, \'complexity_match\': 0.0}, \'step_back_details\': {\'principles\': 0.0, \'abstractions\': 0.0, \'approach\': 0.0}}}]\n\nAnalysis to consider:\nCORE PRINCIPLES:\n                - Radial symmetry and rotational distribution of blades around a central axis\n- Airfoil cross-sectional geometry for blade efficiency (camber, thickness, angle of attack)\n- Helical geometry with pitch angle variation from hub to tip for optimal thrust\n- Conservation of material thickness for structural integrity\n- Parametric relationships between blade count, pitch, and hub diameter\n                \n                SHAPE COMPONENTS:\n                - Central hub/knob: Cylindrical or ellipsoidal base with potential tapered front\n- Blades: Curved surfaces with airfoil cross-sections and helical twist\n- Fillets: Smooth transitions between hub and blade roots for stress distribution\n- Boss/mounting hardware: Cylindrical protrusion or recessed cavity for attachment\n- Optional spinner cap: Conical or hemispherical element for aerodynamic finishing\n                \n                IMPLEMENTATION STEPS:\n                1. Create central hub geometry with appropriate diameter and profile curve\n2. Develop a single master blade with correct airfoil profile, twist angle, and taper\n3. Apply array/radial modifier to duplicate blades symmetrically around the rotation axis\n4. Create transitional fillets between blade roots and hub for structural integrity\n5. Add mounting features (shaft hole, mounting bosses, etc.) based on application requirements\n6. Apply smoothing and optimization for final surface quality\n\nUSER REQUEST:\nI want a propeller\n\nPlease generate OpenSCAD code that satisfies the user\'s request. Follow these guidelines:\n1. Use clear variable names and comments\n2. Break down complex shapes into modules\n. Use proper indentation and formatting\n4. Include helpful comments explaining the code\n5. Wrap the code in <code> tags or ```scad code blocks\n\nYour response should ONLY contain the OpenSCAD code, properly wrapped in tags. Do not include any explanations or additional text.\n\nOpenSCAD code:', 'role': 'user'}], 'model': 'claude-3-7-sonnet-20250219', 'stream': True, 'temperature': 0.7}}
+DEBUG:openai._base_client:Sending HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions
+DEBUG:httpcore.connection:close.started
+DEBUG:httpcore.connection:close.complete
+DEBUG:httpcore.connection:connect_tcp.started host='api2.qyfxw.cn' port=443 local_address=None timeout=None socket_options=None
+DEBUG:httpcore.connection:connect_tcp.complete return_value=<httpcore._backends.sync.SyncStream object at 0x14119af90>
+DEBUG:httpcore.connection:start_tls.started ssl_context=<ssl.SSLContext object at 0x14113b410> server_hostname='api2.qyfxw.cn' timeout=None
+DEBUG:httpcore.connection:start_tls.complete return_value=<httpcore._backends.sync.SyncStream object at 0x141103570>
+DEBUG:httpcore.http11:send_request_headers.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_headers.complete
+DEBUG:httpcore.http11:send_request_body.started request=<Request [b'POST']>
+DEBUG:httpcore.http11:send_request_body.complete
+DEBUG:httpcore.http11:receive_response_headers.started request=<Request [b'POST']>
+DEBUG:urllib3.connectionpool:Resetting dropped connection: us.i.posthog.com
+DEBUG:httpcore.http11:receive_response_headers.complete return_value=(b'HTTP/1.1', 200, b'OK', [(b'Server', b'nginx'), (b'Date', b'Sun, 30 Mar 2025 12:51:15 GMT'), (b'Content-Type', b'text/event-stream'), (b'Transfer-Encoding', b'chunked'), (b'Connection', b'keep-alive'), (b'Cache-Control', b'no-cache'), (b'X-Oneapi-Request-Id', b'20250330205114486385268N94AmW5S'), (b'Strict-Transport-Security', b'max-age=31536000')])
+INFO:httpx:HTTP Request: POST https://api2.qyfxw.cn/v1/chat/completions "HTTP/1.1 200 OK"
+DEBUG:openai._base_client:HTTP Response: POST https://api2.qyfxw.cn/v1/chat/completions "200 OK" Headers({'server': 'nginx', 'date': 'Sun, 30 Mar 2025 12:51:15 GMT', 'content-type': 'text/event-stream', 'transfer-encoding': 'chunked', 'connection': 'keep-alive', 'cache-control': 'no-cache', 'x-oneapi-request-id': '20250330205114486385268N94AmW5S', 'strict-transport-security': 'max-age=31536000'})
+DEBUG:openai._base_client:request_id: None
+DEBUG:httpcore.http11:receive_response_body.started request=<Request [b'POST']>
+DEBUG:urllib3.connectionpool:https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
+DEBUG:httpcore.http11:receive_response_body.complete
+DEBUG:httpcore.http11:response_closed.started
+DEBUG:httpcore.http11:response_closed.complete
+INFO:__main__:
 Generation Summary:
-2025-03-30 11:29:34,532 - __main__ - INFO -   Description: I want a camera lens
-2025-03-30 11:29:34,532 - __main__ - INFO -   Provider: anthropic
-2025-03-30 11:29:34,532 - __main__ - INFO -   Attempts: 1
-2025-03-30 11:29:34,538 - __main__ - INFO -   Stage Summary:
-Stage Duration Summary:
-  Initialization: 40.86s
-
-Total Duration: 40.86s
-2025-03-30 11:29:38,311 - __main__ - INFO - 
+INFO:__main__:  Description: I want a propeller
+INFO:__main__:  Provider: anthropic
+INFO:__main__:  Attempts: 1
+DEBUG:urllib3.connectionpool:Resetting dropped connection: us.i.posthog.com
+DEBUG:urllib3.connectionpool:https://us.i.posthog.com:443 "POST /batch/ HTTP/1.1" 200 15
+INFO:__main__:Starting knowledge base viewer
+DEBUG:scad_knowledge_base:Successfully retrieved 40 examples from knowledge base
+INFO:__main__:Knowledge base viewing completed
+INFO:__main__:User decided to quit the application
+INFO:__main__:
 Session Summary:
-2025-03-30 11:29:38,311 - __main__ - INFO - Stage Duration Summary:
-  Initialization: 40.86s
-
-Total Duration: 40.86s
-2025-03-30 11:29:38,311 - __main__ - INFO - Session ended at: 2025-03-30T11:29:38.311887
-2025-03-30 11:29:38,312 - __main__ - INFO - ==================================================
+INFO:__main__:Session ended at: 2025-03-30T20:53:06.430675
+INFO:__main__:==================================================
+DEBUG:httpcore.connection:close.started
+DEBUG:httpcore.connection:close.complete
+DEBUG:httpcore.connection:close.started
+DEBUG:httpcore.connection:close.complete

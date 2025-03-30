@@ -1,43 +1,50 @@
 from prompts import OPENSCAD_GNERATOR_PROMPT_TEMPLATE, BASIC_KNOWLEDGE
 from constant import *
 from KeywordExtractor import KeywordExtractor
-from llm_management import LLMProvider
-from enhanced_scad_knowledge_base import EnhancedSCADKnowledgeBase
+from LLM import LLMProvider
+from scad_knowledge_base import SCADKnowledgeBase
 from step_back_analyzer import StepBackAnalyzer
 from langchain.prompts import ChatPromptTemplate
 import datetime
-from conversation_logger import ConversationLogger
-from typing import Optional
+from typing import Optional, List, Dict
+import logging
+import traceback
 
+logger = logging.getLogger(__name__)
 
 class OpenSCADGenerator:
-    def __init__(self, llm_provider="anthropic"):
+    def __init__(self, llm_provider="anthropic", knowledge_base=None, keyword_extractor=None, metadata_extractor=None, conversation_logger=None):
         """Initialize the OpenSCAD generator"""
         print("\n=== Initializing OpenSCAD Generator ===")
-        
+        logger.info("Initializing OpenSCAD Generator...")
         # Initialize LLM
         print("\nSetting up LLM...")
+        logger.info("Setting up LLM...")
         self.llm_provider = llm_provider
         self.llm = LLMProvider.get_llm(provider=llm_provider)
         self.model_name = self.llm.model_name if hasattr(self.llm, 'model_name') else str(self.llm)
         print(f"- Provider: {self.llm_provider}")
         print(f"- Model: {self.model_name}")
-        
+        logger.info(f"- Provider: {self.llm_provider}")
+        logger.info(f"- Model: {self.model_name}")
+    
         # Initialize knowledge base and logger
         print("\nSetting up components...")
-        self.knowledge_base = EnhancedSCADKnowledgeBase()
-        self.logger = ConversationLogger()
-        print("- Knowledge base initialized")
-        print("- Conversation logger initialized")
+        logger.info("Setting up components...")
+        self.knowledge_base = knowledge_base
+        self.logger = conversation_logger
+        self.keyword_extractor = keyword_extractor
+        self.metadata_extractor = metadata_extractor
         
         # Initialize step-back analyzer
-        self.step_back_analyzer = StepBackAnalyzer(llm=self.llm, logger=self.logger)
-        print("- Step-back analyzer initialized")
+        self.step_back_analyzer = StepBackAnalyzer(llm=self.llm, conversation_logger=self.logger)
         
         # Load prompts
         print("\nLoading prompts...")
+        logger.info("Loading OpenSCAD Generator prompts...")
         self.main_prompt = OPENSCAD_GNERATOR_PROMPT_TEMPLATE
         print("- Main generation prompt loaded")
+        logger.info("- Main generation prompt loaded")
         
         # Initialize debug log
         self.debug_log = []
@@ -56,7 +63,7 @@ class OpenSCADGenerator:
         except Exception as e:
             print(f"Error saving debug log: {e}")
     
-    def perform_step_back_analysis(self, description: str, keyword_data: dict, max_retries: int = 3) -> Optional[dict]:
+    def perform_step_back_analysis(self, description: str, keyword_data: dict) -> Optional[dict]:
         """Perform step-back analysis with approved keywords.
         
         Args:
@@ -67,7 +74,7 @@ class OpenSCADGenerator:
         Returns:
             Dictionary containing step-back analysis if successful, None otherwise
         """
-        return self.step_back_analyzer.perform_analysis(description, keyword_data, max_retries)
+        return self.step_back_analyzer.perform_analysis(description, keyword_data)
 
     def perform_keyword_extraction(self, description: str, max_retries: int = 3) -> Optional[dict]:
         """Perform keyword extraction and get user confirmation.
@@ -81,20 +88,19 @@ class OpenSCADGenerator:
         """
         keyword_data = None
         retry_count = 0
+        print(description)
         
         while retry_count < max_retries:
             # Log keyword extraction query and prompt
-            keyword_prompt = self.knowledge_base.keyword_extractor.prompt.replace("<<INPUT>>", description)
             self.write_debug(
                 "=== KEYWORD EXTRACTION ===\n",
                 f"Attempt {retry_count + 1}/{max_retries}\n",
                 "Query:\n",
                 f"{description}\n\n",
-                "Full Prompt Sent to LLM:\n",
-                f"{keyword_prompt}\n\n"
+                "Extracting keywords from description...\n\n"
             )
             
-            keyword_data = self.knowledge_base.keyword_extractor.extract_keyword(description)
+            keyword_data = self.keyword_extractor.extract_keyword(description)
             
             # Log keyword extraction response
             self.write_debug(
@@ -153,90 +159,92 @@ class OpenSCADGenerator:
         return None
 
     def retrieve_similar_examples(self, description: str, step_back_result: dict, keyword_data: dict) -> tuple[list, Optional[dict]]:
-        """Retrieve similar examples from the knowledge base.
-        
-        Args:
-            description: The description to find examples for
-            step_back_result: The step-back analysis results
-            keyword_data: The extracted keyword data
-            
-        Returns:
-            Tuple of (examples list, extracted metadata)
-        """
+        """Retrieve similar examples from the knowledge base."""
         print("\nRetrieving relevant examples...")
-        
-        # Log retrieval query with full search parameters
-        self.write_debug(
-            "=== EXAMPLE RETRIEVAL ===\n",
-            "Query:\n",
-            f"Description: {description}\n",
-            "Filters from Step-back Analysis:\n",
-            f"- Principles: {', '.join(step_back_result.get('principles', []))}\n",
-            f"- Components: {', '.join(step_back_result.get('abstractions', []))}\n\n",
-            "Keyword Data for Filtering:\n",
-            f"Core Type: {keyword_data.get('core_type', '')}\n",
-            f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}\n",
-            f"Compound Type: {keyword_data.get('compound_type', '')}\n\n",
-            "Search Parameters:\n",
-            f"Similarity Threshold: {0.7}\n\n"
-        )
-        
-        examples, extracted_metadata = self.knowledge_base.get_similar_examples(
+        return self.knowledge_base.get_examples(
             description,
             step_back_result=step_back_result,
             keyword_data=keyword_data,
             return_metadata=True
         )
-        
-        # Log retrieval results
-        self.write_debug(
-            "Retrieved Examples:\n",
-            f"Total Examples Found: {len(examples)}\n\n"
-        )
-        
-        return examples, extracted_metadata
 
-    def log_ranked_examples(self, examples: list):
-        """Log the ranked examples and their scores.
+    def prepare_generation_inputs(self, description: str, examples: List[Dict], step_back_result: Dict = None) -> Dict:
+        """
+        Prepare inputs for the code generation prompt.
         
         Args:
-            examples: List of ranked examples
+            description: The original query/description
+            examples: List of similar examples found
+            step_back_result: Optional step-back analysis results
+            
+        Returns:
+            Dictionary containing all inputs needed for the generation prompt
         """
-        if examples:
-            for i, ex in enumerate(examples, 1):
+        try:
+            # Format step-back analysis if available
+            step_back_text = ""
+            if step_back_result:
+                principles = step_back_result.get('principles', [])
+                abstractions = step_back_result.get('abstractions', [])
+                approach = step_back_result.get('approach', [])
+                
+                step_back_text = f"""
+                CORE PRINCIPLES:
+                {chr(10).join(f'- {p}' for p in principles)}
+                
+                SHAPE COMPONENTS:
+                {chr(10).join(f'- {a}' for a in abstractions)}
+                
+                IMPLEMENTATION STEPS:
+                {chr(10).join(f'{i+1}. {s}' for i, s in enumerate(approach))}
+                """
+            
+            # Format examples for logging
+            examples_text = []
+            for ex in examples:
                 example_id = ex.get('example', {}).get('id', 'unknown')
                 score = ex.get('score', 0.0)
                 score_breakdown = ex.get('score_breakdown', {})
                 
-                self.write_debug(
-                    f"Example {i}:\n",
-                    f"ID: {example_id}\n",
-                    f"Score: {score:.3f}\n",
-                    "Component Scores:\n",
-                    "\n".join(f"  - {name}: {score:.3f}" 
-                            for name, score in score_breakdown.get('component_scores', {}).items()),
-                    "\n\n"
-                )
-        
-        # Log re-ranking results
-        self.write_debug(
-            "=== RE-RANKING RESULTS ===\n",
-            f"Number of examples after re-ranking: {len(examples)}\n\n",
-            "Final Ranked Examples:\n"
-        )
-        
-        for i, ex in enumerate(examples, 1):
-            self.write_debug(
-                f"Rank {i}:\n",
-                f"ID: {ex.get('example', {}).get('id', 'unknown')}\n",
-                f"Final Score: {ex.get('score', 0.0):.3f}\n",
-                "Score Components:\n",
-                "\n".join(f"  - {name}: {score:.3f}"
-                        for name, score in ex.get('score_breakdown', {}).get('component_scores', {}).items()),
-                "\n\n"
-            )
-        
-        self.write_debug("=" * 50 + "\n\n")
+                example_text = f"""
+                Example ID: {example_id}
+                Score: {score:.3f}
+                Component Scores:
+                {chr(10).join(f'  - {name}: {score:.3f}' for name, score in score_breakdown.get('component_scores', {}).items())}
+                """
+                examples_text.append(example_text)
+            
+            # Prepare the complete inputs
+            inputs = {
+                "basic_knowledge": BASIC_KNOWLEDGE,
+                "examples": examples,
+                "request": description,
+                "step_back_analysis": step_back_text.strip() if step_back_text else ""
+            }
+            
+            # Log the complete analysis and examples
+            """
+            print("\nStep-back Analysis:")
+            print(step_back_text.strip() if step_back_text else "No step-back analysis available")
+            """
+            
+            print("\nRetrieved Examples:")
+            if examples_text:
+                print("\n".join(examples_text))
+            else:
+                print("No examples found")
+            
+            return inputs
+            
+        except Exception as e:
+            print(f"Error preparing generation inputs: {str(e)}")
+            traceback.print_exc()
+            return {
+                "basic_knowledge": BASIC_KNOWLEDGE,
+                "examples": [],
+                "request": description,
+                "step_back_analysis": ""
+            }
 
     def generate_scad_code(self, description: str, examples: list, step_back_result: dict) -> Optional[dict]:
         """Generate OpenSCAD code using the prepared inputs.
@@ -250,7 +258,7 @@ class OpenSCADGenerator:
             Dictionary containing success status and generated code/error
         """
         # Prepare the prompt inputs
-        inputs = self.knowledge_base.prepare_generation_inputs(
+        inputs = self.prepare_generation_inputs(
             description=description,
             examples=examples,
             step_back_result=step_back_result
@@ -338,6 +346,7 @@ class OpenSCADGenerator:
             try:
                 # Clear previous debug log if this is first attempt
                 if retry_count == 0:
+                    logger.info("First attempt, clearing previous debug log...")
                     self.debug_log = []
                     
                     # Log initial user decision and query
@@ -381,7 +390,6 @@ class OpenSCADGenerator:
                     examples, extracted_metadata = self.retrieve_similar_examples(
                         description, step_back_result, keyword_data
                     )
-                    self.log_ranked_examples(examples)
                 
                 # Step 4: Generate OpenSCAD code
                 print("\n" + "="*50)
@@ -433,13 +441,17 @@ class OpenSCADGenerator:
                 )
                 
                 if add_to_kb == 'y':
-                    # Only log successful and approved generations
+                    # First add to knowledge base (ChromaDB)
+                    kb_success = self.knowledge_base.add_example(description, scad_code, metadata=extracted_metadata)
+                    
+                    # Then log to conversation logs
                     self.logger.log_scad_generation(prompt_value, scad_code)
-                    # Add to knowledge base if user approves, using previously extracted metadata
-                    if self.knowledge_base.add_example(description, scad_code, metadata=extracted_metadata):
-                        print("Example added to knowledge base!")
+                    
+                    if kb_success:
+                        print("Example added to knowledge base and conversation logs!")
+                        print("Your example is now immediately available for future generations.")
                     else:
-                        print("Failed to add example to knowledge base.")
+                        print("Failed to add example to knowledge base, but it was saved to conversation logs.")
                 else:
                     print("Example not saved. Thank you for the feedback!")
                 
@@ -471,115 +483,3 @@ class OpenSCADGenerator:
                         'success': False,
                         'error': str(e)
                     }
-
-    def view_knowledge_base(self):
-        """View and explore the contents of the knowledge base.
-        
-        This method allows users to:
-        1. View all examples in the knowledge base
-        2. Select a specific example by index
-        3. View the full details of the selected example including SCAD code
-        """
-        try:
-            # Get all examples from the knowledge base
-            print("\n" + "="*50)
-            print("KNOWLEDGE BASE EXPLORER")
-            print("="*50)
-            
-            examples = self.knowledge_base.get_all_examples()
-            if not examples:
-                print("\nNo examples found in the knowledge base.")
-                return
-            
-            # Display examples with their descriptions and metadata
-            print(f"\nFound {len(examples)} examples:")
-            print("-" * 40)
-            
-            for i, example in enumerate(examples, 1):
-                metadata = example.get('metadata', {})
-                description = example.get('description', 'No description available')
-                object_type = metadata.get('object_type', 'Unknown type')
-                features = ', '.join(metadata.get('features', [])) or 'No features'
-                timestamp = metadata.get('timestamp', 'Unknown time')
-                
-                print(f"\n[{i}] Example ID: {example.get('id', 'unknown')}")
-                print(f"Description: {description}")
-                print(f"Type: {object_type}")
-                print(f"Features: {features}")
-                print(f"Added: {timestamp}")
-                print("-" * 40)
-            
-            while True:
-                try:
-                    # Get user selection
-                    selection = input("\nEnter the number of the example to view (or 'q' to quit): ").lower().strip()
-                    
-                    if selection == 'q':
-                        return
-                    
-                    index = int(selection) - 1
-                    if 0 <= index < len(examples):
-                        selected = examples[index]
-                        
-                        # Display full example details
-                        print("\n" + "="*50)
-                        print("EXAMPLE DETAILS")
-                        print("="*50)
-                        
-                        print("\nDescription:")
-                        print(selected.get('description', 'No description available'))
-                        
-                        print("\nMetadata:")
-                        metadata = selected.get('metadata', {})
-                        print(f"- Object Type: {metadata.get('object_type', 'Unknown')}")
-                        print(f"- Features: {', '.join(metadata.get('features', []))}")
-                        print(f"- Added: {metadata.get('timestamp', 'Unknown')}")
-                        print(f"- Type: {metadata.get('type', 'Unknown')}")
-                        
-                        if 'step_back_analysis' in metadata:
-                            analysis = metadata['step_back_analysis']
-                            print("\nTechnical Analysis:")
-                            if 'principles' in analysis:
-                                print("\nCore Principles:")
-                                for p in analysis['principles']:
-                                    print(f"- {p}")
-                            if 'abstractions' in analysis:
-                                print("\nShape Components:")
-                                for a in analysis['abstractions']:
-                                    print(f"- {a}")
-                            if 'approach' in analysis:
-                                print("\nImplementation Steps:")
-                                for i, s in enumerate(analysis['approach'], 1):
-                                    print(f"{i}. {s}")
-                        
-                        print("\nOpenSCAD Code:")
-                        print("-" * 40)
-                        print(selected.get('code', 'No code available'))
-                        print("-" * 40)
-                        
-                        # Ask if user wants to save this code to a file
-                        save = input("\nWould you like to save this code to a file? (y/n): ").lower().strip()
-                        if save == 'y':
-                            filename = f"example_{selected.get('id', 'unknown')}.scad"
-                            with open(filename, "w") as f:
-                                f.write(selected.get('code', ''))
-                            print(f"\nCode saved to {filename}")
-                        
-                        # Ask if user wants to view another example
-                        again = input("\nWould you like to view another example? (y/n): ").lower().strip()
-                        if again != 'y':
-                            break
-                    else:
-                        print("\nInvalid selection. Please enter a number between 1 and", len(examples))
-                except ValueError:
-                    print("\nInvalid input. Please enter a number or 'q' to quit.")
-                except Exception as e:
-                    print(f"\nError viewing example: {str(e)}")
-        
-        except Exception as e:
-            print(f"\nError accessing knowledge base: {str(e)}")
-            self.write_debug(
-                "=== KNOWLEDGE BASE VIEW ERROR ===\n",
-                f"Error: {str(e)}\n",
-                "=" * 50 + "\n\n"
-            )
