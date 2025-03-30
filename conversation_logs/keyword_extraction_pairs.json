@@ -1481,5 +1481,62 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "Parametric drone propeller with multiple blades",
+      "timestamp": "2025-03-30T21:55:08.950082"
+    },
+    "response": {
+      "core_type": "drone propeller",
+      "modifiers": [
+        "parametric",
+        "multiple blades"
+      ],
+      "compound_type": "drone propeller with multiple blades"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a drone propeller with 4 blades, each of it with 6 inches and diameter of 9 inches\nConsider these adjustments: Modifiers should be 6 blades, 6 inches of pitch, 9 inches of diameter",
+      "timestamp": "2025-03-30T22:03:21.663678"
+    },
+    "response": {
+      "core_type": "drone propeller",
+      "modifiers": [
+        "4 blades",
+        "6 inches of pitch",
+        "9 inches of diameter"
+      ],
+      "compound_type": "drone propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a drone propeller please",
+      "timestamp": "2025-03-30T22:04:37.764660"
+    },
+    "response": {
+      "core_type": "drone propeller",
+      "modifiers": [
+        "drone"
+      ],
+      "compound_type": "drone propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]

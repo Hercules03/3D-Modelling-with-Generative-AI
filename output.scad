@@ -1,126 +1,141 @@
-// Drone Propeller
-// Parametric design for a standard quadcopter propeller
-// Includes hub, airfoil blades with proper pitch, and mounting hole
+// Drone Propeller Generator
+// Customizable parameters for creating a drone propeller
 
-// Resolution for circular objects
-$fn = 100;
+/* MAIN PARAMETERS */
+// Basic propeller dimensions
+num_blades = 2;          // Number of propeller blades
+blade_length = 50;       // Length of each blade from hub center (mm)
+hub_diameter = 12;       // Diameter of the central hub (mm)
+hub_height = 8;          // Height of the central hub (mm)
+shaft_diameter = 5;      // Diameter of the shaft hole (mm)
 
-// Main parameters
-num_blades = 2;         // Number of propeller blades
-blade_length = 65;      // Length of each blade from hub center
-hub_radius = 10;        // Radius of central hub
-hub_height = 8;         // Height of central hub
-shaft_radius = 3.2;     // Radius of motor shaft hole
-shaft_flat = true;      // Whether shaft has a flat side for mounting
-blade_width = 15;       // Maximum width of blade
-blade_thickness = 2.5;  // Maximum thickness at blade root
-twist_angle = 35;       // Twist angle from root to tip (degrees)
-airfoil_camber = 0.08;  // Camber ratio for airfoil shape
-rotation_dir = 1;       // 1 for CW, -1 for CCW rotation
+// Blade shape parameters
+blade_width_root = 12;   // Width of blade at the root (mm)
+blade_width_tip = 6;     // Width of blade at the tip (mm)
+blade_thickness = 2;     // Maximum blade thickness (mm)
+pitch_angle = 25;        // Base pitch angle (degrees)
+twist_angle = 15;        // Additional twist from root to tip (degrees)
 
-// Module for creating a single propeller blade with twist and airfoil profile
+// Resolution parameters
+$fn = 60;                // Default resolution for curved surfaces
+blade_segments = 20;     // Number of segments along blade length
+
+/* MODULES */
+
+// Generate an airfoil cross-section
+module airfoil(chord, thickness, camber=0.05) {
+    // NACA-inspired airfoil profile
+    points = [
+        // Upper surface points (leading to trailing edge)
+        [0, 0],
+        [0.025*chord, 0.3*thickness],
+        [0.05*chord, 0.5*thickness],
+        [0.1*chord, 0.8*thickness],
+        [0.2*chord, thickness],
+        [0.3*chord, 0.95*thickness],
+        [0.5*chord, 0.8*thickness],
+        [0.7*chord, 0.5*thickness],
+        [0.9*chord, 0.2*thickness],
+        [chord, 0],
+        // Lower surface points (trailing to leading edge)
+        [0.9*chord, -0.15*thickness],
+        [0.7*chord, -0.3*thickness],
+        [0.5*chord, -0.4*thickness],
+        [0.3*chord, -0.5*thickness],
+        [0.2*chord, -0.45*thickness],
+        [0.1*chord, -0.3*thickness],
+        [0.05*chord, -0.2*thickness],
+        [0.025*chord, -0.1*thickness],
+        [0, 0]
+    ];
+    
+    // Apply camber
+    camber_points = [for (p = points) 
+        let (x = p[0], 
+             y = p[1],
+             camber_y = camber * sin(180 * x/chord))
+        [x, y + camber_y]
+    ];
+    
+    polygon(camber_points);
+}
+
+// Create a single blade
 module blade() {
-    // Create blade with twist and taper
-    hull() {
-        for (i = [0:10]) {
-            pos = i/10;
-            // Calculate position along blade
-            x_pos = pos * blade_length;
-            
-            // Calculate blade width and thickness based on position
-            local_width = blade_width * (1 - 0.6*pos);
-            local_thickness = blade_thickness * (1 - 0.5*pos);
-            
-            // Calculate twist angle
-            local_twist = twist_angle * pos * rotation_dir;
-            
-            translate([x_pos, 0, 0])
-            rotate([0, 0, local_twist])
-            scale([1, local_thickness/local_width, 1])
-            translate([0, 0, -local_thickness/2])
-            union() {
-                // Main airfoil shape
-                scale([local_width/2, 1, local_thickness])
-                rotate([0, 90, 0])
-                cylinder(h=0.01, r1=1, r2=1);
-                
-                // Add slight camber for improved aerodynamics
-                translate([0, local_width * airfoil_camber, 0])
-                scale([local_width/2, 1, local_thickness * 0.8])
-                rotate([0, 90, 0])
-                cylinder(h=0.01, r1=0.8, r2=0.8);
-            }
+    for (i = [0:blade_segments-1]) {
+        t1 = i / blade_segments;
+        t2 = (i + 1) / blade_segments;
+        
+        z1 = t1 * blade_length;
+        z2 = t2 * blade_length;
+        
+        // Calculate chord width (linear taper)
+        chord1 = blade_width_root + t1 * (blade_width_tip - blade_width_root);
+        chord2 = blade_width_root + t2 * (blade_width_tip - blade_width_root);
+        
+        // Calculate thickness (thinner toward tip)
+        thickness1 = blade_thickness * (1 - 0.5 * t1);
+        thickness2 = blade_thickness * (1 - 0.5 * t2);
+        
+        // Calculate twist angle (varies along length)
+        angle1 = pitch_angle + t1 * twist_angle;
+        angle2 = pitch_angle + t2 * twist_angle;
+        
+        // Create blade segment
+        hull() {
+            translate([0, 0, z1])
+                rotate([0, 0, angle1])
+                    linear_extrude(height=0.01)
+                        airfoil(chord1, thickness1);
+                        
+            translate([0, 0, z2])
+                rotate([0, 0, angle2])
+                    linear_extrude(height=0.01)
+                        airfoil(chord2, thickness2);
         }
     }
 }
 
-// Module for creating the central hub with shaft hole
+// Create hub with mounting hole
 module hub() {
     difference() {
         union() {
             // Main hub cylinder
-            cylinder(r1 = hub_radius, r2 = hub_radius * 0.9, h = hub_height);
+            cylinder(h=hub_height, d=hub_diameter, center=true);
             
-            // Hub base (for strength)
-            cylinder(r = hub_radius * 1.1, h = hub_height * 0.3);
-            
-            // Top reinforcement
-            translate([0, 0, hub_height - hub_height * 0.2])
-                cylinder(r1 = hub_radius * 0.9, r2 = hub_radius * 0.7, h = hub_height * 0.2);
+            // Top hub cap (optional)
+            translate([0, 0, hub_height/2])
+                cylinder(h=hub_height/4, d1=hub_diameter, d2=hub_diameter*0.8, center=true);
+                
+            // Bottom hub cap (optional)
+            translate([0, 0, -hub_height/2])
+                cylinder(h=hub_height/4, d1=hub_diameter*0.8, d2=hub_diameter, center=true);
         }
         
-        // Shaft hole through center
-        translate([0, 0, -1]) {
-            cylinder(r = shaft_radius, h = hub_height + 2);
-            
-            // Add flat side for motor shaft if needed
-            if (shaft_flat) {
-                translate([shaft_radius * 0.6, 0, 0])
-                    cube([shaft_radius * 0.8, shaft_radius * 2, hub_height + 2], center=true);
-            }
-        }
+        // Shaft hole
+        cylinder(h=hub_height*1.2, d=shaft_diameter, center=true);
         
-        // Mounting screw holes (optional)
-        for (i = [0:3]) {
-            rotate([0, 0, i * 90])
-            translate([hub_radius * 0.6, 0, hub_height/2])
-            rotate([0, 90, 0])
-            cylinder(r = 1.5, h = hub_radius);
-        }
+        // Set screw hole (optional)
+        translate([0, hub_diameter/2, 0])
+            rotate([90, 0, 0])
+                cylinder(h=hub_diameter, d=2, center=true);
     }
 }
 
-// Blade with fillet connection to hub
-module blade_with_fillet() {
-    union() {
-        blade();
-        
-        // Create fillet at blade root
-        translate([0, 0, -blade_thickness/2])
-        hull() {
-            translate([0, 0, 0])
-            scale([hub_radius * 0.4, blade_width * 0.4, blade_thickness])
-            sphere(r = 1);
-            
-            translate([blade_length * 0.15, 0, 0])
-            scale([hub_radius * 0.2, blade_width * 0.6, blade_thickness])
-            sphere(r = 1);
-        }
-    }
-}
-
-// Assemble the propeller
+// Create the complete propeller
 module propeller() {
-    // Central hub
-    hub();
+    // Add the hub
+    color("SlateGray") hub();
     
-    // Blades with even spacing
+    // Add the blades
+    color("LightSteelBlue")
     for (i = [0:num_blades-1]) {
-        rotate([0, 0, i * (360 / num_blades)])
-        translate([hub_radius, 0, hub_height/2])
-        blade_with_fillet();
+        rotate([0, 0, i * 360 / num_blades])
+            translate([0, 0, 0])
+                rotate([90, 0, 0])
+                    blade();
     }
 }
 
-// Create the propeller
+// Generate the propeller
 propeller();
