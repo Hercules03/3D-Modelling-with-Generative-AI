@@ -1138,5 +1138,23 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "I want a book shelf",
+      "timestamp": "2025-03-30T10:59:47.087130"
+    },
+    "response": {
+      "core_type": "book shelf",
+      "modifiers": [
+        "book"
+      ],
+      "compound_type": "book shelf"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]

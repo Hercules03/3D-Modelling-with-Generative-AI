@@ -22,125 +22,157 @@ class MetadataExtractor:
         self.extraction_prompt = METADATA_EXTRACTION_PROMPT
         self.logger = ConversationLogger()
         self.prompt_logger = LLMPromptLogger()  # Add LLMPromptLogger
+        
+        # Define required metadata fields
+        self.required_fields = {
+            'object_type': str,
+            'features': list,
+            'geometric_properties': list,
+            'materials': list,
+            'technical_requirements': list,
+            'complexity': str,
+            'style': str,
+            'use_case': list,
+            'categories': list,
+            'properties': dict
+        }
 
     def extract_metadata(self, description, code="", step_back_result=None, keyword_data=None):
-        """Extract metadata from a model description and code"""
+        """
+        Extract metadata from a model description and code.
+        This is the main entry point for metadata extraction.
+        """
         try:
             print(f"\nExtracting metadata")
-            
             timestamp = datetime.now().isoformat()
             
-            # Handle case where keyword_data is None
-            if keyword_data is None:
-                print("No keyword data provided, using default values")
-                keyword_data = {
+            # 1. Process keyword data
+            keyword_data = self._process_keyword_data(keyword_data)
+            object_type = (keyword_data.get("compound_type") or keyword_data.get("core_type", ""))
+            
+            # 2. Extract base metadata from description and step-back analysis
+            base_metadata = self._extract_base_metadata(description, step_back_result)
+            if not base_metadata:
+                base_metadata = {}
+            
+            # 3. Add code analysis metadata if code is provided
+            if code:
+                code_metadata = self.analyze_code_metadata(code)
+                base_metadata.update(code_metadata)
+            
+            # 4. Add keyword-based metadata
+            base_metadata["object_type"] = object_type
+            
+            # 5. Perform category analysis
+            category_result = self.analyze_categories(description, base_metadata)
+            if category_result:
+                base_metadata.update(category_result)
+            
+            # 6. Ensure all required fields exist with correct types
+            metadata = self._validate_and_normalize_metadata(base_metadata)
+            
+            # 7. Log the extraction
+            self._log_extraction(description, code, metadata, timestamp)
+            
+            print("=== Full Metadata Extraction Complete ===\n")
+            return metadata
+            
+        except Exception as e:
+            print(f"Metadata extraction failed with error: {e}")
+            import traceback
+            traceback.print_exc()
+            print("=== Metadata Extraction Failed ===\n")
+            return self._get_default_metadata()
+
+    def _process_keyword_data(self, keyword_data):
+        """Process and validate keyword data"""
+        if keyword_data is None:
+            return {
+                "core_type": "model",
+                "modifiers": [],
+                "compound_type": ""
+            }
+        
+        if isinstance(keyword_data, str):
+            try:
+                return json.loads(keyword_data)
+            except json.JSONDecodeError:
+                return {
                     "core_type": "model",
                     "modifiers": [],
                     "compound_type": ""
                 }
-            # Also handle string type conversion (in case it's not a dictionary)
-            elif isinstance(keyword_data, str):
-                print("Converting string keyword_data to dictionary")
-                try:
-                    keyword_data = json.loads(keyword_data)
-                except json.JSONDecodeError:
-                    keyword_data = {
-                        "core_type": "model",
-                        "modifiers": [],
-                        "compound_type": ""
-                    }
-            
-            # Create the analysis object for keyword extraction
-            analysis = {
-                "query": {
-                    "input": description,
-                    "timestamp": timestamp,
-                    "model": ModelDefinitions.KEYWORD_EXTRACTOR
-                },
-                "response": {
-                    "core_type": keyword_data.get("core_type", ""),
-                    "modifiers": keyword_data.get("modifiers", []),
-                    "compound_type": keyword_data.get("compound_type", "")
-                },
-                "metadata": {
-                    "success": True,
-                    "error": None
-                }
-            }
-            print(f"Created analysis object: {json.dumps(analysis, indent=2)}")
-            
-            # Use the extracted type for metadata
-            object_type = (keyword_data.get("compound_type") or 
-                         keyword_data.get("core_type", ""))
-            print(f"Using object type: {object_type}")
-            
-            # Get LLM-based metadata
-            print("\n=== Starting Full Metadata Extraction ===")
-            prompt = self.extraction_prompt.format(description=description, step_back_analysis=step_back_result)
-            print("Invoking main LLM for metadata extraction...")
+        
+        return keyword_data
+
+    def _extract_base_metadata(self, description, step_back_result):
+        """Extract base metadata using LLM"""
+        try:
+            prompt = self.extraction_prompt.format(
+                description=description,
+                step_back_analysis=step_back_result
+            )
             response = self.llm.invoke(prompt)
-            
-            # Parse JSON response for full metadata
-            try:
-                # Clean up the response by removing code block markers
-                clean_content = response.content.replace("```json", "").replace("```", "").strip()
-                metadata = json.loads(clean_content)
-                # Update with our enhanced object type
-                metadata["object_type"] = object_type
-                
-                # Add code analysis metadata if code is provided
-                if code:
-                    code_metadata = self.analyze_code_metadata(code)
-                    metadata.update(code_metadata)
-                
-                # Ensure required fields exist
-                metadata.setdefault('features', [])
-                metadata.setdefault('geometric_properties', [])
-                metadata.setdefault('materials', [])
-                metadata.setdefault('technical_requirements', [])
-                metadata.setdefault('complexity', 'SIMPLE')
-                metadata.setdefault('style', 'Modern')
-                metadata.setdefault('use_case', [])
-                
-                print("Successfully extracted metadata:")
-                for key, value in metadata.items():
-                    print(f"  • {key}: {value}")
-                
-                # Log metadata extraction
-                self.prompt_logger.log_metadata_extraction(
-                    query=description,
-                    code=code,
-                    response=metadata,
-                    timestamp=timestamp
-                )
-                
-                # Perform category analysis
-                category_result = self.analyze_categories(description, metadata)
-                if category_result:
-                    metadata.update(category_result)
-                    self.prompt_logger.log_category_analysis(
-                        query=description,
-                        code=code,
-                        response=category_result,
-                        timestamp=timestamp
-                    )
-                
-                print("=== Full Metadata Extraction Complete ===\n")
-                return metadata
-                
-            except json.JSONDecodeError as e:
-                print(f"Error parsing metadata response as JSON: {e}")
-                print(f"Raw response that failed to parse: {response.content}")
-                print("=== Full Metadata Extraction Failed ===\n")
-                return {"object_type": object_type}
-                
+            clean_content = response.content.replace("```json", "").replace("```", "").strip()
+            return json.loads(clean_content)
         except Exception as e:
-            print(f"Metadata extraction failed with error: {e}")
-            print("Stack trace:")
-            import traceback
-            traceback.print_exc()
-            print("=== Metadata Extraction Failed ===\n")
-            return {}
+            print(f"Error extracting base metadata: {e}")
+            return None
+
+    def _validate_and_normalize_metadata(self, metadata):
+        """Ensure all required fields exist with correct types"""
+        normalized = {}
+        
+        for field, field_type in self.required_fields.items():
+            value = metadata.get(field)
+            
+            # Convert to correct type if needed
+            if value is None:
+                if field_type == list:
+                    value = []
+                elif field_type == dict:
+                    value = {}
+                elif field_type == str:
+                    value = ""
+            elif isinstance(value, str):
+                if field_type == list:
+                    try:
+                        value = json.loads(value)
+                    except json.JSONDecodeError:
+                        value = [value] if value else []
+                elif field_type == dict:
+                    try:
+                        value = json.loads(value)
+                    except json.JSONDecodeError:
+                        value = {}
+            
+            normalized[field] = value
+        
+        return normalized
+
+    def _get_default_metadata(self):
+        """Return default metadata structure"""
+        return {
+            'object_type': '',
+            'features': [],
+            'geometric_properties': [],
+            'materials': [],
+            'technical_requirements': [],
+            'complexity': 'SIMPLE',
+            'style': 'Modern',
+            'use_case': [],
+            'categories': ['other'],
+            'properties': {}
+        }
+
+    def _log_extraction(self, description, code, metadata, timestamp):
+        """Log metadata extraction results"""
+        self.prompt_logger.log_metadata_extraction(
+            query=description,
+            code=code,
+            response=metadata,
+            timestamp=timestamp
+        )
 
     def analyze_categories(self, description, metadata):
         """Analyze categories for the given description and metadata"""
