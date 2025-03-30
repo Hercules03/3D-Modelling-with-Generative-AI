@@ -115,13 +115,6 @@ class SCADKnowledgeBase:
         os.makedirs(self.persistence_dir, exist_ok=True)
         with open(f"{self.persistence_dir}/last_processed.json", "w") as f:
             json.dump({"timestamp": self.last_processed_time}, f)
-    
-    
-    def _analyze_object_categories(self, object_type, description):
-        """Use LLM to analyze object categories using standardized categories and properties"""
-        # Use the centralized method from MetadataExtractor
-        metadata = {'object_type': object_type}
-        return self.metadata_extractor.analyze_categories(description, metadata)
 
     def add_example(self, description, code, metadata=None):
         """Add a new example to the knowledge base"""
@@ -214,57 +207,6 @@ class SCADKnowledgeBase:
         
         return 'example'
 
-    def _extract_metadata(self, description: str, code: str = "") -> Dict:
-        """Extract metadata from description and code using MetadataExtractor"""
-        try:
-            # Get metadata from extractor
-            metadata = self.metadata_extractor.extract_metadata(
-                description=description,
-                code=code,
-                step_back_result=None,  # Will be added if needed
-                keyword_data=self.keyword_extractor.extract_keyword(description)
-            )
-            
-            if not metadata:
-                logger.error("Failed to extract metadata")
-                return None
-            
-            return metadata
-            
-        except Exception as e:
-            logger.error(f"Error extracting metadata: {str(e)}")
-            logger.error(f"Stack trace: {traceback.format_exc()}")
-            return None
-
-    def analyze_categories(self, description: str, code: str) -> dict:
-        """Analyze and categorize the object using MetadataExtractor"""
-        try:
-            # Get metadata first to ensure we have the object type
-            metadata = self.metadata_extractor.extract_metadata(description, code)
-            return self.metadata_extractor.analyze_categories(description, metadata)
-                
-        except Exception as e:
-            print(f"Error analyzing categories: {str(e)}")
-            return {
-                "categories": ["other"],
-                "properties": {},
-                "similar_objects": []
-            }
-
-    def _analyze_code_metadata(self, code: str) -> dict:
-        """Analyze OpenSCAD code to extract additional metadata using MetadataExtractor"""
-        return self.metadata_extractor.analyze_code_metadata(code)
-
-    def _calculate_complexity_score(self, code, metadata):
-        """Calculate complexity score based on code analysis and metadata"""
-        # Use the centralized method from MetadataExtractor
-        return self.metadata_extractor.calculate_complexity_with_metadata(code, metadata)
-
-    def _analyze_components(self, code):
-        """Analyze and extract components from SCAD code"""
-        # Use the centralized method from MetadataExtractor
-        return self.metadata_extractor.analyze_components(code)
-
     def _rank_results(self, query_metadata, results):
         """
         Rank and filter search results based on metadata similarity.
@@ -353,6 +295,7 @@ class SCADKnowledgeBase:
                 print(f"\nResult ID: {result.get('id', 'unknown')}")
                 print(f"Result object_type: {result_metadata.get('object_type', '')}")
                 print(f"Result features: {result_metadata.get('features', [])}")
+                print(f"Result description: {result.get('document', result_metadata.get('description', 'No description available'))}")
                 print(f"Query object_type: {query_metadata.get('object_type', '')}")
                 print(f"Query features: {query_metadata.get('features', [])}")
 
@@ -469,11 +412,6 @@ class SCADKnowledgeBase:
         
         return ranked_results
 
-    def _validate_metadata(self, metadata):
-        """Validate the metadata structure."""
-        # Use the centralized method from MetadataExtractor
-        return self.metadata_extractor.validate_metadata(metadata)
-
     def _example_exists(self, example_id):
         """Check if an example with the given ID already exists"""
         try:
@@ -481,11 +419,6 @@ class SCADKnowledgeBase:
             return bool(existing and existing['ids'])
         except Exception:
             return False
-
-    def _group_components_by_type(self, components: List[Dict]) -> Dict[str, List[Dict]]:
-        """Group components by their type"""
-        # Use the centralized method from MetadataExtractor
-        return self.metadata_extractor._group_components_by_type(components)
 
     def delete_examples(self, example_ids: List[str]) -> bool:
         """Delete multiple examples from the knowledge base"""
@@ -662,7 +595,8 @@ class SCADKnowledgeBase:
         """
         try:
             print("\nRetrieving similar examples...")
-            print(f"Query: {description}")
+            print(f"Query: \"{description}\"")
+            print("="*50)
             
             # Extract metadata from query
             print("\nExtracting metadata from query...")
@@ -760,6 +694,7 @@ class SCADKnowledgeBase:
                 for i, example in enumerate(relevant_results, 1):
                     print(f"\nExample {i} (Score: {example['score']:.3f}):")
                     print(f"ID: {example['example']['id']}")
+                    print(f"Description: \"{example['example'].get('document', example['example']['metadata'].get('description', 'No description'))}\"")
                     print("Score Breakdown:")
                     for name, score in example['score_breakdown']['component_scores'].items():
                         print(f"  {name}: {score:.3f}")
@@ -963,15 +898,19 @@ class SCADKnowledgeBase:
         except json.JSONDecodeError:
             return value if value else []
             
-    def input_manual_knowledge(self) -> bool:
+    def input_manual_knowledge(self, generator=None) -> bool:
         """Handle manual input of knowledge to add directly to the knowledge base.
         
         This method allows users to:
         1. Enter a description for a 3D model
         2. Read SCAD code from a file (add.scad)
         3. Extract and confirm keywords
-        4. Perform step-back analysis
+        4. Perform step-back analysis 
         5. Add the example to the knowledge base with metadata
+        
+        Args:
+            generator: Optional OpenSCADGenerator instance to reuse for keyword extraction
+                      and step-back analysis
         
         Returns:
             bool: True if the knowledge was successfully added, False otherwise
@@ -1016,128 +955,23 @@ class SCADKnowledgeBase:
             return False
         
         try:
-            
-            # Step 1: Extract keywords and get user confirmation
+            # Use OpenSCADGenerator methods since generator must exist
             print("\n" + "="*50)
             print("STEP 1: KEYWORD EXTRACTION")
             print("="*50)
             
-            keyword_data = None
-            max_keyword_retries = 3
-            keyword_retry_count = 0
-            
-            # Initialize the keyword extractor if not already initialized
-            from KeywordExtractor import KeywordExtractor
-            if not hasattr(self, 'keyword_extractor'):
-                self.keyword_extractor = KeywordExtractor()
-            
-            while keyword_retry_count < max_keyword_retries:
-                # Extract keywords
-                keyword_data = self.keyword_extractor.extract_keyword(description)
-                
-                print("\nKeyword Analysis Results:")
-                print("-" * 30)
-                print(f"Core Type: {keyword_data.get('core_type', '')}")
-                print(f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}")
-                print(f"Compound Type: {keyword_data.get('compound_type', '')}")
-                print("-" * 30)
-                
-                # Ask for user confirmation
-                user_input = input("\nDo you accept these keywords? (yes/no): ").lower().strip()
-                
-                if user_input == 'yes':
-                    # Log the approved keywords
-                    self.logger.log_keyword_extraction({
-                        "query": {
-                            "input": description,
-                            "timestamp": datetime.now().isoformat()
-                        },
-                        "response": keyword_data,
-                        "metadata": {
-                            "success": True,
-                            "error": None,
-                            "user_approved": True
-                        }
-                    })
-                    break
-                else:
-                    keyword_retry_count += 1
-                    if keyword_retry_count < max_keyword_retries:
-                        print("\nRetrying keyword extraction...")
-                        # Ask user for refinement suggestions
-                        print("Please provide any suggestions to improve the keyword extraction (or press Enter to retry):")
-                        user_feedback = input().strip()
-                        if user_feedback:
-                            description = f"{description}\nConsider these adjustments: {user_feedback}"
-                    else:
-                        print("\nMaximum keyword extraction attempts reached.")
-                        print("Please try again with a different description.")
-                        return False
-
+            # Use generator's keyword extraction
+            keyword_data = generator.perform_keyword_extraction(description)
             if keyword_data is None:
                 print("\nKeyword extraction failed. Please try again with a different description.")
                 return False
-
-            # Step 2: Perform step-back analysis with approved keywords
+            
             print("\n" + "="*50)
             print("STEP 2: TECHNICAL ANALYSIS")
             print("="*50)
             
-            # Initialize step-back analyzer if not already initialized
-            from step_back_analyzer import StepBackAnalyzer
-            from LLM import LLMProvider
-            if not hasattr(self, 'step_back_analyzer'):
-                llm = LLMProvider.get_llm()
-                self.step_back_analyzer = StepBackAnalyzer(llm=llm, logger=self.logger)
-            
-            step_back_result = None
-            max_step_back_retries = 3
-            step_back_retry_count = 0
-            
-            while step_back_retry_count < max_step_back_retries:
-                # Perform step-back analysis
-                step_back_result = self.perform_step_back(description, keyword_data)
-                if not step_back_result:
-                    print("\nStep-back analysis failed. Please try again.")
-                    step_back_retry_count += 1
-                    continue
-                
-                # Ask for user confirmation
-                user_input = input("\nDo you accept this technical analysis? (yes/no): ").lower().strip()
-                
-                if user_input == 'yes':
-                    # Log the approved step-back analysis
-                    self.logger.log_step_back_analysis({
-                        "query": {
-                            "input": description,
-                            "timestamp": datetime.now().isoformat()
-                        },
-                        "response": {
-                            "principles": step_back_result.get('principles', []),
-                            "abstractions": step_back_result.get('abstractions', []),
-                            "approach": step_back_result.get('approach', [])
-                        },
-                        "metadata": {
-                            "success": True,
-                            "error": None,
-                            "user_approved": True
-                        }
-                    })
-                    break
-                else:
-                    step_back_retry_count += 1
-                    if step_back_retry_count < max_step_back_retries:
-                        print("\nRetrying step-back analysis...")
-                        # Ask user for refinement suggestions
-                        print("Please provide any suggestions to improve the step-back analysis (or press Enter to retry):")
-                        user_feedback = input().strip()
-                        if user_feedback:
-                            description = f"{description}\nConsider these aspects in your analysis: {user_feedback}"
-                    else:
-                        print("\nMaximum step-back analysis attempts reached.")
-                        print("Please try again with a different description.")
-                        return False
-
+            # Use generator's step-back analysis
+            step_back_result = generator.perform_step_back_analysis(description, keyword_data)
             if step_back_result is None:
                 print("\nStep-back analysis failed. Please try again with a different description.")
                 return False
@@ -1176,7 +1010,6 @@ class SCADKnowledgeBase:
             logger.error(f"Stack trace: {traceback.format_exc()}")
             print(f"\nError saving knowledge: {str(e)}")
             return False
-            
     def _validate_scad_code(self, code: str) -> bool:
         """Validate OpenSCAD code for basic syntax and structure"""
         logger.debug("Validating OpenSCAD code")

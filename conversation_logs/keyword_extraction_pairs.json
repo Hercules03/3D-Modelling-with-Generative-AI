@@ -1427,5 +1427,59 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "Propeller for a whirligig\nConsider these adjustments: the modifier should be whirligig, Commond type is propeller for a whirligig, core type is propeller",
+      "timestamp": "2025-03-30T21:13:03.774918"
+    },
+    "response": {
+      "core_type": "propeller",
+      "modifiers": [
+        "for a whirligig"
+      ],
+      "compound_type": "propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a blade of a drone propeller",
+      "timestamp": "2025-03-30T21:20:31.901762"
+    },
+    "response": {
+      "core_type": "blade",
+      "modifiers": [
+        "drone propeller"
+      ],
+      "compound_type": "drone propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
+  },
+  {
+    "query": {
+      "input": "I want a drone propeller",
+      "timestamp": "2025-03-30T21:22:00.412760"
+    },
+    "response": {
+      "core_type": "drone propeller",
+      "modifiers": [
+        "drone"
+      ],
+      "compound_type": "drone propeller"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]

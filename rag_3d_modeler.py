@@ -187,7 +187,7 @@ def main():
             
         elif choice == "2":
             logger.info("Starting manual knowledge input")
-            result = kb.input_manual_knowledge()
+            result = kb.input_manual_knowledge(generator=generator)
             logger.info("Manual knowledge input result: %s", "Success" if result else "Failed")
             continue
             

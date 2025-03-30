@@ -54,6 +54,7 @@ class KeywordExtractor:
             
             # Replace the placeholder in the prompt
             prompt_value = self.prompt.replace("<<INPUT>>", description)
+            print(f"prompt_value: {prompt_value}")
             self.write_debug(
                 "\n=== KEYWORD EXTRACTION PROMPT ===\n",
                 f"Description: {description}\n",

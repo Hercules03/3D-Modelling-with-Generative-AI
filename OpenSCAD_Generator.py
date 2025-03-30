@@ -111,8 +111,10 @@ class OpenSCADGenerator:
                 "=" * 50 + "\n\n"
             )
             
+            
             print("\nKeyword Analysis Results:")
             print("-" * 30)
+            print(f"query: {description}")
             print(f"Core Type: {keyword_data.get('core_type', '')}")
             print(f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}")
             print(f"Compound Type: {keyword_data.get('compound_type', '')}")
