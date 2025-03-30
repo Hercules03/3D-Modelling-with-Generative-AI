@@ -1,0 +1,24 @@
+# Environment variables
+.env
+.env.*
+
+# Debug logs
+*.log
+debug_log.txt
+detailed_debug.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python

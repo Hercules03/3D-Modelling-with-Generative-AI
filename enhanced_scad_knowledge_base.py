@@ -20,83 +20,6 @@ from fuzzywuzzy import fuzz
 logger = logging.getLogger(__name__)
 
 class EnhancedSCADKnowledgeBase:
-    # Add this as a class variable at the top of the class
-    STANDARD_CATEGORIES = {
-        "container": {
-            "description": "Objects that can hold or contain other items",
-            "examples": ["cup", "mug", "bowl", "vase", "bottle", "box", "jar", "tray", "basket", "planter", "container"]
-        },
-        "furniture": {
-            "description": "Objects used for living or working spaces",
-            "examples": ["table", "chair", "desk", "shelf", "cabinet", "bench", "stand", "organizer", "rack", "holder"]
-        },
-        "decorative": {
-            "description": "Objects primarily for aesthetic purposes",
-            "examples": ["sculpture", "ornament", "statue", "figurine", "vase", "frame", "display", "art", "decoration"]
-        },
-        "functional": {
-            "description": "Utility objects with specific practical purposes",
-            "examples": ["holder", "stand", "bracket", "hook", "hanger", "clip", "mount", "support", "organizer", "adapter"]
-        },
-        "geometric": {
-            "description": "Basic or complex geometric shapes and mathematical objects",
-            "examples": ["cube", "sphere", "cylinder", "cone", "polyhedron", "torus", "prism", "pyramid", "helix"]
-        },
-        "mechanical": {
-            "description": "Parts or components of mechanical systems",
-            "examples": ["gear", "bolt", "nut", "bearing", "lever", "hinge", "joint", "wheel", "pulley", "spring"]
-        },
-        "enclosure": {
-            "description": "Objects designed to enclose or protect other items",
-            "examples": ["case", "box", "housing", "cover", "shell", "enclosure", "protection", "sleeve", "cap"]
-        },
-        "modular": {
-            "description": "Objects designed to be combined or connected with others",
-            "examples": ["connector", "adapter", "joint", "mount", "tile", "block", "module", "segment", "piece"]
-        },
-        "other": {
-            "description": "Objects that don't fit in other categories",
-            "examples": []
-        }
-    }
-
-    STANDARD_PROPERTIES = {
-        # Physical dimensions and characteristics
-        "size": ["tiny", "small", "medium", "large", "huge"],
-        "wall_thickness": ["thin", "medium", "thick", "solid"],
-        "hollow": ["yes", "no", "partial"],
-        
-        # Design characteristics
-        "style": ["modern", "traditional", "minimalist", "decorative", "industrial", "organic", "geometric", "artistic"],
-        "complexity": ["simple", "moderate", "complex", "intricate"],
-        "symmetry": ["radial", "bilateral", "asymmetric", "periodic"],
-        
-        # 3D Printing specific
-        "printability": ["easy", "moderate", "challenging", "requires_support"],
-        "orientation": ["flat", "vertical", "angled", "any"],
-        "support_needed": ["none", "minimal", "moderate", "extensive"],
-        "infill_requirement": ["low", "medium", "high", "solid"],
-        
-        # Assembly and structure
-        "assembly": ["single_piece", "multi_part", "snap_fit", "threaded", "interlocking"],
-        "stability": ["self_standing", "needs_support", "wall_mounted", "hanging"],
-        "adjustability": ["fixed", "adjustable", "modular", "customizable"],
-        
-        # Material and finishing
-        "material_compatibility": ["any", "pla", "abs", "petg", "resin", "multi_material"],
-        "surface_finish": ["smooth", "textured", "patterned", "functional"],
-        "post_processing": ["none", "minimal", "required", "optional"],
-        
-        # Functional aspects
-        "durability": ["light_duty", "medium_duty", "heavy_duty"],
-        "water_resistance": ["none", "splash_proof", "water_tight"],
-        "heat_resistance": ["low", "medium", "high"],
-        
-        # Design intent
-        "customization": ["fixed", "parametric", "highly_customizable"],
-        "purpose": ["practical", "decorative", "educational", "prototype"]
-    }
-
     def __init__(self):
         """Initialize the enhanced knowledge base with ChromaDB"""
         self.debug_log = []
@@ -341,80 +264,9 @@ class EnhancedSCADKnowledgeBase:
     
     def _analyze_object_categories(self, object_type, description):
         """Use LLM to analyze object categories using standardized categories and properties"""
-        try:
-            # Convert standard categories to a format suitable for the prompt
-            categories_info = "\n".join(
-                f"- {cat}: {info['description']} (e.g., {', '.join(info['examples'])})"
-                for cat, info in self.STANDARD_CATEGORIES.items()
-            )
-            
-            properties_info = "\n".join(
-                f"- {prop}: {', '.join(values)}"
-                for prop, values in self.STANDARD_PROPERTIES.items()
-            )
-
-            # Use the prompt template from prompts.py
-            prompt = CATEGORY_ANALYSIS_PROMPT.format(
-                object_type=object_type,
-                description=description,
-                categories_info=categories_info,
-                properties_info=properties_info
-            )
-
-            response = self.llm.invoke(prompt)
-            
-            # Ensure we're getting a clean JSON string
-            json_str = response.content.strip()
-            if json_str.startswith("```json"):
-                json_str = json_str.split("```json")[1]
-            if json_str.endswith("```"):
-                json_str = json_str.rsplit("```", 1)[0]
-            json_str = json_str.strip()
-            
-            try:
-                result = json.loads(json_str)
-                
-                # Validate and clean the response
-                cleaned_result = {
-                    "categories": [
-                        cat for cat in result.get("categories", [])
-                        if cat in self.STANDARD_CATEGORIES
-                    ],
-                    "properties": {
-                        prop: value
-                        for prop, value in result.get("properties", {}).items()
-                        if prop in self.STANDARD_PROPERTIES
-                        and value in self.STANDARD_PROPERTIES[prop]
-                    },
-                    "similar_objects": [
-                        obj for obj in result.get("similar_objects", [])
-                        if any(obj in cat_info["examples"]
-                              for cat_info in self.STANDARD_CATEGORIES.values())
-                    ]
-                }
-                
-                # Ensure at least one category is assigned
-                if not cleaned_result["categories"]:
-                    cleaned_result["categories"] = ["container"]  # Default to container for most 3D objects
-                
-                return cleaned_result
-                
-            except json.JSONDecodeError as e:
-                print(f"Error parsing LLM response as JSON: {str(e)}")
-                print(f"Raw response: {json_str}")
-                return {
-                    "categories": ["container"],
-                    "properties": {},
-                    "similar_objects": []
-                }
-                
-        except Exception as e:
-            print(f"Error analyzing object categories: {e}")
-            return {
-                "categories": ["container"],
-                "properties": {},
-                "similar_objects": []
-            }
+        # Use the centralized method from MetadataExtractor
+        metadata = {'object_type': object_type}
+        return self.metadata_extractor.analyze_categories(description, metadata)
 
     def add_example(self, description, code, metadata=None):
         """Add a new example to the knowledge base"""
@@ -723,116 +575,13 @@ class EnhancedSCADKnowledgeBase:
 
     def _calculate_complexity_score(self, code, metadata):
         """Calculate complexity score based on code analysis and metadata"""
-        score = 0
-        
-        # Code-based complexity factors
-        try:
-            # Count number of operations/functions
-            operations = len([line for line in code.split('\n') 
-                            if any(op in line.lower() for op in ['union', 'difference', 'intersection', 'translate', 'rotate', 'scale'])])
-            score += min(operations * 2, 30)  # Max 30 points for operations
-            
-            # Count nested levels
-            max_nesting = 0
-            current_nesting = 0
-            for line in code.split('\n'):
-                if '{' in line:
-                    current_nesting += 1
-                    max_nesting = max(max_nesting, current_nesting)
-                if '}' in line:
-                    current_nesting -= 1
-            score += min(max_nesting * 5, 20)  # Max 20 points for nesting
-            
-            # Count variables and modules
-            variables = len([line for line in code.split('\n') if '=' in line and not line.strip().startswith('//')])
-            modules = len([line for line in code.split('\n') if 'module' in line])
-            score += min((variables + modules) * 2, 20)  # Max 20 points for variables/modules
-            
-            # Analyze geometric complexity
-            geometric_ops = len([line for line in code.split('\n') 
-                               if any(shape in line.lower() for shape in ['sphere', 'cube', 'cylinder', 'polyhedron'])])
-            score += min(geometric_ops * 3, 15)  # Max 15 points for geometric operations
-            
-        except Exception as e:
-            print(f"Error calculating code complexity: {str(e)}")
-        
-        # Metadata-based complexity factors
-        try:
-            # Consider declared complexity
-            if metadata.get('properties_complexity') == 'intricate':
-                score += 15
-            elif metadata.get('properties_complexity') == 'complex':
-                score += 10
-            elif metadata.get('properties_complexity') == 'moderate':
-                score += 5
-            
-            # Consider printability
-            if metadata.get('properties_printability') == 'challenging':
-                score += 10
-            elif metadata.get('properties_printability') == 'requires_support':
-                score += 5
-            
-            # Consider support needed
-            if metadata.get('properties_support_needed') == 'extensive':
-                score += 10
-            elif metadata.get('properties_support_needed') == 'moderate':
-                score += 5
-            
-        except Exception as e:
-            print(f"Error calculating metadata complexity: {str(e)}")
-        
-        # Normalize score to 0-100 range
-        normalized_score = min(max(score, 0), 100)
-        return normalized_score
+        # Use the centralized method from MetadataExtractor
+        return self.metadata_extractor.calculate_complexity_with_metadata(code, metadata)
 
     def _analyze_components(self, code):
         """Analyze and extract components from SCAD code"""
-        components = []
-        try:
-            # Extract modules (reusable components)
-            module_pattern = r'module\s+(\w+)\s*\([^)]*\)\s*{'
-            modules = re.findall(module_pattern, code)
-            for module in modules:
-                components.append({
-                    'type': 'module',
-                    'name': module,
-                    'reusable': True
-                })
-            
-            # Extract main geometric shapes
-            shape_pattern = r'(sphere|cube|cylinder|polyhedron)\s*\('
-            shapes = re.findall(shape_pattern, code)
-            for shape in shapes:
-                components.append({
-                    'type': 'primitive',
-                    'name': shape,
-                    'reusable': False
-                })
-            
-            # Extract transformations
-            transform_pattern = r'(translate|rotate|scale|mirror)\s*\('
-            transformations = re.findall(transform_pattern, code)
-            for transform in transformations:
-                components.append({
-                    'type': 'transformation',
-                    'name': transform,
-                    'reusable': False
-                })
-            
-            # Extract boolean operations
-            bool_pattern = r'(union|difference|intersection)\s*\('
-            booleans = re.findall(bool_pattern, code)
-            for boolean in booleans:
-                components.append({
-                    'type': 'boolean',
-                    'name': boolean,
-                    'reusable': False
-                })
-            
-        except Exception as e:
-            print(f"Error analyzing components: {str(e)}")
-        
-        return components
+        # Use the centralized method from MetadataExtractor
+        return self.metadata_extractor.analyze_components(code)
 
     def _rank_results(self, query_metadata, results):
         """
@@ -911,31 +660,31 @@ class EnhancedSCADKnowledgeBase:
                 # Calculate component match score
                 result_components = result_metadata['step_back_analysis'].get('shape_components', [])
                 query_components = query_metadata['step_back_analysis'].get('shape_components', [])
-                component_match = self._calculate_text_similarity(query_components, result_components)
+                component_match = self.metadata_extractor.calculate_text_similarity(query_components, result_components)
 
                 # Calculate step-back analysis score
-                principles_score = self._calculate_text_similarity(
+                principles_score = self.metadata_extractor.calculate_text_similarity(
                     query_metadata['step_back_analysis']['core_principles'],
                     result_metadata['step_back_analysis']['core_principles']
                 )
-                components_score = self._calculate_text_similarity(
+                components_score = self.metadata_extractor.calculate_text_similarity(
                     query_metadata['step_back_analysis']['shape_components'],
                     result_metadata['step_back_analysis']['shape_components']
                 )
-                steps_score = self._calculate_text_similarity(
+                steps_score = self.metadata_extractor.calculate_text_similarity(
                     query_metadata['step_back_analysis']['implementation_steps'],
                     result_metadata['step_back_analysis']['implementation_steps']
                 )
                 step_back_score = (principles_score + components_score + steps_score) / 3
 
                 # Calculate geometric properties match
-                geometric_score = self._calculate_text_similarity(
+                geometric_score = self.metadata_extractor.calculate_text_similarity(
                     query_metadata['geometric_properties'],
                     result_metadata['geometric_properties']
                 )
 
                 # Calculate feature match
-                feature_score = self._calculate_text_similarity(
+                feature_score = self.metadata_extractor.calculate_text_similarity(
                     query_metadata['features'],
                     result_metadata['features']
                 )
@@ -1013,88 +762,10 @@ class EnhancedSCADKnowledgeBase:
         
         return ranked_results
 
-    def _calculate_text_similarity(self, list1, list2):
-        """
-        Calculate similarity between two lists of text items using semantic matching.
-        """
-        if not list1 or not list2:
-            return 0.0
-        
-        # Keywords that indicate mechanical/automotive relevance
-        mechanical_keywords = {
-            'circular', 'cylindrical', 'rotational', 'symmetric', 'concentric',
-            'wheel', 'rim', 'hub', 'spoke', 'bolt', 'mounting', 'automotive',
-            'vehicle', 'car', 'truck', 'axle', 'bearing'
-        }
-        
-        total_score = 0
-        max_scores = []
-        
-        for item1 in list1:
-            item_scores = []
-            item1_words = set(str(item1).lower().split())
-            
-            # Check for mechanical/automotive relevance
-            mechanical_relevance = len(item1_words.intersection(mechanical_keywords)) > 0
-            
-            for item2 in list2:
-                item2_words = set(str(item2).lower().split())
-                
-                # Basic word overlap score
-                overlap_score = len(item1_words.intersection(item2_words)) / len(item1_words.union(item2_words))
-                
-                # Fuzzy match score
-                fuzzy_score = fuzz.ratio(str(item1).lower(), str(item2).lower()) / 100.0
-                
-                # Combined score with mechanical relevance bonus
-                combined_score = (overlap_score * 0.6 + fuzzy_score * 0.4)
-                if mechanical_relevance and len(item2_words.intersection(mechanical_keywords)) > 0:
-                    combined_score *= 1.5  # 50% bonus for mechanical matches
-                
-                item_scores.append(combined_score)
-            
-            if item_scores:
-                max_scores.append(max(item_scores))
-        
-        if max_scores:
-            total_score = sum(max_scores) / len(max_scores)
-        
-        return min(total_score, 1.0)  # Cap at 1.0
-
     def _validate_metadata(self, metadata):
         """Validate the metadata structure."""
-        required_fields = [
-            'object_type',
-            'dimensions',
-            'features',
-            'materials',
-            'complexity',
-            'style',
-            'use_case',
-            'geometric_properties',
-            'technical_requirements',
-            'step_back_analysis'
-        ]
-
-        # Check top-level required fields
-        for field in required_fields:
-            if field not in metadata:
-                print(f"Missing required field: {field}")
-                return False
-
-        # Check step-back analysis structure
-        step_back_fields = [
-            'core_principles',  # Updated from 'principles'
-            'shape_components',
-            'implementation_steps'
-        ]
-
-        for field in step_back_fields:
-            if field not in metadata['step_back_analysis']:
-                print(f"Missing required step-back analysis field: {field}")
-                return False
-
-        return True
+        # Use the centralized method from MetadataExtractor
+        return self.metadata_extractor.validate_metadata(metadata)
 
     def _example_exists(self, example_id):
         """Check if an example with the given ID already exists"""
@@ -1106,14 +777,8 @@ class EnhancedSCADKnowledgeBase:
 
     def _group_components_by_type(self, components: List[Dict]) -> Dict[str, List[Dict]]:
         """Group components by their type"""
-        grouped = {}
-        for component in components:
-            if isinstance(component, dict) and 'type' in component and 'name' in component:
-                comp_type = component['type'].lower()
-                if comp_type not in grouped:
-                    grouped[comp_type] = []
-                grouped[comp_type].append(component)
-        return grouped 
+        # Use the centralized method from MetadataExtractor
+        return self.metadata_extractor._group_components_by_type(components)
 
     def delete_examples(self, example_ids: List[str]) -> bool:
         """Delete multiple examples from the knowledge base"""

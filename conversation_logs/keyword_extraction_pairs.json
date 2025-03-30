@@ -1156,5 +1156,24 @@
       "error": null,
       "user_approved": true
     }
+  },
+  {
+    "query": {
+      "input": "I want a camera lens",
+      "timestamp": "2025-03-30T11:26:46.343470"
+    },
+    "response": {
+      "core_type": "camera lens",
+      "modifiers": [
+        "camera",
+        "lens"
+      ],
+      "compound_type": "camera lens"
+    },
+    "metadata": {
+      "success": true,
+      "error": null,
+      "user_approved": true
+    }
   }
 ]

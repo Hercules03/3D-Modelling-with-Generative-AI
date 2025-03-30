@@ -188,6 +188,23 @@ Example added to knowledge base!
 - **Code Organization**: Refactored code for better modularity and maintainability
 - **Performance Optimization**: Improved vector search and ranking algorithms
 
+## Security
+
+### API Key Management
+This project requires API keys for external LLM providers. Please follow these security best practices:
+
+- **Never commit API keys to the repository**
+- Always use the `.env` file (which is in `.gitignore`) to store sensitive keys
+- For development or collaboration, copy `.env.example` to `.env` and add your actual keys
+- Regularly rotate your API keys, especially if you suspect they may have been compromised
+- Consider using environment variables for deployment environments
+
+### Data Privacy
+The system makes API calls to external LLM providers with your input data. Be aware that:
+- Text descriptions and generated 3D models may be processed by third-party APIs
+- Review the privacy policies of the LLM providers you use
+- Consider using local models through Ollama for sensitive use cases
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit pull requests or open issues for bugs, feature requests, or improvements.

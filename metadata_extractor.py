@@ -5,8 +5,92 @@ from prompts import METADATA_EXTRACTION_PROMPT, KEYWORD_EXTRACTOR_PROMPT, CATEGO
 from conversation_logger import ConversationLogger
 from LLMPromptLogger import LLMPromptLogger
 from constant import BASIC_KNOWLEDGE
+import re
+from typing import Dict, List, Union, Optional
+import logging
+import traceback
+from fuzzywuzzy import fuzz
+
+logger = logging.getLogger(__name__)
 
 class MetadataExtractor:
+    # Add standard categories as a class variable
+    STANDARD_CATEGORIES = {
+        "container": {
+            "description": "Objects that can hold or contain other items",
+            "examples": ["cup", "mug", "bowl", "vase", "bottle", "box", "jar", "tray", "basket", "planter", "container"]
+        },
+        "furniture": {
+            "description": "Objects used for living or working spaces",
+            "examples": ["table", "chair", "desk", "shelf", "cabinet", "bench", "stand", "organizer", "rack", "holder"]
+        },
+        "decorative": {
+            "description": "Objects primarily for aesthetic purposes",
+            "examples": ["sculpture", "ornament", "statue", "figurine", "vase", "frame", "display", "art", "decoration"]
+        },
+        "functional": {
+            "description": "Utility objects with specific practical purposes",
+            "examples": ["holder", "stand", "bracket", "hook", "hanger", "clip", "mount", "support", "organizer", "adapter"]
+        },
+        "geometric": {
+            "description": "Basic or complex geometric shapes and mathematical objects",
+            "examples": ["cube", "sphere", "cylinder", "cone", "polyhedron", "torus", "prism", "pyramid", "helix"]
+        },
+        "mechanical": {
+            "description": "Parts or components of mechanical systems",
+            "examples": ["gear", "bolt", "nut", "bearing", "lever", "hinge", "joint", "wheel", "pulley", "spring"]
+        },
+        "enclosure": {
+            "description": "Objects designed to enclose or protect other items",
+            "examples": ["case", "box", "housing", "cover", "shell", "enclosure", "protection", "sleeve", "cap"]
+        },
+        "modular": {
+            "description": "Objects designed to be combined or connected with others",
+            "examples": ["connector", "adapter", "joint", "mount", "tile", "block", "module", "segment", "piece"]
+        },
+        "other": {
+            "description": "Objects that don't fit in other categories",
+            "examples": []
+        }
+    }
+
+    STANDARD_PROPERTIES = {
+        # Physical dimensions and characteristics
+        "size": ["tiny", "small", "medium", "large", "huge"],
+        "wall_thickness": ["thin", "medium", "thick", "solid"],
+        "hollow": ["yes", "no", "partial"],
+        
+        # Design characteristics
+        "style": ["modern", "traditional", "minimalist", "decorative", "industrial", "organic", "geometric", "artistic"],
+        "complexity": ["simple", "moderate", "complex", "intricate"],
+        "symmetry": ["radial", "bilateral", "asymmetric", "periodic"],
+        
+        # 3D Printing specific
+        "printability": ["easy", "moderate", "challenging", "requires_support"],
+        "orientation": ["flat", "vertical", "angled", "any"],
+        "support_needed": ["none", "minimal", "moderate", "extensive"],
+        "infill_requirement": ["low", "medium", "high", "solid"],
+        
+        # Assembly and structure
+        "assembly": ["single_piece", "multi_part", "snap_fit", "threaded", "interlocking"],
+        "stability": ["self_standing", "needs_support", "wall_mounted", "hanging"],
+        "adjustability": ["fixed", "adjustable", "modular", "customizable"],
+        
+        # Material and finishing
+        "material_compatibility": ["any", "pla", "abs", "petg", "resin", "multi_material"],
+        "surface_finish": ["smooth", "textured", "patterned", "functional"],
+        "post_processing": ["none", "minimal", "required", "optional"],
+        
+        # Functional aspects
+        "durability": ["light_duty", "medium_duty", "heavy_duty"],
+        "water_resistance": ["none", "splash_proof", "water_tight"],
+        "heat_resistance": ["low", "medium", "high"],
+        
+        # Design intent
+        "customization": ["fixed", "parametric", "highly_customizable"],
+        "purpose": ["practical", "decorative", "educational", "prototype"]
+    }
+
     def __init__(self, llm_provider="gemma"):
         """Initialize the metadata extractor with an LLM provider"""
         print("\nInitializing Metadata Extractor...")
@@ -174,15 +258,37 @@ class MetadataExtractor:
             timestamp=timestamp
         )
 
-    def analyze_categories(self, description, metadata):
-        """Analyze categories for the given description and metadata"""
+    def analyze_categories(self, description, metadata=None):
+        """
+        Analyze categories for the given description and metadata.
+        This is the centralized method for category analysis.
+        """
         try:
-            # Format the prompt with standard categories and properties
+            if metadata is None:
+                metadata = {'object_type': ''}
+            
+            # Prepare category info from standard categories
+            categories_info = BASIC_KNOWLEDGE.get("categories")
+            if not categories_info:
+                categories_info = "\n".join(
+                    f"- {cat}: {info['description']} (e.g., {', '.join(info['examples'])})"
+                    for cat, info in self.STANDARD_CATEGORIES.items()
+                )
+            
+            # Prepare properties info from standard properties
+            properties_info = BASIC_KNOWLEDGE.get("properties")
+            if not properties_info:
+                properties_info = "\n".join(
+                    f"- {prop}: {', '.join(values)}"
+                    for prop, values in self.STANDARD_PROPERTIES.items()
+                )
+            
+            # Format the prompt with categories and properties
             prompt = CATEGORY_ANALYSIS_PROMPT.format(
                 object_type=metadata.get("object_type", ""),
                 description=description,
-                categories_info=BASIC_KNOWLEDGE["categories"],
-                properties_info=BASIC_KNOWLEDGE["properties"]
+                categories_info=categories_info,
+                properties_info=properties_info
             )
             
             # Get category analysis from LLM
@@ -193,17 +299,55 @@ class MetadataExtractor:
                 # Clean up and parse JSON response
                 clean_content = content.replace("```json", "").replace("```", "").strip()
                 category_data = json.loads(clean_content)
+                
+                # Validate and clean the response if using standard categories
+                if hasattr(self, 'STANDARD_CATEGORIES'):
+                    cleaned_result = {
+                        "categories": [
+                            cat for cat in category_data.get("categories", [])
+                            if cat in self.STANDARD_CATEGORIES
+                        ],
+                        "properties": {
+                            prop: value
+                            for prop, value in category_data.get("properties", {}).items()
+                            if prop in self.STANDARD_PROPERTIES
+                            and value in self.STANDARD_PROPERTIES[prop]
+                        },
+                        "similar_objects": [
+                            obj for obj in category_data.get("similar_objects", [])
+                            if any(obj in cat_info["examples"]
+                                for cat_info in self.STANDARD_CATEGORIES.values())
+                        ]
+                    }
+                    
+                    # Ensure at least one category is assigned
+                    if not cleaned_result["categories"]:
+                        cleaned_result["categories"] = ["container"]  # Default to container for most 3D objects
+                    
+                    return cleaned_result
+                
                 return category_data
             except json.JSONDecodeError as e:
                 print(f"Error parsing category analysis response: {e}")
-                return None
+                return {
+                    "categories": ["other"],
+                    "properties": {},
+                    "similar_objects": []
+                }
                 
         except Exception as e:
             print(f"Category analysis failed: {e}")
-            return None
+            return {
+                "categories": ["other"],
+                "properties": {},
+                "similar_objects": []
+            }
 
     def analyze_code_metadata(self, code: str) -> dict:
-        """Analyze OpenSCAD code to extract additional metadata"""
+        """
+        Analyze OpenSCAD code to extract additional metadata.
+        This is the centralized method for code analysis.
+        """
         metadata = {}
         
         try:
@@ -242,6 +386,10 @@ class MetadataExtractor:
                 tech_reqs.append("modular_design")
             metadata["technical_requirements"] = tech_reqs
             
+            # Group components by type
+            grouped_components = self._group_components_by_type(components)
+            metadata["grouped_components"] = grouped_components
+            
             return metadata
             
         except Exception as e:
@@ -249,7 +397,10 @@ class MetadataExtractor:
             return {}
 
     def _calculate_complexity_score(self, code: str) -> float:
-        """Calculate complexity score based on code analysis"""
+        """
+        Calculate complexity score based on code analysis.
+        Centralized method for complexity scoring.
+        """
         score = 0
         
         try:
@@ -286,7 +437,10 @@ class MetadataExtractor:
             return 0
 
     def _analyze_components(self, code: str) -> list:
-        """Analyze and extract components from SCAD code"""
+        """
+        Analyze and extract components from SCAD code.
+        Centralized method for component extraction.
+        """
         components = []
         try:
             import re
@@ -335,4 +489,136 @@ class MetadataExtractor:
             
         except Exception as e:
             print(f"Error analyzing components: {str(e)}")
-            return [] 
+            return []
+
+    def _group_components_by_type(self, components: List[Dict]) -> Dict[str, List[Dict]]:
+        """Group components by their type"""
+        grouped = {}
+        for component in components:
+            if isinstance(component, dict) and 'type' in component and 'name' in component:
+                comp_type = component['type'].lower()
+                if comp_type not in grouped:
+                    grouped[comp_type] = []
+                grouped[comp_type].append(component)
+        return grouped
+    
+    def calculate_text_similarity(self, list1, list2):
+        """
+        Calculate similarity between two lists of text items using semantic matching.
+        """
+        if not list1 or not list2:
+            return 0.0
+        
+        # Keywords that indicate mechanical/automotive relevance
+        mechanical_keywords = {
+            'circular', 'cylindrical', 'rotational', 'symmetric', 'concentric',
+            'wheel', 'rim', 'hub', 'spoke', 'bolt', 'mounting', 'automotive',
+            'vehicle', 'car', 'truck', 'axle', 'bearing'
+        }
+        
+        total_score = 0
+        max_scores = []
+        
+        for item1 in list1:
+            item_scores = []
+            item1_words = set(str(item1).lower().split())
+            
+            # Check for mechanical/automotive relevance
+            mechanical_relevance = len(item1_words.intersection(mechanical_keywords)) > 0
+            
+            for item2 in list2:
+                item2_words = set(str(item2).lower().split())
+                
+                # Basic word overlap score
+                overlap_score = len(item1_words.intersection(item2_words)) / len(item1_words.union(item2_words))
+                
+                # Fuzzy match score
+                fuzzy_score = fuzz.ratio(str(item1).lower(), str(item2).lower()) / 100.0
+                
+                # Combined score with mechanical relevance bonus
+                combined_score = (overlap_score * 0.6 + fuzzy_score * 0.4)
+                if mechanical_relevance and len(item2_words.intersection(mechanical_keywords)) > 0:
+                    combined_score *= 1.5  # 50% bonus for mechanical matches
+                
+                item_scores.append(combined_score)
+            
+            if item_scores:
+                max_scores.append(max(item_scores))
+        
+        if max_scores:
+            total_score = sum(max_scores) / len(max_scores)
+        
+        return min(total_score, 1.0)  # Cap at 1.0
+    
+    def calculate_complexity_with_metadata(self, code: str, metadata: Dict) -> float:
+        """
+        Calculate complexity score considering both code and metadata.
+        Enhanced version that takes metadata into account for complexity scoring.
+        """
+        # Get base complexity score from code analysis
+        score = self._calculate_complexity_score(code)
+        
+        # Metadata-based complexity factors
+        try:
+            # Consider declared complexity
+            if metadata.get('properties_complexity') == 'intricate':
+                score += 15
+            elif metadata.get('properties_complexity') == 'complex':
+                score += 10
+            elif metadata.get('properties_complexity') == 'moderate':
+                score += 5
+            
+            # Consider printability
+            if metadata.get('properties_printability') == 'challenging':
+                score += 10
+            elif metadata.get('properties_printability') == 'requires_support':
+                score += 5
+            
+            # Consider support needed
+            if metadata.get('properties_support_needed') == 'extensive':
+                score += 10
+            elif metadata.get('properties_support_needed') == 'moderate':
+                score += 5
+            
+        except Exception as e:
+            print(f"Error calculating metadata complexity: {str(e)}")
+        
+        # Normalize score to 0-100 range
+        normalized_score = min(max(score, 0), 100)
+        return normalized_score
+
+    def validate_metadata(self, metadata: Dict) -> bool:
+        """Validate the metadata structure."""
+        required_fields = [
+            'object_type',
+            'dimensions',
+            'features',
+            'materials',
+            'complexity',
+            'style',
+            'use_case',
+            'geometric_properties',
+            'technical_requirements',
+            'step_back_analysis'
+        ]
+
+        # Check top-level required fields
+        for field in required_fields:
+            if field not in metadata:
+                print(f"Missing required field: {field}")
+                return False
+
+        # Check step-back analysis structure
+        step_back_fields = [
+            'core_principles',  # Updated from 'principles'
+            'shape_components',
+            'implementation_steps'
+        ]
+
+        if 'step_back_analysis' in metadata:
+            for field in step_back_fields:
+                if field not in metadata['step_back_analysis']:
+                    print(f"Missing required step-back analysis field: {field}")
+                    return False
+
+        return True 
