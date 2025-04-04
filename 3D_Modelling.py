@@ -12,7 +12,7 @@ import datetime
 import time
 
 # Import ModelDefinitions first since other modules depend on it
-from LLM import ModelGeneratorConfig, OllamaManager
+from LLM import ModelGeneratorConfig, OllamaManager, LLMProvider
 
 from openpyscad import *
 from constant import *
@@ -22,6 +22,9 @@ from KeywordExtractor import KeywordExtractor
 from metadata_extractor import MetadataExtractor
 from conversation_logger import ConversationLogger
 from LLMPromptLogger import LLMPromptLogger
+
+from generator_graph import Model_Generator_Graph
+from manual_input_graph import Manual_Knowledge_Graph
 
 # Configure logging
 logger = logging.getLogger(__name__)    # Create a logger object using the current module name
@@ -152,6 +155,8 @@ def main():
     keyword_extractor = KeywordExtractor()
     metadata_extractor = MetadataExtractor(provider, conversation_logger, prompt_logger)
     kb = SCADKnowledgeBase(keyword_extractor, metadata_extractor, conversation_logger)
+    # kb.update_knowledge_base_with_techniques()
+    LLM_Provider = LLMProvider()
     
     # Initialize the generator with the selected provider
     try:
@@ -186,9 +191,31 @@ def main():
             break
             
         elif choice == "2":
-            logger.info("Starting manual knowledge input")
-            result = kb.input_manual_knowledge(generator=generator)
-            logger.info("Manual knowledge input result: %s", "Success" if result else "Failed")
+            logger.info("Starting manual knowledge input using new graph")
+            
+            try:
+                # Get LLM instance
+                llm = LLM_Provider.get_llm(provider=provider)
+                
+                # Initialize manual knowledge graph
+                manual_graph = Manual_Knowledge_Graph(llm, knowledge_base=kb)
+                
+                # Handle the complete manual knowledge input process
+                result = manual_graph.handle_manual_knowledge_input()
+                
+                # Log the result
+                success = result.get("success", False)
+                if success:
+                    logger.info("Manual knowledge input successful")
+                else:
+                    error = result.get("error", "Unknown error")
+                    logger.warning(f"Manual knowledge input failed: {error}")
+                
+            except Exception as e:
+                error_info = ErrorHandler.handle_generation_error(e, 1, 1)
+                print(f"\nError in manual knowledge input: {error_info['error']}")
+                logger.error(f"Manual knowledge input failed: {error_info}")
+            
             continue
             
         elif choice == "3":
@@ -209,46 +236,27 @@ def main():
             continue
             
         elif choice == "1":
-            print("\nDescribe the 3D object you want to create, and I'll generate OpenSCAD code for it.")
-            print("Type 'quit' to exit.")
+            
+            llm = LLM_Provider.get_llm(provider=provider)
             
             while True:
-                description = input("\nWhat would you like to model? ")
-                if description.lower() in config.quit_words:
+                user_input = input("Enter a description of the object you want to generate: ")
+                if user_input.lower() in config.quit_words:
+                    logger.info("User decided to quit the application")
                     break
+                else:
+                    print(f"User input: {user_input}")  
                 
-                print("I am generating, please be patient...")
-                logger.info(f"Generating model for: {description}")
+                print("\nProcessing your request. This may take a moment...")
                 
-                try:
-                    for attempt in range(1, config.settings.max_generation_attempts + 1):
-                        result = generator.generate_model(description)
-                        if result['success']:
-                            # Log successful generation details (to file only)
-                            logger.info("\nGeneration Summary:")
-                            logger.info("  Description: %s", description)
-                            logger.info("  Provider: %s", provider)
-                            logger.info("  Attempts: %d", attempt)
-                            print("\nGeneration complete!")  # Simple success message for terminal
-                            break
-                            
-                        error_info = ErrorHandler.handle_generation_error(
-                            Exception(result['error']), 
-                            attempt, 
-                            config.settings.max_generation_attempts
-                        )
-                        print(f"\rAttempt {attempt} failed. Retrying..." if attempt < config.settings.max_generation_attempts else "\nFailed to generate model.")
-                        
-                        if attempt == config.settings.max_generation_attempts:
-                            logger.error("Failed to generate after maximum attempts")                            
-                except Exception as e:
-                    error_info = ErrorHandler.handle_generation_error(
-                        e, 
-                        config.settings.max_generation_attempts, 
-                        config.settings.max_generation_attempts
-                    )
-                    print("\nAn error occurred. Please check the debug logs for details.")
-                    logger.error("Unexpected error during generation: %s", error_info)        
+                model_generator_graph = Model_Generator_Graph(llm, knowledge_base=kb)
+                result = model_generator_graph.generate(user_input)
+                
+                # Ask if user wants to continue
+                continue_input = input("\nWould you like to generate another object? (yes/no): ")
+                if continue_input.lower() not in ["yes", "y"]:
+                    break
+            
         else:
             logger.warning(f"Invalid choice: {choice}")
             print("Invalid choice. Please select 1, 2, 3, 4, or 5.")

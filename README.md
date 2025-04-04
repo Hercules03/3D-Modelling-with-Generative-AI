@@ -1,221 +1,338 @@
-# 3D Modelling with Generative AI
+# 3D Modeling with Generative AI and LangGraph
 
-A Python-based system that uses Large Language Models (LLMs) to generate OpenSCAD code for 3D models from textual descriptions. Built with a focus on maintainability and extensibility, the system leverages modern AI techniques including:
+A modern Python system for generating OpenSCAD code from natural language descriptions using LangGraph for orchestration and Large Language Models (LLMs) for generation. This project combines structured workflows with AI to simplify the creation of parametric 3D models.
 
-- **Retrieval-Augmented Generation (RAG)** for accessing relevant examples
-- **Semantic vector search** for finding similar models
-- **Step-back analysis** for technical understanding of 3D objects 
-- **Comprehensive metadata extraction** for improved model generation
+## Core Architecture
 
-## Core Features
+### LangGraph Orchestration
 
-### Advanced LLM Integration
-- **Multi-provider support**: Anthropic Claude, OpenAI, Ollama (local)
-- **Configurable generation parameters**: Control temperature, context window
-- **Prompt optimization**: Carefully designed prompts for consistent results
+The system uses LangGraph to orchestrate a multi-stage, graph-based workflow with:
 
-### Intelligent Analysis Pipeline
-- **Keyword Extraction**: Accurately identifies object types and modifiers
-- **Step-Back Analysis**: Breaks down design requirements into:
-  - Core principles (design philosophy)
-  - Shape components (geometric building blocks)
-  - Implementation steps (construction approach)
-- **Metadata Extraction**: Comprehensive analysis of object properties
+- **State-managed processing pipeline** with conditional routing
+- **Quality-driven feedback loops** to improve generation quality
+- **Fault-tolerance** with proper state preservation
+- **Modular processing nodes** for maintainable components
 
-### Knowledge Management
-- **ChromaDB Vector Store**: Semantic search for finding relevant examples
-- **Automatic Categorization**: Smart classification of objects
-- **Example Management**: Add, view, and delete examples with metadata
-- **Smart Deduplication**: Prevents redundant examples 
+### Processing Pipeline
 
-### Enhanced Result Ranking
-- **Multi-factor scoring**: Weighted matching based on:
-  - Component similarity (35%)
-  - Geometric properties (25%)
-  - Step-back analysis (20%)
-  - Feature matching (15%)
-  - Style and complexity (5%)
+```
+Process Input → Keyword Extraction → Search Query Generation → Web Search 
+               → Content Filtering → Step-Back Analysis → Quality Assessment 
+               → Query Analysis → Example Retrieval → Code Generation
+```
 
-### Robust Architecture
-- **Modular Design**: Separate components with clear responsibilities
-- **Comprehensive Logging**: Debug and trace entire generation process
-- **Error Handling**: Graceful handling of API and processing failures
+Each stage is implemented as a LangGraph node, with conditional edges for intelligent routing based on quality assessments.
 
-## System Components
+## Key Features
 
-The system is built with a modular design pattern for maintainability:
+### 1. Intelligent Input Processing
 
-- **`rag_3d_modeler.py`**: Main application interface
-- **`OpenSCAD_Generator.py`**: Core generation logic
-- **`enhanced_scad_knowledge_base.py`**: Knowledge base management
-- **`step_back_analyzer.py`**: Technical analysis of 3D objects
-- **`metadata_extractor.py`**: Comprehensive metadata extraction
-- **`KeywordExtractor.py`**: Object type and modifier identification
-- **`llm_management.py`**: Provider management and optimization
-- **`conversation_logger.py`**: Interaction tracking
-- **`prompts.py`**: System prompts and templates
+- **Keyword Extraction**: Identifies object types, modifiers, and compound terms
+- **Web Research**: Performs multi-faceted searches using Tavily API
+- **Content Grading**: Filters web content for relevance using LLM-based assessment
 
-## Installation
+### 2. Step-Back Technical Analysis
+
+- **Hierarchical Decomposition**: Breaks complex objects into basic components
+- **Structural Insights**: Identifies core principles and implementation approaches
+- **Quality Assessment**: Rates analysis quality with detailed feedback
+- **Revision Loops**: Automatically improves low-quality analyses
+
+### 3. Smart Example Retrieval
+
+- **Query Analysis**: Tailors search strategy based on object characteristics
+- **OpenSCAD Technique Detection**: Identifies required operations (union, difference, extrusion, etc.)
+- **Technique-Weighted Ranking**: Prioritizes examples with relevant operations
+- **Metadata Enhancement**: Extracts code structures, parameters, and implementation patterns
+
+### 4. Advanced Code Generation
+
+- **Multi-Source Context**: Combines step-back analysis, similar examples, and web research
+- **Parameter Extraction**: Identifies and documents key parameters
+- **Code Structure Analysis**: Extracts module organization and techniques
+- **Enhanced Output**: Generates fully-commented, well-structured OpenSCAD code
+
+## Technical Implementation
+
+### State Management
+
+The system uses LangGraph's `State` class to manage the flow of information:
+
+```python
+class State(TypedDict):
+    messages: Annotated[list, add_messages]
+    input_text: Optional[str]
+    extracted_keywords: Optional[Dict[str, Any]]
+    search_queries: Optional[List[str]]
+    search_results: Optional[Dict[str, List[Dict[str, str]]]]
+    filtered_search_results: Optional[Dict[str, List[Dict[str, str]]]]
+    step_back_analysis: Optional[Dict[str, Any]]
+    analysis_grade: Optional[Dict[str, Any]]
+    query_analysis: Optional[Dict[str, Any]]
+    similar_examples: Optional[List[Dict[str, Any]]]
+    retrieved_metadata: Optional[Dict[str, Any]]
+    generated_code: Optional[Dict[str, Any]]
+    # ...other state fields
+```
+
+### Graph Structure
+
+The workflow is defined as a directed graph with conditional routing:
+
+```python
+workflow = StateGraph(State)
+
+# Add nodes
+workflow.add_node("process_input", process_input)
+workflow.add_node("extract_keywords", extract_keywords)
+# ... other nodes
+
+# Add edges
+workflow.add_edge(START, "process_input")
+workflow.add_edge("process_input", "extract_keywords")
+# ... other edges
+
+# Add conditional routing
+workflow.add_conditional_edges(
+    "grade_step_back_analysis",
+    step_back_quality_router,
+    {
+        "analyze_query": "analyze_query",
+        "run_step_back_analysis": "run_step_back_analysis"
+    }
+)
+```
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.8+
+- OpenSCAD installed for rendering
+- Ollama (optional, for local models)
+
+### Installation
 
 1. **Clone the repository**:
-```bash
-git clone https://github.com/yourusername/3D-Modelling-with-Generative-AI.git
-cd 3D-Modelling-with-Generative-AI
-```
+   ```bash
+   git clone https://github.com/yourusername/3D-Modelling-with-Generative-AI.git
+   cd 3D-Modelling-with-Generative-AI
+   ```
 
-2. **Set up a virtual environment** (recommended):
-```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-```
+2. **Set up a virtual environment**:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   ```
 
 3. **Install dependencies**:
-```bash
-pip install -r requirements.txt
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 4. **Configure API keys**:
-Create a `.env` file in the project root with your API keys:
-```
-ANTHROPIC_API_KEY=your_anthropic_key
-OPENAI_API_KEY=your_openai_key
-```
+   Create a `.env` file with:
+   ```
+   ANTHROPIC_API_KEY=your_anthropic_key
+   OPENAI_API_KEY=your_openai_key
+   TAVILY_API_KEY=your_tavily_key
+   ```
 
-5. **(Optional) Install Ollama for local model support**:
-```bash
-# Install Ollama from https://ollama.ai/
-# Then pull required models:
-ollama pull gemma3:4b-it-q8_0
-ollama pull deepseek-r1:7b
-```
+5. **Install Ollama models** (optional for local execution):
+   ```bash
+   ollama pull llama3.2:3b-instruct-q4_K_M
+   ollama pull keyword-extractor:latest
+   ```
 
-## Usage
+### Usage
 
 Run the main application:
 ```bash
-python rag_3d_modeler.py
+python 3D_Modelling.py
 ```
 
-### Workflow
+#### Workflow Modes
 
-1. **Generate a 3D object**:
-   - Enter a description of the object you want to model
-   - Review and approve keyword extraction
-   - Confirm step-back technical analysis
-   - System retrieves and ranks relevant examples
-   - Review the generated OpenSCAD code
-   - Save and render the model
-
-2. **Knowledge Management**:
-   - View existing examples in the knowledge base
-   - Add new examples manually
-   - Delete or update examples
-   - Browse categorized examples
+1. **Generate Mode**: Create new 3D models from text descriptions
+2. **Knowledge Input Mode**: Add examples to the knowledge base manually
+3. **Knowledge Management**: View and delete examples
+4. **Exit**: Quit the application
 
 ## Example Session
 
 ```
 Welcome to the 3D Model Generator!
 
-What would you like to model? A coffee mug with a hexagonal pattern and a curved handle
+Available LLM Providers:
+1. Anthropic (claude-3-sonnet-20240229)
+2. OpenAI (gpt-4-turbo)
+3. Gemma (gemma3:4b-it-q8_0)
+4. DeepSeek (deepseek-r1:7b)
 
-=== KEYWORD EXTRACTION ===
-Analyzing description...
+Select LLM provider (1-4, default is 1): 1
+
+Select an option:
+1. Generate a 3D object
+2. Input knowledge manually
+3. Delete knowledge
+4. View knowledge base
+5. Quit
+
+Enter your choice (1-5): 1
+
+Enter a description of the object you want to generate: A gear with 12 teeth and a hexagonal center hole
+
+=== PERFORMING KEYWORD EXTRACTION ===
 
 Keyword Analysis Results:
-Core Type: mug
-Modifiers: [coffee, hexagonal, pattern, curved, handle]
-Compound Type: coffee mug
+Core Type: gear
+Modifiers: [12 teeth, hexagonal, center hole]
+Compound Type: gear with 12 teeth and a hexagonal center hole
 
-Do you accept these keywords? (yes/no): yes
+Do you approve these keywords? (yes/no): yes
 
-=== TECHNICAL ANALYSIS ===
-Performing step-back analysis...
+=== CREATING SEARCH QUERIES ===
+
+Generated Search Queries:
+- gear 12 teeth hexagonal center hole 3D model
+- gear 12 teeth hexagonal center hole 3D printing constraints
+- gear 12 teeth hexagonal center hole technical requirements
+- gear 12 teeth hexagonal center hole 3D model design considerations
+- gear 12 teeth hexagonal center hole 3D model polygon count formats
+
+=== PERFORMING SEARCH ===
+
+=== GRADING WEB CONTENT ===
+
+=== PERFORMING STEP-BACK ANALYSIS ===
 
 Core Principles:
-- Cylindrical container with appropriate dimensions for fluid containment
-- Ergonomic handle design with curved form for comfortable grip
-- Hexagonal tessellation pattern as a decorative and structural element
-- Balance between aesthetics and functional usability
+- Involute gear tooth profile for smooth power transmission
+- Hexagonal center for secure shaft mounting
+- 12-tooth configuration for appropriate gear ratio
+- Even spacing of teeth for balanced rotation
+- Sufficient tooth depth for proper mesh engagement
 
 Shape Components:
-- Cylindrical body with hollow interior
-- Curved handle with attachment points
-- Hexagonal pattern on exterior surface
-- Solid base for stability
+- Circular base with appropriate outer diameter
+- 12 evenly spaced teeth with involute profile
+- Hexagonal center hole
+- Optional chamfer or fillet on edges
 
 Implementation Steps:
-1. Create cylindrical container with appropriate dimensions
-2. Design curved handle and position it relative to the mug body
-3. Generate hexagonal pattern and apply it to the mug's exterior
-4. Add finishing details like base reinforcement and rim
-5. Combine all elements with proper boolean operations
+1. Define key parameters (modules, tooth height, center hole size)
+2. Create the base gear outline with appropriate diameter
+3. Generate the involute tooth profile
+4. Replicate the tooth pattern 12 times around the center
+5. Create the hexagonal center hole
+6. Apply any final modifications (fillets, chamfers)
 
-Do you accept this technical analysis? (yes/no): yes
+=== GRADING STEP-BACK ANALYSIS ===
 
-=== FINDING SIMILAR EXAMPLES ===
-Searching knowledge base...
-Found 2 relevant examples
+Analysis quality rating: 9/10 (Good)
+
+=== PERFORMING QUERY ANALYSIS FOR SCAD CODE RETRIEVAL ===
+
+SCAD Code Retrieval Analysis:
+Search Strategy: hybrid
+Enhanced Query: Parametric gear with 12 teeth and a hexagonal center hole
+Important Attributes: ['cylindrical container', 'curved handle', 'hexagonal pattern', 'hollow interior']
+Style Preference: Parametric
+Complexity: MEDIUM
+Code Similarities: ['module-based design', 'pattern generation', 'curved handle construction']
+Likely Techniques: ['difference', 'union', 'rotate', 'translate']
+
+=== RETRIEVING SIMILAR SCAD CODE EXAMPLES ===
+
+Found 3 similar SCAD code examples:
+Example 1 (Score: 0.842):
+ID: gear_001
+Techniques Used: difference, cylinder, translate, rotate
+Code Metrics: 120 lines, 5 modules, 12 parameters
 
 === GENERATING SCAD CODE ===
-Generating OpenSCAD code...
 
-Generated Code:
-// Coffee Mug with Hexagonal Pattern and Curved Handle
+Generated Code Preview:
+// --- Beginning of code ---
+// Gear with 12 teeth and a hexagonal center hole
+// Author: AI Generator
+// Date: 2023-07-25
+
 // Parameters
-$fn = 100; // Smoothness
-mug_height = 95; // Height of mug
-mug_radius = 40; // Radius of mug
-wall_thickness = 3; // Thickness of the mug wall
-handle_thickness = 7; // Thickness of the handle
-...
+$fn = 120;  // High resolution for smooth curves
+num_teeth = 12;  // Number of teeth
+pressure_angle = 20;  // Standard pressure angle (degrees)
 
-Would you like to save this example to the knowledge base? (y/n): y
+// Main Parameters
+$fn = 100; // Resolution
+
+// --- Middle section ---
+module hexagon(size) {
+    polygon([
+        for (i = [0:5]) 
+            [size * cos(i * 60), size * sin(i * 60)]
+    ]);
+}
+
+// --- End of code ---
+module main() {
+    difference() {
+        mug_body();
+        translate([0, 0, -0.1]) cylinder(h=mug_height+0.2, r=mug_inner_radius);
+    }
+    mug_handle();
+}
+
+main();
+
+// Total: 145 lines of OpenSCAD code
+
+Would you like to add this example to the knowledge base? (y/n): y
 Example added to knowledge base!
 ```
 
-## Requirements
+## System Components
 
-- Python 3.8+
-- OpenSCAD (for rendering models)
-- Dependencies listed in `requirements.txt`
+- **`3D_Modelling.py`**: Main application entry point
+- **`generator_graph.py`**: Main LangGraph workflow definition
+- **`manual_input_graph.py`**: Graph for manual knowledge input
+- **`graph_state_tools.py`**: Processing nodes and state handling
+- **`OpenSCAD_Generator.py`**: Core OpenSCAD generation logic
+- **`scad_knowledge_base.py`**: Vector database for examples
+- **`step_back_analyzer.py`**: 3D object technical analysis
+- **`metadata_extractor.py`**: Code and metadata processing
+- **`KeywordExtractor.py`**: Input text parsing and extraction
+- **`LLM.py`**: LLM provider management
+- **`conversation_logger.py`**: Interaction logging
+- **`prompts.py`**: System prompts for LLM interactions
 
-## Recent Improvements
+## Architecture Diagram
 
-- **Enhanced Metadata Extraction**: Consolidated metadata extraction into a single class
-- **Step-Back Analyzer**: Dedicated module for technical analysis of 3D objects
-- **Improved Error Handling**: Better handling of edge cases and API failures
-- **Code Organization**: Refactored code for better modularity and maintainability
-- **Performance Optimization**: Improved vector search and ranking algorithms
-
-## Security
-
-### API Key Management
-This project requires API keys for external LLM providers. Please follow these security best practices:
-
-- **Never commit API keys to the repository**
-- Always use the `.env` file (which is in `.gitignore`) to store sensitive keys
-- For development or collaboration, copy `.env.example` to `.env` and add your actual keys
-- Regularly rotate your API keys, especially if you suspect they may have been compromised
-- Consider using environment variables for deployment environments
-
-### Data Privacy
-The system makes API calls to external LLM providers with your input data. Be aware that:
-- Text descriptions and generated 3D models may be processed by third-party APIs
-- Review the privacy policies of the LLM providers you use
-- Consider using local models through Ollama for sensitive use cases
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs, feature requests, or improvements.
-
-## License
-
-[MIT License](LICENSE)
+```
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  User Interface  │────▶│  LangGraph Flow  │────▶│  LLM Processing  │
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+         │                        │                        │
+         ▼                        ▼                        ▼
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  State Manager   │◀───▶│  Node Processors │◀───▶│     External     │
+└──────────────────┘     └──────────────────┘     │       APIs       │
+         │                        │               └──────────────────┘
+         ▼                        ▼                        ▼
+┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│  Vector Search   │◀───▶│  Code Generator  │────▶│  OpenSCAD File   │
+└──────────────────┘     └──────────────────┘     └──────────────────┘
+```
 
 ## Acknowledgments
 
-- OpenSCAD community
-- Anthropic and OpenAI for their LLM APIs
-- Ollama project for local model support
-- ChromaDB team for their vector database implementation
+- Langchain and LangGraph teams for the workflow tools
+- Anthropic, OpenAI, and other LLM providers
+- OpenSCAD community for the modeling language
+- Tavily for search API integration
+- Chroma for vector database functionality
+- Ollama for local model support
+
+## License
+
+MIT License - See LICENSE file for details.

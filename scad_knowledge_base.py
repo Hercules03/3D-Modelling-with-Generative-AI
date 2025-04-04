@@ -10,6 +10,7 @@ from typing import Dict, List
 import logging
 import traceback
 from fuzzywuzzy import fuzz
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +77,116 @@ class SCADKnowledgeBase:
             print(f"\nError initializing ChromaDB: {str(e)}")
             raise
         
+    def extract_techniques_from_code(self, code):
+        """Extract OpenSCAD techniques used in the code"""
+        techniques = []
+        
+        # Check for common OpenSCAD operations
+        operations = {
+            "union": r"union\s*\(",
+            "difference": r"difference\s*\(",
+            "intersection": r"intersection\s*\(",
+            "translate": r"translate\s*\(",
+            "rotate": r"rotate\s*\(",
+            "scale": r"scale\s*\(",
+            "mirror": r"mirror\s*\(",
+            "hull": r"hull\s*\(",
+            "minkowski": r"minkowski\s*\(",
+            "linear_extrude": r"linear_extrude\s*\(",
+            "rotate_extrude": r"rotate_extrude\s*\("
+        }
+        
+        for technique, pattern in operations.items():
+            if re.search(pattern, code):
+                techniques.append(technique)
+        
+        # Check for more complex patterns
+        if "for" in code and "(" in code:
+            techniques.append("iteration")
+        
+        if "module" in code:
+            techniques.append("modular")
+        
+        if "function" in code:
+            techniques.append("functional")
+        
+        if re.search(r"if\s*\(", code):
+            techniques.append("conditional")
+        
+        return techniques
+
+    def extract_parameters_from_code(self, code):
+        """Extract primary parameters from OpenSCAD code"""
+        # Look for parameters defined at the top level
+        params = re.findall(r"^\s*([a-zA-Z0-9_]+)\s*=\s*([^;]+);(?:\s*\/\/\s*(.+))?", code, re.MULTILINE)
+        
+        # Process into a more usable format
+        parameters = []
+        for name, value, comment in params:
+            # Skip internal variables
+            if name.startswith("_") or "tmp" in name.lower() or "temp" in name.lower():
+                continue
+            
+            parameters.append({
+                "name": name.strip(),
+                "value": value.strip(),
+                "comment": comment.strip() if comment else None
+            })
+        
+        # Sort by position in file (earlier parameters are likely more important)
+        return parameters[:10]  # Return just the top 10 parameters
+
+    def analyze_code_structure(self, code):
+        """Analyze the structure of the SCAD code to extract metrics"""
+        if not code:
+            return {}
+            
+        lines = code.split('\n')
+        
+        # Basic metrics
+        metrics = {
+            "line_count": len(lines),
+            "module_count": code.count("module "),
+            "function_count": code.count("function "),
+            "comment_lines": sum(1 for line in lines if line.strip().startswith("//")),
+            "operation_count": sum(1 for pattern in ["union", "difference", "intersection", "translate", "rotate", "scale"] 
+                                if pattern in code)
+        }
+        
+        # Assess complexity based on metrics
+        if metrics["module_count"] > 5 or metrics["line_count"] > 200 or metrics["operation_count"] > 15:
+            complexity = "COMPLEX"
+        elif metrics["module_count"] > 2 or metrics["line_count"] > 100 or metrics["operation_count"] > 8:
+            complexity = "MEDIUM"
+        else:
+            complexity = "SIMPLE"
+            
+        metrics["complexity"] = complexity
+        
+        # Code style assessment
+        style_indicators = {
+            "Parametric": "=",  # lots of variable assignments 
+            "Modular": "module",  # use of modules
+            "Functional": "function",  # use of functions
+            "Procedural": "for",  # heavy use of loops
+            "Object-Oriented": "children"  # use of children
+        }
+        
+        style_points = {}
+        for style, indicator in style_indicators.items():
+            if indicator in code:
+                # Count occurrences and normalize
+                count = code.count(indicator)
+                style_points[style] = count
+        
+        # Determine primary style (the one with most points)
+        if style_points:
+            primary_style = max(style_points.items(), key=lambda x: x[1])[0]
+            metrics["primary_style"] = primary_style
+            metrics["style_breakdown"] = style_points
+        
+        return metrics
+        
     def write_debug(self, *messages):
         """Write messages to debug log"""
         for message in messages:
@@ -117,7 +228,7 @@ class SCADKnowledgeBase:
             json.dump({"timestamp": self.last_processed_time}, f)
 
     def add_example(self, description, code, metadata=None):
-        """Add a new example to the knowledge base"""
+        """Add a new example to the knowledge base with enhanced code analysis"""
         try:
             # Generate a unique ID based on style and hash of description
             style = metadata.get('style', 'unknown').lower() if metadata else 'unknown'
@@ -143,6 +254,44 @@ class SCADKnowledgeBase:
             metadata.setdefault('complexity', 'SIMPLE')
             metadata.setdefault('style', 'Modern')
             metadata.setdefault('use_case', [])
+            
+            # Extract code-specific information if not already provided
+            if 'techniques_used' not in metadata:
+                metadata['techniques_used'] = self.extract_techniques_from_code(code)
+            
+            if 'primary_parameters' not in metadata:
+                metadata['primary_parameters'] = self.extract_parameters_from_code(code)
+            
+            # Add code metrics
+            code_metrics = self.analyze_code_structure(code)
+            
+            # Update complexity if not specified by user
+            if metadata.get('complexity') == 'SIMPLE' and 'complexity' in code_metrics:
+                metadata['complexity'] = code_metrics['complexity']
+                
+            # Update style if not specified by user
+            if metadata.get('style') == 'Modern' and 'primary_style' in code_metrics:
+                metadata['style'] = code_metrics['primary_style']
+                
+            metadata['code_metrics'] = code_metrics
+            
+            # Print analysis results
+            print("\nCode Analysis Results:")
+            print("-" * 40)
+            print(f"Techniques Used: {', '.join(metadata['techniques_used'])}")
+            print(f"Complexity: {metadata['complexity']}")
+            print(f"Style: {metadata['style']}")
+            print(f"Line Count: {code_metrics.get('line_count', 0)}")
+            print(f"Module Count: {code_metrics.get('module_count', 0)}")
+            print(f"Operation Count: {code_metrics.get('operation_count', 0)}")
+            
+            if metadata['primary_parameters']:
+                print("\nPrimary Parameters:")
+                for param in metadata['primary_parameters'][:5]:  # Show top 5
+                    comment = f" // {param['comment']}" if param.get('comment') else ""
+                    print(f"- {param['name']} = {param['value']}{comment}")
+                    
+            print("-" * 40)
             
             # Serialize all list and dictionary values to JSON strings
             serialized_metadata = {}
@@ -209,7 +358,7 @@ class SCADKnowledgeBase:
 
     def _rank_results(self, query_metadata, results):
         """
-        Rank and filter search results based on metadata similarity.
+        Rank and filter search results based on metadata similarity with enhanced metrics.
         """
         ranked_results = []
         
@@ -227,7 +376,8 @@ class SCADKnowledgeBase:
         
         for result in results:
             try:
-                result_metadata = result['metadata']
+                # Get the metadata - may be in 'metadata' field or directly in result
+                result_metadata = result.get('metadata', result)
                 
                 # Ensure all required fields exist with default values
                 result_metadata.setdefault('features', [])
@@ -236,6 +386,9 @@ class SCADKnowledgeBase:
                 result_metadata.setdefault('style', 'Modern')
                 result_metadata.setdefault('complexity', 'SIMPLE')
                 result_metadata.setdefault('object_type', '')
+                result_metadata.setdefault('techniques_used', [])
+                result_metadata.setdefault('code_metrics', {})
+                result_metadata.setdefault('primary_parameters', [])
                 
                 query_metadata.setdefault('features', [])
                 query_metadata.setdefault('geometric_properties', [])
@@ -243,19 +396,28 @@ class SCADKnowledgeBase:
                 query_metadata.setdefault('style', 'Modern')
                 query_metadata.setdefault('complexity', 'SIMPLE')
                 query_metadata.setdefault('object_type', '')
+                query_metadata.setdefault('techniques_needed', [])
 
-                # Convert string fields to lists if they're strings
-                for field in ['features', 'geometric_properties']:
+                # Convert string fields to lists/dicts if they're strings
+                for field in ['features', 'geometric_properties', 'techniques_used', 'code_metrics', 'primary_parameters']:
                     if isinstance(result_metadata.get(field), str):
                         try:
                             result_metadata[field] = json.loads(result_metadata[field])
                         except:
-                            result_metadata[field] = [x.strip() for x in result_metadata[field].split(',') if x.strip()]
-                    if isinstance(query_metadata.get(field), str):
+                            if field in ['features', 'geometric_properties', 'techniques_used']:
+                                result_metadata[field] = [x.strip() for x in result_metadata[field].split(',') if x.strip()]
+                            else:
+                                result_metadata[field] = {}
+                    
+                    # Also convert query metadata if needed
+                    if field in query_metadata and isinstance(query_metadata.get(field), str):
                         try:
                             query_metadata[field] = json.loads(query_metadata[field])
                         except:
-                            query_metadata[field] = [x.strip() for x in query_metadata[field].split(',') if x.strip()]
+                            if field in ['features', 'geometric_properties', 'techniques_needed']:
+                                query_metadata[field] = [x.strip() for x in query_metadata[field].split(',') if x.strip()]
+                            else:
+                                query_metadata[field] = {}
 
                 # Parse step-back analysis fields
                 try:
@@ -290,14 +452,6 @@ class SCADKnowledgeBase:
                     metadata['step_back_analysis'].setdefault('core_principles', [])
                     metadata['step_back_analysis'].setdefault('shape_components', [])
                     metadata['step_back_analysis'].setdefault('implementation_steps', [])
-
-                # Debug step-back analysis
-                print(f"\nResult ID: {result.get('id', 'unknown')}")
-                print(f"Result object_type: {result_metadata.get('object_type', '')}")
-                print(f"Result features: {result_metadata.get('features', [])}")
-                print(f"Result description: {result.get('document', result_metadata.get('description', 'No description available'))}")
-                print(f"Query object_type: {query_metadata.get('object_type', '')}")
-                print(f"Query features: {query_metadata.get('features', [])}")
 
                 # Calculate component match score
                 result_components = result_metadata['step_back_analysis'].get('shape_components', [])
@@ -339,22 +493,35 @@ class SCADKnowledgeBase:
                 # Calculate complexity match
                 query_complexity = str(query_metadata['complexity']).upper()
                 result_complexity = str(result_metadata['complexity']).upper()
-                complexity_score = 1.0 if query_complexity == result_complexity else 0.0
-                
+                complexity_score = 1.0 if query_complexity == result_complexity else 0.5  # Partial match even if different
+
                 # Calculate object type match
                 query_object_type = str(query_metadata.get('object_type', '')).lower()
                 result_object_type = str(result_metadata.get('object_type', '')).lower()
                 object_type_score = fuzz.ratio(query_object_type, result_object_type) / 100.0
-
+                
+                # Calculate techniques match (NEW)
+                technique_score = 0.0
+                query_techniques = query_metadata.get('techniques_needed', [])
+                result_techniques = result_metadata.get('techniques_used', [])
+                
+                if query_techniques and result_techniques:
+                    # Count matching techniques
+                    matching = sum(1 for t in query_techniques if t in result_techniques)
+                    if matching > 0:
+                        # Score based on percentage of needed techniques that are present
+                        technique_score = matching / len(query_techniques)
+                
                 # Calculate final score with weights
                 weights = {
-                    'component_match': 0.03,
-                    'geometric_match': 0.03,
-                    'step_back_match': 0.03,
-                    'feature_match': 0.2,
-                    'object_type_match': 0.7,
-                    'style_match': 0.005,
-                    'complexity_match': 0.005
+                    'component_match': 0.05,
+                    'geometric_match': 0.05, 
+                    'step_back_match': 0.00,
+                    'feature_match': 0.15,
+                    'object_type_match': 0.40,  # Reduced from 0.55
+                    'style_match': 0.05,
+                    'complexity_match': 0.05,
+                    'technique_match': 0.25     # Increased from 0.10
                 }
 
                 final_score = (
@@ -364,7 +531,8 @@ class SCADKnowledgeBase:
                     weights['feature_match'] * feature_score +
                     weights['object_type_match'] * object_type_score +
                     weights['style_match'] * style_score +
-                    weights['complexity_match'] * complexity_score
+                    weights['complexity_match'] * complexity_score +
+                    weights['technique_match'] * technique_score
                 )
 
                 # Create score breakdown
@@ -377,13 +545,15 @@ class SCADKnowledgeBase:
                         'feature_match': feature_score,
                         'object_type_match': object_type_score,
                         'style_match': style_score,
-                        'complexity_match': complexity_score
+                        'complexity_match': complexity_score,
+                        'technique_match': technique_score
                     },
                     'step_back_details': {
                         'principles': principles_score,
                         'abstractions': components_score,
                         'approach': steps_score
-                    }
+                    },
+                    'matching_techniques': [t for t in query_techniques if t in result_techniques] if query_techniques else []
                 }
 
                 ranked_results.append({
@@ -402,13 +572,17 @@ class SCADKnowledgeBase:
         
         print("\nFinal Ranking:")
         print("=" * 50)
-        for i, result in enumerate(ranked_results, 1):
+        for i, result in enumerate(ranked_results[:5], 1):  # Show top 5
             print(f"\nRank {i}:")
             print(f"Example ID: {result['example'].get('id', 'unknown')}")
             print(f"Final Score: {result['score']:.3f}")
             print("Component Scores:")
             for name, score in result['score_breakdown']['component_scores'].items():
                 print(f"- {name}: {score:.3f}")
+            
+            # Show matching techniques if available
+            if result['score_breakdown']['matching_techniques']:
+                print(f"Matching Techniques: {', '.join(result['score_breakdown']['matching_techniques'])}")
         
         return ranked_results
 
@@ -429,6 +603,54 @@ class SCADKnowledgeBase:
             print(f"Error deleting examples: {str(e)}")
             traceback.print_exc()
             return False
+        
+    def update_knowledge_base_with_techniques(self):
+        """One-time update to extract and store techniques for all examples"""
+        print("Updating knowledge base with technique information...")
+        
+        # Get all examples
+        results = self.collection.get()
+        if not results or not results['ids']:
+            print("No examples found in knowledge base.")
+            return
+        
+        updated_count = 0
+        
+        for i in range(len(results['ids'])):
+            example_id = results['ids'][i]
+            metadata = results['metadatas'][i]
+            
+            # Skip if already has techniques
+            if 'techniques_used' in metadata and metadata['techniques_used']:
+                continue
+                
+            # Extract code
+            code = metadata.get('code', '')
+            if not code:
+                continue
+                
+            # Extract techniques
+            techniques = self.extract_techniques_from_code(code)
+            
+            # Extract parameters and metrics
+            parameters = self.extract_parameters_from_code(code)
+            code_metrics = self.analyze_code_structure(code)
+            
+            # Update metadata
+            metadata['techniques_used'] = json.dumps(techniques)
+            metadata['primary_parameters'] = json.dumps(parameters)
+            metadata['code_metrics'] = json.dumps(code_metrics)
+            
+            # Update in collection
+            self.collection.update(
+                ids=[example_id],
+                metadatas=[metadata]
+            )
+            
+            updated_count += 1
+            print(f"Updated example {example_id} with {len(techniques)} techniques")
+        
+        print(f"Updated {updated_count} examples with technique information.")
 
     def search_examples(self, search_term: str = None, filters: Dict = None, page: int = 1, page_size: int = 10) -> Dict:
         """
@@ -561,6 +783,17 @@ class SCADKnowledgeBase:
             print(f"Error getting example details: {str(e)}")
             traceback.print_exc()
             return None
+    def _extract_techniques_from_metadata(self, metadata):
+        """Helper method to extract techniques from metadata"""
+        if 'techniques_used' in metadata:
+            techniques = metadata['techniques_used']
+            if isinstance(techniques, str):
+                try:
+                    return json.loads(techniques)
+                except:
+                    return [t.strip() for t in techniques.split(',') if t.strip()]
+            return techniques
+        return []
 
     def perform_step_back(self, query, approved_keywords=None):
         """Perform step-back analysis using pre-approved keywords if provided"""
@@ -577,17 +810,19 @@ class SCADKnowledgeBase:
             return None
 
     def get_examples(self, description: str, step_back_result: Dict = None, keyword_data: Dict = None, 
-                   similarity_threshold: float = 0.6, return_metadata: bool = False, max_results: int = 5) -> List[Dict]:
+               similarity_threshold: float = 0.6, return_metadata: bool = False, max_results: int = 5,
+               technique_filters: List[str] = None) -> List[Dict]:
         """
-        Get relevant examples based on description, step-back analysis, and keyword data.
+        Get relevant examples based on description, step-back analysis, and keyword data with technique filtering.
         
         Args:
             description: The query description
             step_back_result: Optional step-back analysis results 
             keyword_data: Optional pre-extracted keyword data
-            similarity_threshold: Minimum similarity score required (default: 0.65)
+            similarity_threshold: Minimum similarity score required (default: 0.6)
             return_metadata: Whether to return extracted metadata along with examples
             max_results: Maximum number of results to return (default: 5)
+            technique_filters: Optional list of techniques to filter by
             
         Returns:
             If return_metadata is False: List of relevant examples with their similarity scores
@@ -596,6 +831,8 @@ class SCADKnowledgeBase:
         try:
             print("\nRetrieving similar examples...")
             print(f"Query: \"{description}\"")
+            if technique_filters:
+                print(f"Technique Filters: {', '.join(technique_filters)}")
             print("="*50)
             
             # Extract metadata from query
@@ -606,7 +843,39 @@ class SCADKnowledgeBase:
                 keyword_data=keyword_data
             )
             
-            # Prepare filters from step-back analysis if available
+            # Add techniques from step-back analysis if available
+            if step_back_result and 'principles' in step_back_result:
+                potential_techniques = []
+                for principle in step_back_result['principles']:
+                    # Look for techniques mentioned in principles
+                    technique_keywords = {
+                        "union": ["combine", "join", "merge", "add"],
+                        "difference": ["subtract", "cut", "remove", "hollow"],
+                        "intersection": ["intersect", "overlap", "common"],
+                        "translate": ["move", "position", "place", "shift"],
+                        "rotate": ["turn", "spin", "rotation", "angle"],
+                        "scale": ["resize", "proportion", "enlarge", "reduce"],
+                        "mirror": ["reflect", "flip", "symmetry"],
+                        "hull": ["envelope", "surround", "outline", "convex"],
+                        "minkowski": ["smooth", "round", "bevel", "sum"],
+                        "extrude": ["extend", "raise", "linear", "path"],
+                        "pattern": ["repeat", "array", "grid", "duplicate"]
+                    }
+                    
+                    for technique, keywords in technique_keywords.items():
+                        if any(keyword.lower() in principle.lower() for keyword in keywords):
+                            potential_techniques.append(technique)
+                
+                # Add identified techniques to query metadata
+                if potential_techniques:
+                    query_metadata['techniques_needed'] = potential_techniques
+                    print(f"Identified techniques from analysis: {', '.join(potential_techniques)}")
+            
+            # If explicit technique filters are provided, use those
+            if technique_filters:
+                query_metadata['techniques_needed'] = technique_filters
+                
+            # Prepare filters
             filters = None
             if step_back_result:
                 filters = {k: v for k, v in {
@@ -622,22 +891,14 @@ class SCADKnowledgeBase:
                 f"Keyword Data: {keyword_data}\n",
                 f"Step-back Principles: {step_back_result.get('principles', []) if step_back_result else []}\n",
                 f"Similarity Threshold: {similarity_threshold}\n",
+                f"Technique Filters: {technique_filters}\n",
                 "=" * 50 + "\n"
             )
             
             # Query the vector store
             results = self.collection.query(
                 query_texts=[description],
-                n_results=max_results
-            )
-            
-            # Log raw query results
-            self.write_debug(
-                "\n=== VECTOR STORE QUERY RESULTS ===\n",
-                f"Results count: {len(results.get('ids', [[]])[0]) if results.get('ids') else 0}\n",
-                f"Result IDs: {results.get('ids', [[]])[0] if results.get('ids') else []}\n",
-                f"Result Distances: {results.get('distances', [[]])[0] if results.get('distances') else []}\n",
-                "=" * 50 + "\n"
+                n_results=max_results * 2  # Request more results to allow for technique filtering
             )
             
             # Check for empty results
@@ -650,6 +911,7 @@ class SCADKnowledgeBase:
             for i in range(len(results['ids'][0])):
                 result = {
                     'id': results['ids'][0][i],
+                    'document': results['documents'][0][i],
                     'metadata': results['metadatas'][0][i],
                     'distance': results['distances'][0][i]
                 }
@@ -658,35 +920,51 @@ class SCADKnowledgeBase:
                 if filters and not self._passes_filters(result['metadata'], filters):
                     continue
                     
+                # Apply technique filters if provided
+                if technique_filters and 'techniques_used' in result['metadata']:
+                    techniques = result['metadata']['techniques_used']
+                    if isinstance(techniques, str):
+                        try:
+                            techniques = json.loads(techniques)
+                        except:
+                            techniques = [t.strip() for t in techniques.split(',') if t.strip()]
+                    
+                    # Only include if at least one required technique is present
+                    if not any(tech in techniques for tech in technique_filters):
+                        continue
+                
                 search_results.append(result)
             
             # Summarize raw results for logging
-            print(f"\nFound {len(search_results)} raw results")
-            
-            # Log search results before ranking
-            self.write_debug(
-                "\n=== SEARCH RESULTS BEFORE RANKING ===\n",
-                f"Number of results to rank: {len(search_results)}\n",
-                "".join(f"Result {i}: ID={result['id']}, Distance={result['distance']}\n" 
-                       for i, result in enumerate(search_results, 1)),
-                "=" * 50 + "\n"
-            )
+            print(f"\nFound {len(search_results)} matching results")
             
             # Rank results
             ranked_results = self._rank_results(query_metadata, search_results)
             
+            # Apply technique boosting if needed techniques are specified
+            if 'techniques_needed' in query_metadata and query_metadata['techniques_needed']:
+                needed_techniques = query_metadata['techniques_needed']
+                print(f"\nBoosting results that match needed techniques: {', '.join(needed_techniques)}")
+                
+                # Apply technique boost (up to 0.2 additional points)
+                for result in ranked_results:
+                    techniques = self._extract_techniques_from_metadata(result['example']['metadata'])
+                    
+                    if techniques:
+                        # Count matching techniques
+                        matching = sum(1 for t in needed_techniques if t in techniques)
+                        if matching > 0:
+                            boost = 0.2 * (matching / len(needed_techniques))
+                            result['original_score'] = result['score']
+                            result['score'] += boost
+                            result['technique_boost'] = boost
+                            result['matching_techniques'] = [t for t in needed_techniques if t in techniques]
+                
+                # Re-sort after boosting
+                ranked_results.sort(key=lambda x: x['score'], reverse=True)
+            
             # Filter by similarity threshold
             relevant_results = [r for r in ranked_results if r['score'] >= similarity_threshold]
-            
-            # Log final results
-            self.write_debug(
-                "\n=== FINAL FILTERED RESULTS ===\n",
-                f"Number of relevant results: {len(relevant_results)}\n",
-                f"Similarity threshold: {similarity_threshold}\n",
-                "".join(f"Result {i}: ID={r['example']['id']}, Score={r['score']:.3f}, Score breakdown: {r['score_breakdown']['component_scores']}\n" 
-                       for i, r in enumerate(relevant_results, 1)),
-                "=" * 50 + "\n"
-            )
             
             # Display results to user
             if relevant_results:
@@ -695,11 +973,22 @@ class SCADKnowledgeBase:
                     print(f"\nExample {i} (Score: {example['score']:.3f}):")
                     print(f"ID: {example['example']['id']}")
                     print(f"Description: \"{example['example'].get('document', example['example']['metadata'].get('description', 'No description'))}\"")
+                    
+                    # Show technique boost information if available
+                    if 'technique_boost' in example:
+                        print(f"Technique Boost: +{example['technique_boost']:.2f} (Original Score: {example['original_score']:.3f})")
+                        print(f"Matching Techniques: {', '.join(example['matching_techniques'])}")
+                    
                     print("Score Breakdown:")
                     for name, score in example['score_breakdown']['component_scores'].items():
                         print(f"  {name}: {score:.3f}")
+                    
+                    # Show techniques used if available
+                    techniques = self._extract_techniques_from_metadata(example['example']['metadata'])
+                    if techniques:
+                        print(f"Techniques Used: {', '.join(techniques)}")
             else:
-                print("\nNo similar examples found")
+                print("\nNo similar examples found matching criteria")
             
             # Return results
             return (relevant_results, query_metadata) if return_metadata else relevant_results
@@ -1181,3 +1470,4 @@ class SCADKnowledgeBase:
             logger.error(f"Stack trace: {traceback.format_exc()}")
             print(f"\nError in delete_knowledge: {str(e)}")
             return False 
+        

@@ -30,13 +30,14 @@ class StepBackAnalyzer:
         for message in messages:
             self.debug_log.append(message)
 
-    def perform_analysis(self, description: str, keyword_data: Dict, max_retries: int = 3) -> Optional[Dict]:
+    def perform_analysis(self, query: str, description: str, keyword_data, max_retries: int = 3, auto_approve: bool = True) -> Optional[Dict]:
         """Perform step-back analysis with user validation.
         
         Args:
             description: The description to analyze
             keyword_data: The extracted keyword data
             max_retries: Maximum number of retry attempts
+            auto_approve: If True, automatically approve results (for testing)
             
         Returns:
             Dictionary containing step-back analysis if successful, None otherwise
@@ -45,11 +46,29 @@ class StepBackAnalyzer:
         
         while retry_count < max_retries:
             try:
+                # Get the LLM model info
+                print("\nUsing model for step-back analysis:")
+                print(f"LLM type: {type(self.llm).__name__}")
+                # Try to get model name from different attributes
+                model_name = None
+                if hasattr(self.llm, 'model'):
+                    model_name = self.llm.model
+                    print(f"Model name: {model_name}")
+                elif hasattr(self.llm, 'model_name'):
+                    model_name = self.llm.model_name
+                    print(f"Model name: {model_name}")
+                
+                # Try to get base URL if available
+                if hasattr(self.llm, 'base_url'):
+                    print(f"Base URL: {self.llm.base_url}")
+                print("-" * 50)
+                
                 # Format the step-back prompt with keyword data
                 step_back_prompt_value = self.step_back_prompt.format(
                     Object=keyword_data.get('compound_type', ''),
                     Type=keyword_data.get('core_type', ''),
-                    Modifiers=', '.join(keyword_data.get('modifiers', []))
+                    Modifiers=', '.join(keyword_data.get('modifiers', [])),
+                    description=description
                 )
                 
                 # Log analysis attempt
@@ -57,7 +76,7 @@ class StepBackAnalyzer:
                     "=== STEP-BACK ANALYSIS ===\n",
                     f"Attempt {retry_count + 1}/{max_retries}\n",
                     "Query:\n",
-                    f"{description}\n\n",
+                    f"{query}\n\n",
                     "Keyword Data:\n",
                     f"Core Type: {keyword_data.get('core_type', '')}\n",
                     f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}\n",
@@ -70,26 +89,85 @@ class StepBackAnalyzer:
                 response = self.llm.invoke(step_back_prompt_value)
                 technical_analysis = response.content
                 
+                # Print the raw response for debugging
+                print("\nRaw LLM Response:")
+                print("-" * 50)
+                print(technical_analysis)
+                print("-" * 50)
+                
+                # Log raw response
+                self.write_debug(
+                    "Raw LLM Response:\n",
+                    f"{technical_analysis}\n\n"
+                )
+                
                 # Parse step-back analysis
                 principles = []
                 abstractions = []
                 approach = []
                 
+                # More robust parsing - handle both exact and case-insensitive section headers
                 current_section = None
-                for line in technical_analysis.split('\n'):
+                # First, extract the content inside <analysis> tags if present
+                analysis_content = technical_analysis
+                if "<analysis>" in technical_analysis.lower() and "</analysis>" in technical_analysis.lower():
+                    start_idx = technical_analysis.lower().find("<analysis>") + len("<analysis>")
+                    end_idx = technical_analysis.lower().find("</analysis>")
+                    if start_idx < end_idx:
+                        analysis_content = technical_analysis[start_idx:end_idx].strip()
+                
+                # Process the analysis content line by line
+                for line in analysis_content.split('\n'):
                     line = line.strip()
-                    if 'CORE PRINCIPLES:' in line:
+                    if not line:
+                        continue
+                        
+                    # Check for section headers with more flexibility
+                    if any(header in line.upper() for header in ["CORE PRINCIPLES:", "CORE PRINCIPLES"]):
                         current_section = 'principles'
-                    elif 'SHAPE COMPONENTS:' in line:
+                        continue
+                    elif any(header in line.upper() for header in ["SHAPE COMPONENTS:", "SHAPE COMPONENTS"]):
                         current_section = 'abstractions'
-                    elif 'IMPLEMENTATION STEPS:' in line:
+                        continue
+                    elif any(header in line.upper() for header in ["IMPLEMENTATION STEPS:", "IMPLEMENTATION STEPS"]):
                         current_section = 'approach'
-                    elif line and line[0] in ['-', '•', '*'] and current_section == 'principles':
-                        principles.append(line[1:].strip())
-                    elif line and line[0] in ['-', '•', '*'] and current_section == 'abstractions':
-                        abstractions.append(line[1:].strip())
-                    elif line and line[0].isdigit() and current_section == 'approach':
-                        approach.append(line[line.find('.')+1:].strip())
+                        continue
+                    elif "MEASUREMENT CONSIDERATIONS" in line.upper():
+                        current_section = None  # Skip this section
+                        continue
+                    
+                    # Process content based on current section
+                    if current_section == 'principles':
+                        # Handle bullet points with various markers and without markers
+                        if line[0] in ['-', '•', '*'] or (line[0].isdigit() and '.' in line[:3]):
+                            principles.append(line[line.find(' ')+1:].strip())
+                        elif principles and line[0].isalpha():  # Continuation of previous point or unmarked point
+                            principles.append(line)
+                    elif current_section == 'abstractions':
+                        if line[0] in ['-', '•', '*'] or (line[0].isdigit() and '.' in line[:3]):
+                            abstractions.append(line[line.find(' ')+1:].strip())
+                        elif abstractions and line[0].isalpha():  # Continuation or unmarked point
+                            abstractions.append(line)
+                    elif current_section == 'approach':
+                        if line[0].isdigit() and '.' in line[:3]:
+                            approach.append(line[line.find('.')+1:].strip())
+                        elif line[0] in ['-', '•', '*']:
+                            approach.append(line[line.find(' ')+1:].strip())
+                        elif approach and line[0].isalpha():  # Continuation or unmarked point
+                            approach.append(line)
+                
+                # If sections are still empty, try a fallback approach with simpler parsing
+                if not any([principles, abstractions, approach]):
+                    print("Warning: Initial parsing found no content, trying fallback parsing...")
+                    # Try to identify paragraphs that might contain relevant information
+                    paragraphs = [p.strip() for p in analysis_content.split('\n\n') if p.strip()]
+                    for p in paragraphs:
+                        if "principle" in p.lower() or "concept" in p.lower():
+                            principles.append(p)
+                        elif "shape" in p.lower() or "component" in p.lower() or "geometric" in p.lower():
+                            abstractions.append(p)
+                        elif "step" in p.lower() or "implement" in p.lower() or "approach" in p.lower():
+                            approach.append(p)
                 
                 # Create analysis result
                 analysis_result = {
@@ -127,12 +205,16 @@ class StepBackAnalyzer:
                 print("-" * 30)
                 
                 # Get user confirmation
-                user_input = input("\nDo you accept this technical analysis? (yes/no): ").lower().strip()
+                if auto_approve:
+                    user_input = 'yes'
+                    print("\nAuto-approving step-back analysis.")
+                else:
+                    user_input = input("\nDo you accept this technical analysis? (yes/no): ").lower().strip()
                 
                 # Log user's decision
                 self.write_debug(
                     "=== USER STEP-BACK DECISION ===\n",
-                    f"User accepted step-back analysis: {user_input == 'yes'}\n",
+                    f"User accepted step-back analysis: {user_input == 'yes'} (Auto-approved: {auto_approve})\n",
                     "=" * 50 + "\n\n"
                 )
                 
