@@ -107,7 +107,7 @@ class MetadataExtractor:
             model = ModelDefinitions.DEEPSEEK
         
         self.llm = LLMProvider.get_llm(
-            provider=llm_provider,
+            provider="llama3.2:3b-instruct-q4_K_M",
             temperature=0.7,
             model=model
         )

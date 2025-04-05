@@ -962,6 +962,8 @@ class SCADKnowledgeBase:
                 
                 # Re-sort after boosting
                 ranked_results.sort(key=lambda x: x['score'], reverse=True)
+                
+            similarity_threshold = 0.4
             
             # Filter by similarity threshold
             relevant_results = [r for r in ranked_results if r['score'] >= similarity_threshold]
