@@ -5644,5 +5644,1992 @@
       "input_tokens": 14,
       "output_tokens": 40
     }
+  },
+  {
+    "timestamp": "2025-04-05T21:41:49.636312",
+    "input": {
+      "description": "a sword with sharp edge and metal material",
+      "code": ""
+    },
+    "output": {
+      "object_type": "sword",
+      "features": [
+        "blade",
+        "hilt",
+        "guard",
+        "pommel",
+        "fuller/blood groove",
+        "edge bevels",
+        "point"
+      ],
+      "geometric_properties": [
+        "tapered",
+        "angular",
+        "symmetrical"
+      ],
+      "materials": [
+        "metal",
+        "leather"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Role-playing",
+        "Display",
+        "Decoration"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 22
+    }
+  },
+  {
+    "timestamp": "2025-04-05T22:33:01.782488",
+    "input": {
+      "description": "office chair with armrests",
+      "code": ""
+    },
+    "output": {
+      "object_type": "office chair",
+      "features": [
+        "armrests",
+        "backrest",
+        "seat"
+      ],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Seating"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 12
+    }
+  },
+  {
+    "timestamp": "2025-04-05T22:38:31.938445",
+    "input": {
+      "description": "office chair with armrests",
+      "code": ""
+    },
+    "output": {
+      "object_type": "office chair",
+      "features": [
+        "armrests",
+        "seat",
+        "backrest"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "wood",
+        "metal"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "Modern",
+      "use_case": [
+        "Sitting",
+        "Working"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 15
+    }
+  },
+  {
+    "timestamp": "2025-04-06T08:53:16.770742",
+    "input": {
+      "description": "(box OR drawer) AND (3D model OR container) NOT (furniture OR cabinet)",
+      "code": ""
+    },
+    "output": {
+      "object_type": "drawer box",
+      "features": [
+        "drawer",
+        "container"
+      ],
+      "geometric_properties": [
+        "symmetrical",
+        "angular"
+      ],
+      "materials": [
+        "Wooden",
+        "Metallic"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "Modern",
+      "use_case": [
+        "Storage",
+        "Organization",
+        "Display"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 12,
+      "output_tokens": 16
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:03:19.886497",
+    "input": {
+      "description": "(box OR drawer) AND (3D model OR container) NOT (furniture OR cabinet)",
+      "code": ""
+    },
+    "output": {
+      "object_type": "drawer box",
+      "features": [
+        "lid",
+        "handle"
+      ],
+      "geometric_properties": [
+        "rectangular",
+        "angled"
+      ],
+      "materials": [
+        "wood",
+        "metal"
+      ],
+      "technical_requirements": [
+        "boolean operations",
+        "smooth transitions"
+      ],
+      "complexity": "SIMPLE",
+      "style": "Minimalist",
+      "use_case": [
+        "Storage",
+        "Display"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 12,
+      "output_tokens": 18
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:13:28.221600",
+    "input": {
+      "description": "pen holder with pen attachment",
+      "code": ""
+    },
+    "output": {
+      "object_type": "pen holder",
+      "features": [
+        "holder",
+        "attachment for pen"
+      ],
+      "geometric_properties": [
+        "symmetrical",
+        "angular"
+      ],
+      "materials": [
+        "plastic",
+        "metal"
+      ],
+      "technical_requirements": [
+        "smooth transitions"
+      ],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [
+        "Desk accessory",
+        "Office supply holder"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 21
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:17:11.441401",
+    "input": {
+      "description": "pen holder with pen attachment",
+      "code": ""
+    },
+    "output": {
+      "object_type": "pen holder",
+      "features": [
+        "pen attachment",
+        "holder"
+      ],
+      "geometric_properties": [
+        "cylindrical",
+        "flat"
+      ],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "",
+      "use_case": [
+        "Office",
+        "Desk"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:30:35.454335",
+    "input": {
+      "description": "pen holder with ergonomic design and modular structure",
+      "code": ""
+    },
+    "output": {
+      "object_type": "Pen holder",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "",
+      "style": "",
+      "use_case": [],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 9
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:37:50.028739",
+    "input": {
+      "description": "cabinet with wood door and interior shelving",
+      "code": ""
+    },
+    "output": {
+      "object_type": "cabinet",
+      "features": [
+        "wood door",
+        "interior shelving"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "wood"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "Traditional",
+      "use_case": [
+        "Storage",
+        "Display"
+      ],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 14
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:42:49.035393",
+    "input": {
+      "description": "shark fin quadcopter",
+      "code": ""
+    },
+    "output": {
+      "object_type": "shark fin of a quadcopter",
+      "features": [
+        "quadcopter fin",
+        "aerodynamic stability",
+        "vibration dampening",
+        "wind resistance reduction",
+        "center of gravity optimization"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "carbon fiber",
+        "reinforced nylon",
+        "TPU"
+      ],
+      "technical_requirements": [
+        "rotate",
+        "union",
+        "scale",
+        "translate",
+        "difference",
+        "minkowski"
+      ],
+      "complexity": "MEDIUM",
+      "style": "default",
+      "use_case": [
+        "drone flight",
+        "racing"
+      ],
+      "categories": [],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 3,
+      "output_tokens": 37
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:46:37.389020",
+    "input": {
+      "description": "quadcopter propeller",
+      "code": ""
+    },
+    "output": {
+      "object_type": "propeller of a quadcopter",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "default",
+      "use_case": [],
+      "categories": [
+        "other"
+      ],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 2,
+      "output_tokens": 13
+    }
+  },
+  {
+    "timestamp": "2025-04-06T09:51:02.711006",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "unknown",
+      "features": [
+        "Center bore",
+        "Bolt pattern/lug holes",
+        "Barrel/outer lip",
+        "Spokes/design elements",
+        "Valve stem hole",
+        "Rim flanges",
+        "Drop center",
+        "Bead seat"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "Metal"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "default",
+      "use_case": [
+        "Supporting vehicle weight and structural integrity",
+        "Balancing rotation at high speeds"
+      ],
+      "categories": [],
+      "properties": {}
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 37
+    }
+  },
+  {
+    "timestamp": "2025-04-06T10:02:15.133793",
+    "input": {
+      "description": "guitar 3D model",
+      "code": ""
+    },
+    "output": {
+      "object_type": "guitar",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "furniture",
+        "decorative",
+        "functional",
+        "geometric"
+      ],
+      "properties": {
+        "size": "medium",
+        "style": "artistic",
+        "complexity": "moderate",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "angled",
+        "support_needed": "minimal",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 3,
+      "output_tokens": 50
+    }
+  },
+  {
+    "timestamp": "2025-04-06T10:21:35.222535",
+    "input": {
+      "description": "quadcopter propeller with 4 blades",
+      "code": ""
+    },
+    "output": {
+      "object_type": "quadcopter propeller with 4 blades",
+      "features": [
+        "quadcopter",
+        "4 blades"
+      ],
+      "geometric_properties": [
+        "symmetrical",
+        "curved"
+      ],
+      "materials": [
+        "lightweight yet durable materials"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "Industrial",
+      "use_case": [
+        "Quadcopter Propeller"
+      ],
+      "categories": [
+        "geometric",
+        "functional"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "yes",
+        "style": "modern",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "moderate",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "functional"
+      }
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 61
+    }
+  },
+  {
+    "timestamp": "2025-04-06T10:55:35.541987",
+    "input": {
+      "description": "propeller of a drone",
+      "code": ""
+    },
+    "output": {
+      "object_type": "propeller of a drone",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "mechanical",
+        "enclosure",
+        "geometric"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "yes",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 53
+    }
+  },
+  {
+    "timestamp": "2025-04-06T11:04:30.883844",
+    "input": {
+      "description": "phone stand with ergonomic viewing angle (65-70 degrees optimal) and material efficiency (volume constraints of 2 cubic inches or less)",
+      "code": ""
+    },
+    "output": {
+      "object_type": "phone stand",
+      "features": [
+        "stationary design",
+        "aesthetically pleasing"
+      ],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [
+        "phone display",
+        "portability"
+      ],
+      "categories": [
+        "functional",
+        "furniture"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "angled",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 20,
+      "output_tokens": 58
+    }
+  },
+  {
+    "timestamp": "2025-04-06T11:16:36.182725",
+    "input": {
+      "description": "toy car with rounded edges and child-safe design, low polygon count, wheels and axles, cabin/cockpit area, bumpers/fenders, details like headlights and grille, undercarriage with axle mounts",
+      "code": ""
+    },
+    "output": {
+      "object_type": "toy car",
+      "features": [
+        "rounded edges",
+        "child-safe design",
+        "wheels and axles",
+        "cabin/cockpit area",
+        "bumpers/fenders",
+        "headlights"
+      ],
+      "geometric_properties": [
+        "rounded edges",
+        "symmetrical"
+      ],
+      "materials": [],
+      "technical_requirements": [
+        "Low polygon count"
+      ],
+      "complexity": "SIMPLE",
+      "style": "Child-friendly",
+      "use_case": [
+        "Toys"
+      ],
+      "categories": [
+        "functional",
+        "geometric",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low"
+      }
+    },
+    "tokens": {
+      "input_tokens": 26,
+      "output_tokens": 62
+    }
+  },
+  {
+    "timestamp": "2025-04-06T11:26:12.021529",
+    "input": {
+      "description": "toy car with rotating wheels and detailed interior",
+      "code": ""
+    },
+    "output": {
+      "object_type": "toy car",
+      "features": [
+        "rotating wheels",
+        "detailed interior",
+        "windows and transparent elements"
+      ],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [
+        "Polygon optimization for performance and file size management"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Realistic",
+      "use_case": [
+        "Display",
+        "Decoration"
+      ],
+      "categories": [
+        "functional",
+        "geometric",
+        "decorative"
+      ],
+      "properties": {
+        "size": "medium",
+        "style": "modern",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "moderate",
+        "orientation": "any",
+        "support_needed": "minimal",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "medium_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 65
+    }
+  },
+  {
+    "timestamp": "2025-04-06T21:25:22.591246",
+    "input": {
+      "description": "book shelf with modular design and spatial efficiency for optimal book storage",
+      "code": ""
+    },
+    "output": {
+      "object_type": "book shelf",
+      "features": [
+        "Vertical side panels (typically rectangular with consistent thickness)",
+        "Horizontal shelves (flat surfaces with consistent thickness)",
+        "Back panel (optional, provides structural support)",
+        "Base/feet components for stability",
+        "Shelf supports/dividers for structural reinforcement",
+        "Edge/trim details for aesthetic finishing"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "Wood"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "Modern",
+      "use_case": [
+        "Storage",
+        "Display"
+      ],
+      "categories": [
+        "furniture",
+        "container",
+        "modular",
+        "geometric"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "moderate",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "medium_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 12,
+      "output_tokens": 90
+    }
+  },
+  {
+    "timestamp": "2025-04-06T21:50:27.486714",
+    "input": {
+      "description": "propeller with engine integration and aerodynamic efficiency",
+      "code": ""
+    },
+    "output": {
+      "object_type": "propeller engine",
+      "features": [
+        "engine integration",
+        "aerodynamic efficiency"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "3D printing material"
+      ],
+      "technical_requirements": [
+        "Reynolds number effects",
+        "Torque, power, and RPM requirements",
+        "Material selection for 3D printing limitations"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "aviation",
+        "marine"
+      ],
+      "categories": [
+        "mechanical",
+        "functional",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "medium",
+        "hollow": "yes",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "angled",
+        "support_needed": "minimal",
+        "infill_requirement": "medium",
+        "assembly": "multi_part",
+        "stability": "needs_support",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "splash_proof",
+        "heat_resistance": "low"
+      }
+    },
+    "tokens": {
+      "input_tokens": 7,
+      "output_tokens": 66
+    }
+  },
+  {
+    "timestamp": "2025-04-06T21:55:35.876284",
+    "input": {
+      "description": "a drone propeller with aerodynamic efficiency through airfoil cross-sections and twist distribution",
+      "code": ""
+    },
+    "output": {
+      "object_type": "drone propeller",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "mechanical",
+        "geometric"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "none",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "easy",
+        "orientation": "any",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "medium_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 12,
+      "output_tokens": 54
+    }
+  },
+  {
+    "timestamp": "2025-04-06T22:24:46.257014",
+    "input": {
+      "description": "guitar 3D model",
+      "code": ""
+    },
+    "output": {
+      "object_type": "guitar 3D model",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "decorative",
+        "geometric"
+      ],
+      "properties": {
+        "size": "small",
+        "style": "artistic",
+        "complexity": "simple",
+        "symmetry": "asymmetric"
+      }
+    },
+    "tokens": {
+      "input_tokens": 3,
+      "output_tokens": 20
+    }
+  },
+  {
+    "timestamp": "2025-04-06T22:40:19.362706",
+    "input": {
+      "description": "quadcopter frame",
+      "code": ""
+    },
+    "output": {
+      "object_type": "quadcopter frame",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "mechanical",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "yes",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "minimal",
+        "infill_requirement": "medium",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 2,
+      "output_tokens": 52
+    }
+  },
+  {
+    "timestamp": "2025-04-06T22:46:55.327952",
+    "input": {
+      "description": "quadcopter frame design with motor mounts and landing gear",
+      "code": ""
+    },
+    "output": {
+      "object_type": "quadcopter frame",
+      "features": [
+        "quadcopter frame",
+        "motor mounts",
+        "landing gear/legs",
+        "central hub for housing electronics, battery, and flight controller",
+        "arms/booms extending from the central hub to mount motors"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "not specified"
+      ],
+      "technical_requirements": [
+        "Weight-to-strength ratio optimization",
+        "Symmetry in design to ensure balanced weight distribution and stable flight dynamics"
+      ],
+      "complexity": "MEDIUM",
+      "style": "not specified",
+      "use_case": [
+        "quadcopter flight",
+        "modularity for easy repair, replacement, and customization of components"
+      ],
+      "categories": [
+        "functional",
+        "mechanical",
+        "enclosure",
+        "modular"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "any",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 9,
+      "output_tokens": 104
+    }
+  },
+  {
+    "timestamp": "2025-04-06T23:35:32.280955",
+    "input": {
+      "description": "quadcopter frame design with structural integrity and modular components",
+      "code": ""
+    },
+    "output": {
+      "object_type": "quadcopter frame",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "mechanical",
+        "modular",
+        "enclosure",
+        "other"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "simple",
+        "symmetry": "asymmetric",
+        "printability": "moderate",
+        "orientation": "any",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "minimal",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 9,
+      "output_tokens": 55
+    }
+  },
+  {
+    "timestamp": "2025-04-07T08:17:24.748834",
+    "input": {
+      "description": "quadcopter frame 3D printing",
+      "code": ""
+    },
+    "output": {
+      "object_type": "quadcopter frame",
+      "features": [
+        "Central hub for electronics and flight controller mounting",
+        "Motor mounting arms (typically 4) with optimal length for stability",
+        "Landing gear or integrated landing supports",
+        "Battery compartment with secure mounting mechanism"
+      ],
+      "geometric_properties": [
+        "Symmetrical",
+        "Reinforced at high-stress junction points"
+      ],
+      "materials": [
+        "3D printing material"
+      ],
+      "technical_requirements": [
+        "Weight-to-strength ratio optimization for maximum flight efficiency",
+        "Structural rigidity to prevent frame flex during flight maneuvers"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Flight",
+        "Drone operation"
+      ],
+      "categories": [
+        "geometric",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "yes",
+        "style": "modern",
+        "complexity": "moderate",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "angled",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 105
+    }
+  },
+  {
+    "timestamp": "2025-04-07T09:40:38.899189",
+    "input": {
+      "description": "water bottle with capping system and ergonomic design",
+      "code": ""
+    },
+    "output": {
+      "object_type": "water bottle",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "container",
+        "functional",
+        "enclosure",
+        "modular"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "yes",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "splash_proof",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 55
+    }
+  },
+  {
+    "timestamp": "2025-04-07T09:49:58.662561",
+    "input": {
+      "description": "water bottle with cylindrical main body, threaded neck section, removable screw cap, and ergonomic design",
+      "code": ""
+    },
+    "output": {
+      "object_type": "water bottle",
+      "features": [
+        "cylindrical main body",
+        "threaded neck section",
+        "removable screw cap",
+        "ergonomic design"
+      ],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [
+        "topology optimization for clean mesh flow and efficient polygon distribution"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "drinking"
+      ],
+      "categories": [
+        "container",
+        "functional",
+        "geometric",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "medium",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "splash_proof",
+        "heat_resistance": "low"
+      }
+    },
+    "tokens": {
+      "input_tokens": 15,
+      "output_tokens": 67
+    }
+  },
+  {
+    "timestamp": "2025-04-07T09:57:12.514610",
+    "input": {
+      "description": "cylindrical body with variable diameter profile threaded cap/lid with proper clearance neck with appropriate transition to body base with stable flat surface or concave design",
+      "code": ""
+    },
+    "output": {
+      "object_type": "water bottle",
+      "features": [
+        "cylindrical body",
+        "threaded cap/lid",
+        "neck with appropriate transition to body",
+        "base with stable flat surface or concave design"
+      ],
+      "geometric_properties": [
+        "cylindrical",
+        "threaded",
+        "curved transitions"
+      ],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "No style specified",
+      "use_case": [
+        "Basic use",
+        "Customization"
+      ],
+      "categories": [
+        "container",
+        "enclosure",
+        "functional",
+        "geometric"
+      ],
+      "properties": {
+        "size": "medium",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "moderate",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "any",
+        "support_needed": "minimal",
+        "infill_requirement": "medium",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "splash_proof",
+        "heat_resistance": "low",
+        "customization": "fixed"
+      }
+    },
+    "tokens": {
+      "input_tokens": 25,
+      "output_tokens": 75
+    }
+  },
+  {
+    "timestamp": "2025-04-07T10:02:19.861723",
+    "input": {
+      "description": "water bottle with cylindrical body, threaded neck, screw-on cap, and bottom base",
+      "code": ""
+    },
+    "output": {
+      "object_type": "water bottle",
+      "features": [
+        "cylindrical body",
+        "threaded neck",
+        "screw-on cap"
+      ],
+      "geometric_properties": [
+        "symmetrical",
+        "curved"
+      ],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Minimalist",
+      "use_case": [
+        "Drink container"
+      ],
+      "categories": [
+        "container",
+        "functional",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "yes",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "splash_proof",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 12,
+      "output_tokens": 59
+    }
+  },
+  {
+    "timestamp": "2025-04-07T10:10:40.390613",
+    "input": {
+      "description": "camera digital",
+      "code": ""
+    },
+    "output": {
+      "object_type": "camera digital",
+      "features": [
+        "Lens assembly",
+        "Viewfinder section",
+        "LCD screen",
+        "Control buttons and dials",
+        "Battery compartment",
+        "Memory card slot",
+        "Flash assembly"
+      ],
+      "geometric_properties": [
+        "polygons efficiency balanced with visual fidelity",
+        "topology optimization for animation/deformation where needed"
+      ],
+      "materials": [
+        "reflective lens",
+        "textured grip areas"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Functional design"
+      ],
+      "categories": [
+        "functional",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 2,
+      "output_tokens": 84
+    }
+  },
+  {
+    "timestamp": "2025-04-07T17:12:34.166628",
+    "input": {
+      "description": "frame drone",
+      "code": ""
+    },
+    "output": {
+      "object_type": "drone frame",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "mechanical",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "minimalist",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "medium_duty",
+        "water_resistance": "splash_proof",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 2,
+      "output_tokens": 54
+    }
+  },
+  {
+    "timestamp": "2025-04-07T17:22:32.764477",
+    "input": {
+      "description": "frame drone",
+      "code": ""
+    },
+    "output": {
+      "object_type": "frame of a drone",
+      "features": [
+        "Center hub (main body)",
+        "Arms extending from the center hub",
+        "Motor mounts at the ends of arms",
+        "Landing gear or supports",
+        "Top and bottom plates/covers",
+        "Internal mounting points for electronic components and accessories",
+        "Cable routing channels"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "unknown material(s)"
+      ],
+      "technical_requirements": [
+        "Structural integrity to withstand flight forces while minimizing weight",
+        "Strategic component placement for balanced weight distribution and stability"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Unknown",
+      "use_case": [
+        "Drone frame"
+      ],
+      "categories": [
+        "functional",
+        "mechanical",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 2,
+      "output_tokens": 110
+    }
+  },
+  {
+    "timestamp": "2025-04-07T18:14:02.391269",
+    "input": {
+      "description": "frame of a drone",
+      "code": ""
+    },
+    "output": {
+      "object_type": "frame of a drone",
+      "features": [
+        "center top cover",
+        "side top cover",
+        "middle cover",
+        "arms",
+        "motor mounts",
+        "landing gear/skids",
+        "internal mounting features for electronics and battery",
+        "cable management channels"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "carbon fiber reinforced filaments",
+        "PLA",
+        "ABS",
+        "PETG"
+      ],
+      "technical_requirements": [
+        "Structural integrity",
+        "Vibration dampening",
+        "Thermal management"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Modular",
+      "use_case": [
+        "Protection of internal components",
+        "Weight optimization",
+        "Aerodynamic considerations"
+      ],
+      "categories": [
+        "functional",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "medium",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "challenging",
+        "orientation": "any",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "optional",
+        "durability": "medium_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 93
+    }
+  },
+  {
+    "timestamp": "2025-04-07T18:20:39.837988",
+    "input": {
+      "description": "blade profile with guard and handle, metal material, sharp edge geometry",
+      "code": ""
+    },
+    "output": {
+      "object_type": "sword",
+      "features": [
+        "blade profile with guard and handle",
+        "metal material",
+        "sharp edge geometry"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "metal"
+      ],
+      "technical_requirements": [
+        "boolean operations",
+        "smooth transitions",
+        "parametric modeling techniques"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Decoration",
+        "Display"
+      ],
+      "categories": [
+        "functional",
+        "geometric",
+        "mechanical",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "large",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "challenging",
+        "orientation": "angled",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "textured",
+        "post_processing": "optional",
+        "durability": "medium_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 11,
+      "output_tokens": 70
+    }
+  },
+  {
+    "timestamp": "2025-04-07T19:45:24.664876",
+    "input": {
+      "description": "camera digital",
+      "code": ""
+    },
+    "output": {
+      "object_type": "camera digital",
+      "features": [
+        "lens assembly",
+        "viewfinder",
+        "control elements",
+        "display screen",
+        "battery compartment",
+        "grip area",
+        "flash unit"
+      ],
+      "geometric_properties": [
+        "rounded edges for the camera body",
+        "cylindrical protrusion with concentric rings and glass elements"
+      ],
+      "materials": [
+        "reflective surfaces",
+        "textured grips",
+        "transparent elements"
+      ],
+      "technical_requirements": [
+        "Level of Detail (LOD) management - higher detail for close-up views, lower for distant views"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "portability",
+        "user interaction",
+        "visual fidelity"
+      ],
+      "categories": [
+        "functional",
+        "geometric"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 2,
+      "output_tokens": 100
+    }
+  },
+  {
+    "timestamp": "2025-04-07T19:55:20.307609",
+    "input": {
+      "description": "aerodynamic efficiency airfoil profile pitch angle twist distribution structural integrity material strength thickness distribution hub reinforcement balance weight distribution symmetry mass distribution center of gravity rotational dynamics moment of inertia tip speed centrifugal forces noise reduction blade tip design edge profiling manufacturability printable geometries support requirements material limitations drone propeller",
+      "code": ""
+    },
+    "output": {
+      "object_type": "drone propeller",
+      "features": [
+        "airfoil profile",
+        "pitch angle",
+        "twist distribution",
+        "hub reinforcement"
+      ],
+      "geometric_properties": [
+        "curved",
+        "twisted",
+        "angular"
+      ],
+      "materials": [
+        "metal",
+        "plastics",
+        "resins"
+      ],
+      "technical_requirements": [
+        "balance",
+        "structural integrity",
+        "printability"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Aerodynamic",
+      "use_case": [
+        "Drone propulsion",
+        "Noise reduction"
+      ],
+      "categories": [
+        "geometric",
+        "mechanical",
+        "functional"
+      ],
+      "properties": {
+        "size": "small",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "moderate",
+        "orientation": "flat",
+        "support_needed": "none",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed"
+      }
+    },
+    "tokens": {
+      "input_tokens": 50,
+      "output_tokens": 61
+    }
+  },
+  {
+    "timestamp": "2025-04-08T12:49:21.952634",
+    "input": {
+      "description": "quadcopter frame with weight optimization and vibration dampening",
+      "code": ""
+    },
+    "output": {
+      "object_type": "quadcopter frame",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "mechanical",
+        "enclosure",
+        "functional",
+        "geometric"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "yes",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "moderate",
+        "orientation": "any",
+        "support_needed": "minimal",
+        "infill_requirement": "medium",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 55
+    }
+  },
+  {
+    "timestamp": "2025-04-08T13:28:21.532710",
+    "input": {
+      "description": "aerodynamic efficiency propeller design structural integrity material selection balanced design pitch angle optimization scale appropriateness",
+      "code": ""
+    },
+    "output": {
+      "object_type": "drone propeller",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "mechanical",
+        "geometric",
+        "functional"
+      ],
+      "properties": {
+        "size": "small",
+        "material_compatibility": "pla",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "purpose": "practical",
+        "orientation": "flat",
+        "support_needed": "none",
+        "stability": "self_standing"
+      }
+    },
+    "tokens": {
+      "input_tokens": 15,
+      "output_tokens": 28
+    }
+  },
+  {
+    "timestamp": "2025-04-09T15:46:49.834444",
+    "input": {
+      "description": "propeller of a quadcopter",
+      "code": ""
+    },
+    "output": {
+      "object_type": "propeller of a qudacopter",
+      "features": [
+        "Hub section with mounting hole for motor shaft connection",
+        "Airfoil-shaped blades with optimized cross-section",
+        "Leading edge with appropriate curvature for air intake",
+        "Trailing edge with thinning profile for reduced drag",
+        "Blade root reinforcement for structural stability",
+        "Tip design to minimize vortex formation and noise"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "3D printing compatible material"
+      ],
+      "technical_requirements": [
+        "Aerodynamic efficiency",
+        "Structural integrity",
+        "Weight optimization"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Quadcopter propeller"
+      ],
+      "categories": [
+        "mechanical",
+        "functional",
+        "geometric"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "yes",
+        "complexity": "moderate",
+        "style": "industrial",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "any",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 105
+    }
   }
 ]

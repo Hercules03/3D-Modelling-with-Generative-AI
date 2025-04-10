@@ -8,7 +8,7 @@ from typing import Dict, List, Union, Optional
 import logging
 import traceback
 from fuzzywuzzy import fuzz
-
+from langchain_ollama import ChatOllama
 logger = logging.getLogger(__name__)
 
 class MetadataExtractor:
@@ -106,14 +106,15 @@ class MetadataExtractor:
         elif llm_provider == "deepseek":
             model = ModelDefinitions.DEEPSEEK
         
-        self.llm = LLMProvider.get_llm(
-            provider="llama3.2:3b-instruct-q4_K_M",
+        self.llm = ChatOllama(
+            model="llama3.2:3b-instruct-q4_K_M",
             temperature=0.7,
-            model=model
+            base_url="http://localhost:11434"
         )
         print("- Metadata Extractor LLM provider initialized")
         
         self.extraction_prompt = METADATA_EXTRACTION_PROMPT
+        self.category_prompt = CATEGORY_ANALYSIS_PROMPT  # Add this line
         self.logger = conversation_logger
         self.prompt_logger = prompt_logger
         
@@ -142,7 +143,13 @@ class MetadataExtractor:
             
             # 1. Process keyword data
             keyword_data = self._process_keyword_data(keyword_data)
-            object_type = (keyword_data.get("compound_type") or keyword_data.get("core_type", ""))
+            if isinstance(keyword_data, dict):
+                object_type = (keyword_data.get("compound_type") or keyword_data.get("core_type", ""))
+            else:
+                # Assume it's a Pydantic model
+                compound_type = getattr(keyword_data, "compound_type", None) 
+                core_type = getattr(keyword_data, "core_type", "")
+                object_type = compound_type or core_type
             
             # 2. Extract base metadata from description and step-back analysis
             base_metadata = self._extract_base_metadata(description, step_back_result)
@@ -158,6 +165,10 @@ class MetadataExtractor:
             base_metadata["object_type"] = object_type
             
             # 5. Perform category analysis
+            # Make sure object_type exists before performing category analysis
+            if 'object_type' not in base_metadata or not base_metadata['object_type']:
+                base_metadata['object_type'] = object_type  # Use the one from keywords
+                
             category_result = self.analyze_categories(description, base_metadata)
             if category_result:
                 base_metadata.update(category_result)
@@ -200,18 +211,61 @@ class MetadataExtractor:
         return keyword_data
 
     def _extract_base_metadata(self, description, step_back_result):
-        """Extract base metadata using LLM"""
+        """Extract base metadata using LLM with robust parsing"""
         try:
             prompt = self.extraction_prompt.format(
                 description=description,
                 step_back_analysis=step_back_result
             )
             response = self.llm.invoke(prompt)
-            clean_content = response.content.replace("```json", "").replace("```", "").strip()
-            return json.loads(clean_content)
+            content = response.content if hasattr(response, 'content') else str(response)
+            
+            # First try: look for JSON between code blocks
+            import re
+            json_pattern = r"```(?:json)?\s*([\s\S]*?)\s*```"
+            json_matches = re.findall(json_pattern, content)
+            
+            if json_matches:
+                for json_str in json_matches:
+                    try:
+                        return json.loads(json_str)
+                    except json.JSONDecodeError:
+                        continue
+            
+            # Second try: just clean the content and try to parse
+            clean_content = content.replace("```json", "").replace("```", "").strip()
+            try:
+                return json.loads(clean_content)
+            except json.JSONDecodeError:
+                pass
+            
+            # Third try: extract anything that looks like a JSON object
+            start = content.find('{')
+            end = content.rfind('}')
+            if start != -1 and end != -1 and end > start:
+                try:
+                    json_str = content[start:end+1]
+                    return json.loads(json_str)
+                except json.JSONDecodeError:
+                    pass
+            
+            # If we reach here, all parsing attempts failed
+            print("Could not extract valid JSON from the response")
+            return self._get_default_metadata()
+        
         except Exception as e:
             print(f"Error extracting base metadata: {e}")
-            return None
+            return self._get_default_metadata()
+            
+    def _get_default_metadata(self):
+        """Return default metadata when extraction fails"""
+        return {
+            "category": "unknown",
+            "complexity": "medium",
+            "techniques_used": [],
+            "style": "default",
+            "timestamp": datetime.now().isoformat()
+        }
 
     def _validate_and_normalize_metadata(self, metadata):
         """Ensure all required fields exist with correct types"""
@@ -268,90 +322,91 @@ class MetadataExtractor:
             timestamp=timestamp
         )
 
-    def analyze_categories(self, description, metadata=None):
-        """
-        Analyze categories for the given description and metadata.
-        This is the centralized method for category analysis.
-        """
+    def analyze_categories(self, description, base_metadata):
+        """Analyze the category of the model described"""
         try:
-            if metadata is None:
-                metadata = {'object_type': ''}
+            # Get the object_type from base_metadata or set a default
+            object_type = base_metadata.get('object_type', 'unknown')
             
-            # Prepare category info from standard categories
-            categories_info = BASIC_KNOWLEDGE.get("categories")
-            if not categories_info:
-                categories_info = "\n".join(
-                    f"- {cat}: {info['description']} (e.g., {', '.join(info['examples'])})"
-                    for cat, info in self.STANDARD_CATEGORIES.items()
-                )
+            # Prepare standardized categories and properties info
+            categories_info = json.dumps(self.STANDARD_CATEGORIES, indent=2)
+            properties_info = json.dumps(self.STANDARD_PROPERTIES, indent=2)
             
-            # Prepare properties info from standard properties
-            properties_info = BASIC_KNOWLEDGE.get("properties")
-            if not properties_info:
-                properties_info = "\n".join(
-                    f"- {prop}: {', '.join(values)}"
-                    for prop, values in self.STANDARD_PROPERTIES.items()
-                )
-            
-            # Format the prompt with categories and properties
-            prompt = CATEGORY_ANALYSIS_PROMPT.format(
-                object_type=metadata.get("object_type", ""),
+            # Prepare the prompt for category analysis
+            prompt = self.category_prompt.format(
+                object_type=object_type,
                 description=description,
                 categories_info=categories_info,
                 properties_info=properties_info
             )
             
-            # Get category analysis from LLM
+            # Get response from LLM
             response = self.llm.invoke(prompt)
-            content = response.content.strip()
+            content = response.content if hasattr(response, 'content') else str(response)
             
+            # Check if there's any content to parse
+            if not content or content.isspace():
+                print("Received empty response from category analysis")
+                return self._get_default_category()
+            
+            # First try: look for JSON between code blocks
+            import re
+            json_pattern = r"```(?:json)?\s*([\s\S]*?)\s*```"
+            json_matches = re.findall(json_pattern, content)
+            
+            if json_matches:
+                for json_str in json_matches:
+                    try:
+                        return json.loads(json_str)
+                    except json.JSONDecodeError:
+                        continue
+            
+            # Second try: clean the content and try to parse
+            clean_content = content.replace("```json", "").replace("```", "").strip()
             try:
-                # Clean up and parse JSON response
-                clean_content = content.replace("```json", "").replace("```", "").strip()
-                category_data = json.loads(clean_content)
-                
-                # Validate and clean the response if using standard categories
-                if hasattr(self, 'STANDARD_CATEGORIES'):
-                    cleaned_result = {
-                        "categories": [
-                            cat for cat in category_data.get("categories", [])
-                            if cat in self.STANDARD_CATEGORIES
-                        ],
-                        "properties": {
-                            prop: value
-                            for prop, value in category_data.get("properties", {}).items()
-                            if prop in self.STANDARD_PROPERTIES
-                            and value in self.STANDARD_PROPERTIES[prop]
-                        },
-                        "similar_objects": [
-                            obj for obj in category_data.get("similar_objects", [])
-                            if any(obj in cat_info["examples"]
-                                for cat_info in self.STANDARD_CATEGORIES.values())
-                        ]
-                    }
-                    
-                    # Ensure at least one category is assigned
-                    if not cleaned_result["categories"]:
-                        cleaned_result["categories"] = ["container"]  # Default to container for most 3D objects
-                    
-                    return cleaned_result
-                
-                return category_data
-            except json.JSONDecodeError as e:
-                print(f"Error parsing category analysis response: {e}")
-                return {
-                    "categories": ["other"],
-                    "properties": {},
-                    "similar_objects": []
-                }
-                
+                return json.loads(clean_content)
+            except json.JSONDecodeError:
+                pass
+            
+            # Third try: extract anything that looks like a JSON object
+            start = content.find('{')
+            end = content.rfind('}')
+            if start != -1 and end != -1 and end > start:
+                try:
+                    json_str = content[start:end+1]
+                    return json.loads(json_str)
+                except json.JSONDecodeError:
+                    pass
+            
+            # If we get here, no valid JSON was found
+            print("Error parsing category analysis response: No valid JSON found")
+            print(f"Raw response: {content[:200]}...") # Print first 200 chars for debugging
+            default_category = self._get_default_category()
+            # Ensure we preserve the original object_type from base_metadata
+            if 'object_type' in base_metadata:
+                default_category['object_type'] = base_metadata['object_type']
+            return default_category
+            
         except Exception as e:
-            print(f"Category analysis failed: {e}")
-            return {
-                "categories": ["other"],
-                "properties": {},
-                "similar_objects": []
-            }
+            print(f"Error parsing category analysis response: {e}")
+            default_category = self._get_default_category()
+            # Ensure we preserve the original object_type from base_metadata
+            if 'object_type' in base_metadata:
+                default_category['object_type'] = base_metadata['object_type']
+            return default_category
+        
+    def _get_default_category(self):
+        """Return default category data when analysis fails"""
+        return {
+            "categories": ["other"],
+            "properties": {
+                "style": "modern",
+                "complexity": "MEDIUM",
+                "printability": "moderate"
+            },
+            "similar_objects": [],
+            "object_type": "unknown"  # Make sure object_type is included
+        }
 
     def analyze_code_metadata(self, code: str) -> dict:
         """

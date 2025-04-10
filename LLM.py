@@ -13,13 +13,17 @@ import logging
 import json
 from pathlib import Path
 
+# Import our new caching manager
+from llm_cache import LLMCacheManager
+
 # Configure logging
 logger = logging.getLogger(__name__)
 
+# Initialize the cache manager (singleton instance)
+llm_cache_manager = LLMCacheManager(cache_type="memory")
 
 # Load environment variables
 load_dotenv()
-
 # Model Definitions
 class ModelDefinitions:
     """Centralized model definitions"""
@@ -103,9 +107,18 @@ class OllamaManager:
 class LLMProvider:
     """Enhanced LLM provider management"""
     logger.info("Working on LLMProvider Class")
-    def __init__(self):
+    def __init__(self, enable_cache: bool = True, cache_type: Literal["memory", "sqlite", "none"] = "memory"):
         logger.info("Initializing LLM Provider...")
         self.models = ModelDefinitions()
+        
+        # Set up caching configuration
+        if enable_cache:
+            global llm_cache_manager
+            llm_cache_manager.change_cache_type(cache_type)
+            logger.info(f"LLM caching enabled with {cache_type} cache")
+        else:
+            llm_cache_manager.change_cache_type("none")
+            logger.info("LLM caching disabled")
     
     @staticmethod
     def get_llm(
@@ -113,7 +126,8 @@ class LLMProvider:
         temperature: float = 0.7,
         max_retries: int = 3,
         model: Optional[str] = None,
-        purpose: Optional[str] = None
+        purpose: Optional[str] = None,
+        cache_seed: Optional[int] = None  # Keep this parameter
     ):
         """
         Get LLM instance based on provider and purpose
@@ -124,6 +138,7 @@ class LLMProvider:
             max_retries: Maximum number of retries on failure
             model: Optional specific model to use (overrides default)
             purpose: Optional specific purpose (e.g., 'validation', 'keyword_extraction')
+            cache_seed: Optional seed for cache key generation (for deterministic caching)
         
         Returns:
             LLM instance
@@ -152,24 +167,46 @@ class LLMProvider:
                     anthropic_base_url = os.getenv("ANTHROPIC_BASE_URL", "https://api2.qyfxw.cn/v1")
                     print(f"Using anthropic model: {model}")
                     print(f"Using base url: {anthropic_base_url}")
+                    
+                    # Create kwargs dict with caching parameters
+                    model_kwargs = {}
+                    if cache_seed is not None:
+                        # Only add cache_seed to the langchain kwargs, not to the API call
+                        langchain_kwargs = {"cache_seed": cache_seed}
+                    else:
+                        langchain_kwargs = {}
+                    
                     return ChatOpenAI(
                         model=model,
                         temperature=temperature,
                         openai_api_key=api_key,
                         base_url=anthropic_base_url,
-                        streaming=True 
+                        streaming=True,
+                        model_kwargs=model_kwargs,  # API-level kwargs
+                        **langchain_kwargs  # LangChain-level kwargs including cache_seed
                     )
                     
                 elif provider == "openai":
+                    # Similar changes for OpenAI...
                     openai_base_url = os.getenv("OPENAI_BASE_URL", "https://api2.qyfxw.cn/v1")
                     print(f"Using openai model: {model}")
                     print(f"Using base url: {openai_base_url}")
+                    
+                    # Create kwargs dict with caching parameters
+                    model_kwargs = {}
+                    if cache_seed is not None:
+                        langchain_kwargs = {"cache_seed": cache_seed}
+                    else:
+                        langchain_kwargs = {}
+                    
                     return ChatOpenAI(
                         model=model,
                         temperature=1.0,  # O1-Mini only supports temperature=1.0
                         openai_api_key=api_key,
                         base_url=openai_base_url,
-                        streaming=True
+                        streaming=True,
+                        model_kwargs=model_kwargs,
+                        **langchain_kwargs
                     )
                     
                 elif provider == "gemma":
@@ -182,6 +219,7 @@ class LLMProvider:
                         seed=None,
                         system=None,  # System prompt should be passed separately
                         streaming=True
+                        # Note: ChatOllama doesn't support cache_seed directly
                     )
                     
                 elif provider == "deepseek":
@@ -194,6 +232,7 @@ class LLMProvider:
                         seed=None,
                         system=None,  # System prompt should be passed separately
                         streaming=True
+                        # Note: ChatOllama doesn't support cache_seed directly
                     )
                 
                 else:
@@ -217,4 +256,11 @@ class LLMProvider:
                         seed=None,
                         system=None,
                         streaming=True
-                    ) 
+                    )
+
+    @staticmethod
+    def clear_cache():
+        """Clear the LLM cache"""
+        global llm_cache_manager
+        llm_cache_manager.clear_cache()
+        logger.info("LLM cache cleared")

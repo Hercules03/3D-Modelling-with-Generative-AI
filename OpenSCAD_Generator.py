@@ -1,19 +1,22 @@
 from prompts import OPENSCAD_GNERATOR_PROMPT_TEMPLATE, BASIC_KNOWLEDGE
 from constant import *
-from KeywordExtractor import KeywordExtractor
 from LLM import LLMProvider
-from scad_knowledge_base import SCADKnowledgeBase
 from step_back_analyzer import StepBackAnalyzer
-from langchain.prompts import ChatPromptTemplate
+from parameter_tuner import ParameterTuner, identify_parameters_from_examples, get_user_parameter_input
 import datetime
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Literal, Union
 import logging
 import traceback
+import os
+
+from session_integration import SessionIntegration
+from model_exporter import ModelExporter
+from models import GenerationResult, StepBackAnalysis, KeywordData, ExportResult
 
 logger = logging.getLogger(__name__)
 
 class OpenSCADGenerator:
-    def __init__(self, llm_provider="anthropic", knowledge_base=None, keyword_extractor=None, metadata_extractor=None, conversation_logger=None):
+    def __init__(self, llm_provider="anthropic", knowledge_base=None, keyword_extractor=None, metadata_extractor=None, conversation_logger=None, session_integration=None, output_dir="output"):
         """Initialize the OpenSCAD generator"""
         print("\n=== Initializing OpenSCAD Generator ===")
         logger.info("Initializing OpenSCAD Generator...")
@@ -27,7 +30,7 @@ class OpenSCADGenerator:
         print(f"- Model: {self.model_name}")
         logger.info(f"- Provider: {self.llm_provider}")
         logger.info(f"- Model: {self.model_name}")
-    
+
         # Initialize knowledge base and logger
         print("\nSetting up components...")
         logger.info("Setting up components...")
@@ -36,8 +39,24 @@ class OpenSCADGenerator:
         self.keyword_extractor = keyword_extractor
         self.metadata_extractor = metadata_extractor
         
+        # Initialize session integration
+        self.session_integration = session_integration
+        
+        # Initialize model exporter
+        self.output_dir = output_dir
+        self.model_exporter = ModelExporter(output_dir=output_dir)
+        
         # Initialize step-back analyzer
+        print("- Initializing step-back analyzer...")
+        logger.info("Initializing step-back analyzer...")
         self.step_back_analyzer = StepBackAnalyzer(llm=self.llm, conversation_logger=self.logger)
+        print("- Step-back analyzer initialized")
+        logger.info("Step-back analyzer initialized")
+        
+        # Initialize parameter tuner
+        self.parameter_tuner = ParameterTuner(llm=self.llm)
+        print("- Parameter tuner initialized")
+        logger.info("- Parameter tuner initialized")
         
         # Load prompts
         print("\nLoading prompts...")
@@ -170,7 +189,7 @@ class OpenSCADGenerator:
             return_metadata=True
         )
 
-    def prepare_generation_inputs(self, description: str, examples: List[Dict], step_back_result: Dict = None) -> Dict:
+    def prepare_generation_inputs(self, description: str, examples: List[Dict], step_back_result: Dict = None, parameters: Dict = None) -> Dict:
         """
         Prepare inputs for the code generation prompt.
         
@@ -183,6 +202,9 @@ class OpenSCADGenerator:
             Dictionary containing all inputs needed for the generation prompt
         """
         try:
+            # Import template utilities
+            from scad_templates import select_template_for_object, generate_template_params, apply_template
+            
             # Format step-back analysis if available
             step_back_text = ""
             if step_back_result:
@@ -216,19 +238,65 @@ class OpenSCADGenerator:
                 """
                 examples_text.append(example_text)
             
+            # Get object type and modifiers from keyword extraction
+            object_type = ""
+            modifiers = []
+            if hasattr(self, 'keyword_extractor') and hasattr(self.keyword_extractor, 'last_extracted_data'):
+                object_type = self.keyword_extractor.last_extracted_data.get('core_type', '')
+                modifiers = self.keyword_extractor.last_extracted_data.get('modifiers', [])
+            
+            # Select appropriate template based on object characteristics
+            template_name = select_template_for_object(object_type, modifiers, step_back_result)
+            
+            # Generate template parameters
+            template_params = generate_template_params(object_type, modifiers, step_back_result)
+            
+            # Apply the template to get example code
+            template_code = apply_template(template_name, template_params)
+            
+            # Add template information to the inputs
+            template_info = f"""
+            SUGGESTED TEMPLATE:
+            The object appears to be a "{template_name}" type. Here's a suggested structure:
+            
+            ```scad
+            {template_code}
+            ```
+            
+            Feel free to use this template as a starting point and modify it as needed.
+            """
+            
+            # Add parameter information if provided
+            parameter_info = ""
+            if parameters:
+                parameter_info = "SUGGESTED PARAMETERS:\n"
+                for name, info in parameters.items():
+                    value = info.get("value")
+                    description = info.get("description", "")
+                    # Format based on type
+                    if isinstance(value, list):
+                        # Vector format
+                        value_str = f"[{', '.join(str(x) for x in value)}]"
+                    elif isinstance(value, bool):
+                        # Boolean format
+                        value_str = "true" if value else "false"
+                    else:
+                        value_str = str(value)
+                    
+                    parameter_info += f"{name} = {value_str}; // {description}\n"
+            
             # Prepare the complete inputs
             inputs = {
                 "basic_knowledge": BASIC_KNOWLEDGE,
                 "examples": examples,
                 "request": description,
-                "step_back_analysis": step_back_text.strip() if step_back_text else ""
+                "step_back_analysis": step_back_text.strip() if step_back_text else "",
+                "template_suggestion": template_info,
+                "parameter_suggestions": parameter_info
             }
             
             # Log the complete analysis and examples
-            """
-            print("\nStep-back Analysis:")
-            print(step_back_text.strip() if step_back_text else "No step-back analysis available")
-            """
+            print("\nSelected Template: " + template_name)
             
             print("\nRetrieved Examples:")
             if examples_text:
@@ -245,100 +313,281 @@ class OpenSCADGenerator:
                 "basic_knowledge": BASIC_KNOWLEDGE,
                 "examples": [],
                 "request": description,
-                "step_back_analysis": ""
+                "step_back_analysis": "",
+                "template_suggestion": ""
             }
 
-    def generate_scad_code(self, description: str, examples: list, step_back_result: dict) -> Optional[dict]:
+    def generate_scad_code(self, description: str, examples: list, step_back_result: dict, parameters: dict = None) -> Optional[dict]:
         """Generate OpenSCAD code using the prepared inputs.
         
         Args:
             description: The description to generate code for
             examples: List of similar examples
             step_back_result: The step-back analysis results
+            parameters: Dictionary of parameters to use
             
         Returns:
             Dictionary containing success status and generated code/error
         """
-        # Prepare the prompt inputs
+        # Import the graph-based code generation function
+        from graph_state_tools import create_generate_scad_code_function
+        
+        # First prepare all the inputs as we normally would
         inputs = self.prepare_generation_inputs(
             description=description,
             examples=examples,
-            step_back_result=step_back_result
+            step_back_result=step_back_result,
+            parameters=parameters
         )
         
-        # Generate the prompt and log it
-        prompt_value = self.main_prompt.format(**inputs)
+        # Create a minimal state object with all needed info
+        state = {
+            "input_text": description,
+            "step_back_result": step_back_result or {},
+            "parameters": parameters or {},
+            "examples": examples or [],
+            "prompt_inputs": inputs
+        }
         
-        # Log SCAD generation query with full prompt
-        self.write_debug(
-            "=== SCAD CODE GENERATION ===\n",
-            "Query:\n",
-            f"Description: {description}\n",
-            f"Number of Examples Used: {len(examples)}\n",
-            "Step-back Analysis Used: Yes\n\n",
-            "Full Prompt Sent to LLM:\n",
-            f"{prompt_value}\n\n"
-        )
-        
-        # Get response from the LLM
-        print("Generating OpenSCAD code...")
+        print("Generating OpenSCAD code using graph-based system...")
         print("Thinking...", end="", flush=True)
         
-        # Get streaming response
-        content = ""
-        for chunk in self.llm.stream(prompt_value):
-            if hasattr(chunk, 'content'):
-                chunk_content = chunk.content
+        try:
+            # Create the code generation function from graph_state_tools
+            generate_code_fn = create_generate_scad_code_function(self.llm, None)
+            
+            # Call the code generation function with our state
+            result = generate_code_fn(state)
+            
+            print("\n")  # New line after progress dots
+            
+            # Extract the result and format it as expected by the rest of the system
+            if "generated_code" in result:
+                if result["generated_code"].get("success", False):
+                    success_result = GenerationResult(
+                        success=True,
+                        code=result["generated_code"]["code"],
+                        prompt=inputs.get("prompt_value", "")
+                    )
+                    return success_result.model_dump()
+                else:
+                    error_result = GenerationResult(
+                        success=False,
+                        error=result["generated_code"].get("error", "Generation failed")
+                    )
+                    return error_result.model_dump()
+            elif isinstance(result, dict) and "code" in result:
+                # Handle simpler result format
+                success_result = GenerationResult(
+                    success=True,
+                    code=result["code"],
+                    prompt=inputs.get("prompt_value", "")
+                )
+                return success_result.model_dump()
             else:
-                chunk_content = str(chunk)
-            content += chunk_content
-            print(".", end="", flush=True)
+                # Fallback to error
+                error_result = GenerationResult(
+                    success=False,
+                    error="Graph-based code generation failed with unexpected result format"
+                )
+                return error_result.model_dump()
+                
+        except Exception as e:
+            error_msg = f"Error in graph-based code generation: {str(e)}"
+            print(f"\n{error_msg}")
+            error_result = GenerationResult(
+                success=False,
+                error=error_msg
+            )
+            return error_result.model_dump()
+
+    def export_model(self, scad_code, format="stl", filename="model", resolution=100, additional_params=None):
+        """Export SCAD code to different formats using ModelExporter
         
-        print("\n")  # New line after progress dots
+        Args:
+            scad_code: OpenSCAD code to export
+            format: Format to export to (stl, off, amf, 3mf, csg, dxf, svg, png)
+            filename: Name for the output file (without extension)
+            resolution: Resolution for curves ($fn value)
+            additional_params: Additional parameters to pass to OpenSCAD
+            
+        Returns:
+            ExportResult object with export details
+        """
+        logger.info(f"Exporting model to {format} format with resolution {resolution}")
         
-        # Log SCAD generation response
-        self.write_debug(
-            "Response:\n",
-            f"{content}\n\n",
-            "=" * 50 + "\n\n"
-        )
+        try:
+            # Call the model exporter
+            output_path = self.model_exporter.export_model(
+                scad_code=scad_code,
+                filename=filename,
+                export_format=format,
+                resolution=resolution,
+                additional_params=additional_params
+            )
+            
+            if output_path:
+                # Create successful result
+                result = ExportResult(
+                    success=True,
+                    format=format,
+                    file_path=output_path,
+                    file_size=os.path.getsize(output_path) if os.path.exists(output_path) else None
+                )
+                logger.info(f"Successfully exported model to {output_path}")
+                return result
+            else:
+                # Create error result
+                result = ExportResult(
+                    success=False,
+                    format=format,
+                    error="Export failed"
+                )
+                logger.error(f"Failed to export model to {format} format")
+                return result
+                
+        except Exception as e:
+            error_msg = f"Error exporting model: {str(e)}"
+            logger.error(error_msg)
+            return ExportResult(
+                success=False,
+                format=format,
+                error=error_msg
+            )
+    
+    def generate_model_preview(self, scad_code: str, filename: str = "preview", 
+                         resolution: int = 100, camera_params: str = "0,0,0,55,0,25,140", 
+                         width: int = 800, height: int = 600) -> Optional[str]:
+        """Generate a preview image of the model
         
-        # Try to extract code with different tag variations
-        code_tags = [
-            ('<code>', '</code>'),
-            ('```scad', '```'),
-            ('```openscad', '```'),
-            ('```', '```')
-        ]
+        Args:
+            scad_code (str): The OpenSCAD code to render
+            filename (str): Base name for the output file (without extension)
+            resolution (int): Resolution for curves ($fn value)
+            camera_params (str): Camera position for the render
+            width (int): Image width in pixels
+            height (int): Image height in pixels
+            
+        Returns:
+            Optional[str]: Path to the generated preview image or None if failed
+        """
+        try:
+            # Log that we're generating a preview
+            self.write_debug(
+                "=== GENERATING MODEL PREVIEW ===\n",
+                f"Filename: {filename}.png\n",
+                f"Resolution: {resolution}\n",
+                f"Camera parameters: {camera_params}\n",
+                f"Image size: {width}x{height}\n",
+                "=" * 50 + "\n\n"
+            )
+            
+            # Use the model exporter to generate the preview
+            preview_path = self.model_exporter.generate_preview(
+                scad_code=scad_code,
+                filename=filename,
+                resolution=resolution,
+                camera_params=camera_params,
+                width=width,
+                height=height
+            )
+            
+            if preview_path:
+                self.write_debug(
+                    "Preview generated successfully: " + preview_path + "\n\n"
+                )
+            else:
+                self.write_debug(
+                    "Failed to generate preview\n\n"
+                )
+                
+            return preview_path
+        except Exception as e:
+            error_msg = f"Error generating model preview: {str(e)}"
+            print(f"\n{error_msg}")
+            self.write_debug(
+                "=== PREVIEW GENERATION ERROR ===\n",
+                f"Error: {error_msg}\n",
+                "=" * 50 + "\n\n"
+            )
+            return None
+    
+    def get_preview_settings(self):
+        """Get user input for preview settings.
         
-        scad_code = None
-        for start_tag, end_tag in code_tags:
-            if start_tag in content and end_tag in content:
-                code_start = content.find(start_tag) + len(start_tag)
-                code_end = content.find(end_tag, code_start)
-                if code_end > code_start:
-                    scad_code = content[code_start:code_end].strip()
-                    break
+        Returns:
+            dict: Preview settings including resolution, camera parameters, and image dimensions
+        """
+        print("\nPreview Settings:")
+        print("-" * 30)
         
-        if not scad_code:
-            return {
-                'success': False,
-                'error': "No code section found in response"
-            }
+        # Get resolution
+        resolution_input = input("Enter resolution value ($fn) [default: 100]: ").strip()
+        resolution = int(resolution_input) if resolution_input.isdigit() else 100
         
-        # Add generated code to debug log
-        self.write_debug(
-            "=== GENERATED SCAD CODE ===\n",
-            f"{scad_code}\n",
-            "=" * 50 + "\n\n"
-        )
+        # Ask if user wants to use custom camera settings
+        custom_camera = input("Do you want to use custom camera settings? (y/n) [default: n]: ").lower().strip() == 'y'
+        
+        if custom_camera:
+            print("\nCamera settings are in format: translateX,translateY,translateZ,rotateX,rotateY,rotateZ,distance")
+            print("Default is: 0,0,0,55,0,25,140")
+            
+            camera_input = input("Enter camera parameters: ").strip()
+            # Validate camera input format (should be 7 comma-separated numbers)
+            if camera_input and len(camera_input.split(',')) == 7 and all(part.replace('-', '', 1).replace('.', '', 1).isdigit() for part in camera_input.split(',')):
+                camera_params = camera_input
+            else:
+                print("Invalid camera parameters. Using default settings.")
+                camera_params = "0,0,0,55,0,25,140"
+        else:
+            camera_params = "0,0,0,55,0,25,140"
+        
+        # Get image dimensions
+        custom_dimensions = input("Do you want to use custom image dimensions? (y/n) [default: n]: ").lower().strip() == 'y'
+        
+        if custom_dimensions:
+            width_input = input("Enter image width (pixels) [default: 800]: ").strip()
+            width = int(width_input) if width_input.isdigit() and int(width_input) > 0 else 800
+            
+            height_input = input("Enter image height (pixels) [default: 600]: ").strip()
+            height = int(height_input) if height_input.isdigit() and int(height_input) > 0 else 600
+        else:
+            width = 800
+            height = 600
         
         return {
-            'success': True,
-            'code': scad_code,
-            'prompt': prompt_value
+            "resolution": resolution,
+            "camera_params": camera_params,
+            "width": width,
+            "height": height
         }
 
+    def export_to_multiple_formats(self, scad_code, formats=["stl"], filename="model", resolution=100, additional_params=None):
+        """Export SCAD code to multiple formats
+        
+        Args:
+            scad_code: OpenSCAD code to export
+            formats: List of formats to export to
+            filename: Base name for output files
+            resolution: Resolution for curves
+            additional_params: Additional parameters for OpenSCAD
+            
+        Returns:
+            Dictionary mapping formats to ExportResult objects
+        """
+        results = {}
+        
+        for fmt in formats:
+            results[fmt] = self.export_model(
+                scad_code=scad_code,
+                format=fmt,
+                filename=filename,
+                resolution=resolution,
+                additional_params=additional_params
+            )
+            
+        return results
+    
     def generate_model(self, description):
         """Generate OpenSCAD code for the given description and save it to a file."""
         max_retries = 3
@@ -386,19 +635,22 @@ class OpenSCADGenerator:
                 print("STEP 3: FINDING SIMILAR EXAMPLES")
                 print("="*50)
                 
-                examples = []
-                extracted_metadata = None
-                if retry_count == 0:  # Only get examples on first try
-                    examples, extracted_metadata = self.retrieve_similar_examples(
-                        description, step_back_result, keyword_data
-                    )
+                examples, extracted_metadata = self.retrieve_similar_examples(
+                    description, step_back_result, keyword_data
+                )
+                
+                # Step 3.5: Parameter customization (now handled by the graph, but keep step for completeness)
+                print("\n" + "="*50)
+                print("STEP 3.5: PARAMETER CUSTOMIZATION")
+                print("="*50)
+                print("Parameter identification is handled by the graph system...")
                 
                 # Step 4: Generate OpenSCAD code
                 print("\n" + "="*50)
                 print("STEP 4: GENERATING SCAD CODE")
                 print("="*50)
                 
-                result = self.generate_scad_code(description, examples, step_back_result)
+                result = self.generate_scad_code(description, examples, step_back_result, {})
                 if not result['success']:
                     error_msg = result['error']
                     print(f"\nError: {error_msg}")
@@ -407,6 +659,21 @@ class OpenSCADGenerator:
                         f"Error: {error_msg}\n",
                         "=" * 50 + "\n\n"
                     )
+                    
+                    # Provide more detailed feedback and suggestions
+                    print("\nSuggestions to improve your request:")
+                    print("1. Be more specific about dimensions, shape, and features")
+                    print("2. Specify the purpose or function of the object")
+                    print("3. Mention any similar real-world objects it should resemble")
+                    print("4. Include details about materials or textures if relevant")
+                    print("5. Describe how different parts connect or interact")
+                    
+                    # Ask if user wants to try again with a more detailed description
+                    retry_with_details = input("\nWould you like to try again with a more detailed description? (y/n): ").lower().strip()
+                    if retry_with_details == 'y':
+                        new_description = input("\nPlease provide a more detailed description: ")
+                        # Recursively call generate_model with the new description
+                        return self.generate_model(new_description)
                     
                     # Increment retry counter and continue if not max retries
                     retry_count += 1
@@ -433,6 +700,91 @@ class OpenSCADGenerator:
                 print(scad_code)
                 print("-" * 40)
                 
+                # Ask user if they want to preview the model
+                preview_model = input("\nWould you like to generate a preview of this model? (y/n): ").lower().strip()
+                
+                if preview_model == 'y':
+                    # Get custom preview settings
+                    preview_settings = self.get_preview_settings()
+                    
+                    print("\nGenerating preview...")
+                    preview_path = self.generate_model_preview(
+                        scad_code=scad_code,
+                        filename="preview",
+                        resolution=preview_settings["resolution"],
+                        camera_params=preview_settings["camera_params"],
+                        width=preview_settings["width"],
+                        height=preview_settings["height"]
+                    )
+                    
+                    if preview_path and os.path.exists(preview_path):
+                        print(f"\nPreview generated successfully: {preview_path}")
+                        
+                        # Try to open the preview image with the default viewer
+                        try:
+                            if os.name == 'posix':  # macOS or Linux
+                                if os.path.exists('/usr/bin/open'):  # macOS
+                                    subprocess.run(["open", preview_path])
+                                else:  # Linux
+                                    subprocess.run(["xdg-open", preview_path])
+                            elif os.name == 'nt':  # Windows
+                                os.startfile(preview_path)
+                            print("\nOpened preview in default image viewer.")
+                        except Exception as e:
+                            print(f"\nCould not automatically open preview: {e}")
+                            print(f"Please open the preview image located at: {preview_path}")
+                    else:
+                        print("\nFailed to generate preview. Please check the logs for details.")
+                
+                # Ask user if they want to tune the parameters
+                tune_params = input("\nWould you like to tune the parameters for this model? (y/n): ").lower().strip()
+                
+                if tune_params == 'y':
+                    print("\nTuning parameters...")
+                    tuning_result = self.parameter_tuner.tune_parameters(scad_code, description)
+                    
+                    if tuning_result.get("success") and tuning_result.get("adjustments"):
+                        scad_code = tuning_result.get("updated_code")
+                        print("\nParameters tuned successfully!")
+                        
+                        # Save updated code to file
+                        with open("output.scad", "w") as f:
+                            f.write(scad_code)
+                        
+                        print("\nUpdated OpenSCAD code has been saved to 'output.scad'")
+                    else:
+                        print("\nNo parameter changes were applied.")
+                
+                # Ask user if they want to export this model to other formats
+                export_model = input("\nWould you like to export this model to other formats? (y/n): ").lower().strip()
+                exported_files = None
+                
+                if export_model == 'y':
+                    print("\nAvailable export formats: stl, off, amf, 3mf, csg, dxf, svg, png")
+                    formats_input = input("Enter comma-separated formats to export (default: stl): ").strip()
+                    formats = [f.strip() for f in formats_input.split(',')] if formats_input else ["stl"]
+                    
+                    resolution = input("Enter resolution value (default: 100): ").strip()
+                    resolution = int(resolution) if resolution.isdigit() else 100
+                    
+                    filename = input("Enter base filename (default: model): ").strip() or "model"
+                    
+                    print("\nExporting model to selected formats...")
+                    exported_files = self.export_to_multiple_formats(
+                        scad_code=scad_code,
+                        formats=formats,
+                        filename=filename,
+                        resolution=resolution
+                    )
+                    
+                    # Print export results
+                    print("\nExport Results:")
+                    for fmt, result in exported_files.items():
+                        if result.success:
+                            print(f"  - {fmt}: Success! Saved to {result.file_path}")
+                        else:
+                            print(f"  - {fmt}: Failed - {result.error}")
+                
                 # Ask user if they want to add this to the knowledge base
                 add_to_kb = input("\nWould you like to add this example to the knowledge base? (y/n): ").lower().strip()
                 
@@ -457,12 +809,23 @@ class OpenSCADGenerator:
                 else:
                     print("Example not saved. Thank you for the feedback!")
                 
+                if hasattr(self, 'session_integration'):
+                    metadata = {
+                        "complexity": extracted_metadata.get("complexity", "medium") if extracted_metadata else "medium",
+                        "category": extracted_metadata.get("category", "unknown") if extracted_metadata else "unknown",
+                        "techniques": extracted_metadata.get("techniques_used", []) if extracted_metadata else [],
+                        "added_to_kb": add_to_kb == 'y'
+                    }
+                    self.session_integration.record_generation(description, scad_code, metadata)
+                
                 # Save complete debug log
                 self.save_debug_log()
         
                 return {
                     'success': True,
-                    'code': scad_code
+                    'code': scad_code,
+                    'exported_files': {fmt: result.model_dump() for fmt, result in exported_files.items()} if exported_files else None,
+                    'parameters_tuned': tune_params == 'y'
                 }
             
             except Exception as e:

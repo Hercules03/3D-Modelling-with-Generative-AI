@@ -46,7 +46,7 @@ class SCADKnowledgeBase:
             logger.info("ChromaDB client initialized")
             
             # Initialize embedding function
-            self.embedding_function = SentenceTransformerEmbeddingFunction()
+            self.embedding_function = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
             print("- Sentence transformer embedding function initialized")
             logger.info("Sentence transformer embedding function initialized")
             # Get or create collection
@@ -810,8 +810,8 @@ class SCADKnowledgeBase:
             return None
 
     def get_examples(self, description: str, step_back_result: Dict = None, keyword_data: Dict = None, 
-               similarity_threshold: float = 0.6, return_metadata: bool = False, max_results: int = 5,
-               technique_filters: List[str] = None) -> List[Dict]:
+           similarity_threshold: float = 0.6, return_metadata: bool = False, max_results: int = 5,
+           technique_filters: List[str] = None) -> List[Dict]:
         """
         Get relevant examples based on description, step-back analysis, and keyword data with technique filtering.
         
@@ -834,6 +834,17 @@ class SCADKnowledgeBase:
             if technique_filters:
                 print(f"Technique Filters: {', '.join(technique_filters)}")
             print("="*50)
+            
+            is_technical = self.query_is_technical(description)
+            if is_technical:
+                print("Using technical query embedding model: all-mpnet-base-v2")
+                embedding_function = SentenceTransformerEmbeddingFunction(model_name="all-mpnet-base-v2")
+            else:
+                print("Using general query embedding model: all-MiniLM-L6-v2")
+                embedding_function = SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+            
+            # Update the collection's embedding function for this query
+            self.collection.embedding_function = embedding_function
             
             # Extract metadata from query
             print("\nExtracting metadata from query...")
@@ -1465,7 +1476,7 @@ class SCADKnowledgeBase:
                         else:
                             print("\nInvalid selection.")
             
-            return True
+                return True
             
         except Exception as e:
             logger.error(f"Error in delete_knowledge: {str(e)}")
@@ -1473,3 +1484,34 @@ class SCADKnowledgeBase:
             print(f"\nError in delete_knowledge: {str(e)}")
             return False 
         
+    def query_is_technical(self, description: str) -> bool:
+        """
+        Determine if a query is technical in nature.
+        
+        Args:
+            description: The query description text
+            
+        Returns:
+            bool: True if the query is technical, False otherwise
+        """
+        # Technical keywords that suggest a complex or technical query
+        technical_keywords = [
+            'parametric', 'precise', 'engineering', 'mechanical', 'measurements',
+            'tolerance', 'technical', 'specification', 'dimension', 'clearance',
+            'assembly', 'fitting', 'joint', 'complex', 'intricate', 'detailed',
+            'module', 'function', 'algorithm', 'mathematical', 'geometry',
+            'precision', 'accuracy', 'exact', 'specific', 'accurate'
+        ]
+        
+        # Check for presence of numbers (dimensions, measurements)
+        has_numbers = any(char.isdigit() for char in description)
+        
+        # Check for technical terms
+        has_technical_terms = any(keyword in description.lower() for keyword in technical_keywords)
+        
+        # Check for complex syntax indicators like specific measurements
+        has_measurements = any(unit in description.lower() for unit in ['mm', 'cm', 'inch', 'meter', 'ft', 'degree', 'rad'])
+        
+        # Return True if any technical indicators are present
+        return has_numbers or has_technical_terms or has_measurements
+            

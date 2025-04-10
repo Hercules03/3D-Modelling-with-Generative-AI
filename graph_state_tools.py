@@ -1,9 +1,9 @@
 from typing_extensions import TypedDict
-from typing import Annotated, Optional, Dict, Any, List
+from typing import Annotated, Optional, Dict, Any, List, Literal
 from langgraph.graph.message import add_messages
 from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_core.messages import HumanMessage, SystemMessage
-from prompts import KEYWORD_EXTRACTOR_PROMPT, KEYWORD_EXTRACTOR_SYSTEM_PROMPT, WEB_CONTENT_GRADER_PROMPT, STEP_BACK_HALLUCINATION_CHECKER_SYSTEM_PROMPT, STEP_BACK_GRADER_PROMPT, QUERY_ANALYSIS_PROMPT, BASIC_KNOWLEDGE, OPENSCAD_GNERATOR_PROMPT_TEMPLATE
+from prompts import *
 from langchain_ollama import ChatOllama
 from langchain_core.prompts import ChatPromptTemplate
 import os
@@ -11,9 +11,11 @@ import json
 from myAPI import TAVILY_API_KEY
 from step_back_analyzer import StepBackAnalyzer
 from conversation_logger import ConversationLogger
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 import re
 
+# Import our new Pydantic models
+from models import KeywordData, StepBackAnalysis, QueryAnalysis, GenerationResult, StateData
 # Tavily API Configuration
 os.environ["TAVILY_API_KEY"] = TAVILY_API_KEY
 
@@ -33,49 +35,94 @@ class State(TypedDict):
     similar_examples: Optional[Dict[str, Any]]
     retrieved_metadata: Optional[Dict[str, Any]]
     generated_code: Optional[Dict[str, Any]]
-    
-    
+
 class GradeWebContent(BaseModel):
     """Binary score for relevance check on retrieved web content."""
     binary_score: str = Field(
         description="Web content is relevant to the question, 'yes' or 'no'"
     )
     
+    @field_validator('binary_score')
+    def validate_binary_score(cls, v):
+        v = v.lower().strip()
+        if v not in ['yes', 'no']:
+            raise ValueError("binary_score must be 'yes' or 'no'")
+        return v
+    
 class GradeHallucinations(BaseModel):
     """Binary score for hallucination present in step back analysis."""
-    binary_score: str = Field(
+    binary_score: Literal["yes", "no"] = Field(
         description="Analysis is grounded in the facts, 'yes' or 'no'"
     )
+    
+    @field_validator('binary_score')
+    def validate_binary_score(cls, v):
+        if isinstance(v, str):
+            v = v.lower().strip()
+            if v not in ['yes', 'no']:
+                raise ValueError("binary_score must be 'yes' or 'no'")
+        return v
+
     
 class GradeStepBackAnalysis(BaseModel):
     """Rating scale to assess if step back analysis properly addresses the 3D modeling task."""
     rating: int = Field(
-        description="Quality rating of the analysis on a scale of 0-10 (0=poor, 10=excellent)"
+        description="Quality rating of the analysis on a scale of 0-10 (0=poor, 10=excellent)",
+        ge=0,  # greater than or equal to 0
+        le=10  # less than or equal to 10
     )
     feedback: str = Field(
-        description="Feedback on how to improve the analysis"
+        description="Feedback on how to improve the analysis",
+        min_length=10  # Ensure feedback is not too short
     )
     
+    @field_validator('rating')
+    def validate_rating(cls, v):
+        if not isinstance(v, int):
+            try:
+                v = int(v)
+            except (ValueError, TypeError):
+                raise ValueError("Rating must be an integer between 0 and 10")
+        return v
 class SCADQueryAnalysis(BaseModel):
     """Analysis of a query for finding similar SCAD code examples."""
-    search_strategy: str = Field(
+    search_strategy: Literal["semantic", "keyword", "hybrid"] = Field(
         description="Best strategy to use: 'semantic' (similar meaning), 'keyword' (exact matches), or 'hybrid' (both)"
     )
     enhanced_query: str = Field(
-        description="Reformulated query optimized for finding similar SCAD code examples"
+        description="Reformulated query optimized for finding similar SCAD code examples",
+        min_length=3
     )
     important_attributes: List[str] = Field(
-        description="List of attributes relevant for filtering SCAD code (dimensions, mechanics, etc.)"
+        description="List of attributes relevant for filtering SCAD code (dimensions, mechanics, etc.)",
+        default_factory=list
     )
     style_preference: str = Field(
         description="SCAD coding style preference (e.g., 'Modular', 'Parametric', 'Functional', etc.)"
     )
-    complexity: str = Field(
+    complexity: Literal["SIMPLE", "MEDIUM", "COMPLEX"] = Field(
         description="Complexity of the required SCAD code (SIMPLE, MEDIUM, COMPLEX)"
     )
     code_similarities: List[str] = Field(
-        description="Aspects of SCAD code implementation to match (module structure, algorithms, etc.)"
+        description="Aspects of SCAD code implementation to match (module structure, algorithms, etc.)",
+        default_factory=list
     )
+    
+    @field_validator('search_strategy')
+    def validate_search_strategy(cls, v):
+        if isinstance(v, str):
+            v = v.lower().strip()
+            if v not in ['semantic', 'keyword', 'hybrid']:
+                raise ValueError("search_strategy must be 'semantic', 'keyword', or 'hybrid'")
+        return v
+        
+    @field_validator('complexity')
+    def validate_complexity(cls, v):
+        if isinstance(v, str):
+            v = v.upper().strip()
+            if v not in ['SIMPLE', 'MEDIUM', 'COMPLEX']:
+                raise ValueError("complexity must be 'SIMPLE', 'MEDIUM', or 'COMPLEX'")
+        return v
 
 
 # Define the node to process user input
@@ -657,56 +704,56 @@ def step_back_quality_router(state: State):
     is_good_quality = analysis_grade.get("is_good_quality", False)
     rating = analysis_grade.get("rating", 0)
     
-    print(f"Quality router decision: {'Finish' if is_good_quality else 'Redo step back analysis'} (Rating: {rating}/10, Threshold: 7)")
+    # Add a retry counter to the state
+    retry_count = state.get("debug_info", {}).get("step_back_retry_count", 0)
+    
+    # If we've tried too many times, move forward anyway
+    if retry_count >= 3:
+        print(f"Maximum step-back retry count reached, proceeding despite rating: {rating}/10")
+        return "analyze_query"
     
     if is_good_quality:
         return "analyze_query"
     else:
+        # Update the retry counter in the state
+        if "debug_info" not in state:
+            state["debug_info"] = {}
+        state["debug_info"]["step_back_retry_count"] = retry_count + 1
         return "run_step_back_analysis"
     
-def analyze_query(state: State) -> Dict:
-    """Analyze the user query to determine the best approach for vectorstore search."""
+# In graph_state_tools.py
+
+# Create a function to prepare query analysis data
+def prepare_query_analysis_data(state: State) -> Dict:
+    """Extract and format data needed for query analysis."""
     input_text = state.get("input_text", "")
     extracted_keywords = state.get("extracted_keywords", {})
     step_back_analysis = state.get("step_back_analysis", {})
     filtered_search_results = state.get("filtered_search_results", {})
-    debug_info = state.get("debug_info", {})
     
-    print("="*25,"Performing Query Analysis for SCAD Code Retrieval","="*25)
-    print()
-    
-    query_analysis_llm = ChatOllama(
-        model="llama3.2:3b-instruct-q4_K_M",
-        temperature=0.0,
-        base_url="http://localhost:11434"
-    )
-    
-    structured_query_analysis = query_analysis_llm.with_structured_output(SCADQueryAnalysis)
-    
-    # Extract step back analysis content
+    # Format step back analysis content
     step_back_content = ""
-    if isinstance(step_back_analysis, dict):
+    if step_back_analysis and isinstance(step_back_analysis, dict):
         # Format principles
-        if 'principles' in step_back_analysis:
-            principles = step_back_analysis.get('principles', [])
-            if principles:
-                step_back_content += "Design Principles:\n" + "\n".join([f"- {p}" for p in principles]) + "\n\n"
-            
+        principles = step_back_analysis.get('principles', [])
+        if principles:
+            step_back_content += "Design Principles:\n" + "\n".join([f"- {p}" for p in principles]) + "\n\n"
+        
         # Format abstractions/components
-        if 'abstractions' in step_back_analysis:
-            abstractions = step_back_analysis.get('abstractions', [])
-            if abstractions:
-                step_back_content += "Components:\n" + "\n".join([f"- {a}" for a in abstractions]) + "\n\n"
-            
+        abstractions = step_back_analysis.get('abstractions', [])
+        if abstractions:
+            step_back_content += "Components:\n" + "\n".join([f"- {a}" for a in abstractions]) + "\n\n"
+        
         # Format approach/steps
-        if 'approach' in step_back_analysis:
-            approach = step_back_analysis.get('approach', [])
-            if approach:
-                step_back_content += "Implementation Steps:\n" + "\n".join([f"{i+1}. {s}" for i, s in enumerate(approach)]) + "\n"
-            
+        approach = step_back_analysis.get('approach', [])
+        if approach:
+            step_back_content += "Implementation Steps:\n" + "\n".join([f"{i+1}. {s}" for i, s in enumerate(approach)]) + "\n"
+        
         # If we still don't have content, try the 'analysis' field
         if not step_back_content and 'analysis' in step_back_analysis:
             step_back_content = step_back_analysis['analysis']
+    elif step_back_analysis:  # Handle case where it's a string or other type
+        step_back_content = str(step_back_analysis)
     
     # Format keyword information
     keyword_info = ""
@@ -723,19 +770,33 @@ def analyze_query(state: State) -> Dict:
     
     # Extract relevant information from search results
     search_content = ""
-    if filtered_search_results:
-        results_summary = []
-        for category, results in filtered_search_results.items():
-            for result in results:
-                title = result.get('title', 'No title')
-                # Extract just a snippet from the content for relevance
-                content = result.get('content', '')
-                snippet = content[:200] + "..." if len(content) > 200 else content
-                results_summary.append(f"Title: {title}\nSnippet: {snippet}")
-        
-        if results_summary:
-            search_content = "Search Results Highlights:\n" + "\n\n".join(results_summary[:2])
-        
+    try:
+        if filtered_search_results:
+            results_summary = []
+            for category, results in filtered_search_results.items():
+                for result in results:
+                    title = result.get('title', 'No title')
+                    # Extract just a snippet from the content for relevance
+                    content = result.get('content', '')
+                    snippet = content[:200] + "..." if len(content) > 200 else content
+                    results_summary.append(f"Title: {title}\nSnippet: {snippet}")
+            
+            if results_summary:
+                search_content = "Search Results Highlights:\n" + "\n\n".join(results_summary[:2])
+    except Exception as e:
+        print(f"Error processing search results: {e}")
+        search_content = "Error processing search results"
+    
+    return {
+        "input_text": input_text,
+        "keyword_info": keyword_info,
+        "step_back_content": step_back_content,
+        "search_content": search_content
+    }
+
+# Create a function to perform the query analysis with LLM
+def perform_query_analysis(analysis_data: Dict, query_analysis_llm) -> Dict:
+    """Perform the actual query analysis using LLM."""
     query_analysis_prompt = ChatPromptTemplate.from_messages([
         ("system", QUERY_ANALYSIS_PROMPT),
         ("human", """
@@ -753,17 +814,28 @@ def analyze_query(state: State) -> Dict:
          """)
     ])
     
+    structured_query_analysis = query_analysis_llm.with_structured_output(SCADQueryAnalysis)
     query_analyzer = query_analysis_prompt | structured_query_analysis
     
-    print(f"Analyzing query: '{input_text}'")
-    result = query_analyzer.invoke({
-        "input_text": input_text,
-        "keyword_info": keyword_info,
-        "step_back_content": step_back_content,
-        "search_content": search_content
-    })
-    
-    # Identify likely OpenSCAD techniques based on step back analysis
+    print(f"Analyzing query: '{analysis_data['input_text']}'")
+    try:
+        result = query_analyzer.invoke(analysis_data)
+        return result
+    except Exception as e:
+        print(f"Error in query analysis: {e}")
+        # Return a default SCADQueryAnalysis object if parsing fails
+        return SCADQueryAnalysis(
+            search_strategy="hybrid",
+            enhanced_query=analysis_data['input_text'],
+            important_attributes=[],
+            style_preference="Parametric",
+            complexity="MEDIUM",
+            code_similarities=[]
+        )
+
+# Create a function to identify likely OpenSCAD techniques
+def identify_likely_techniques(result, step_back_content: str) -> List[str]:
+    """Identify likely OpenSCAD techniques based on analysis."""
     likely_techniques = []
     
     # Look for common OpenSCAD operations in the analysis
@@ -781,34 +853,103 @@ def analyze_query(state: State) -> Dict:
         "pattern": ["repeat", "array", "grid", "pattern", "duplicate"]
     }
     
+    # Check if result is None or doesn't have the expected attributes
+    has_important_attributes = result is not None and hasattr(result, 'important_attributes') and result.important_attributes is not None
+    has_code_similarities = result is not None and hasattr(result, 'code_similarities') and result.code_similarities is not None
+    
     # Check step back analysis for technique keywords
     for technique, keywords in technique_keywords.items():
         # Check if any of the keywords for this technique appear in the analysis
         for keyword in keywords:
+            keyword_in_attributes = has_important_attributes and any(keyword.lower() in attr.lower() for attr in result.important_attributes)
+            keyword_in_similarities = has_code_similarities and any(keyword.lower() in sim.lower() for sim in result.code_similarities)
+            
             if (step_back_content and keyword.lower() in step_back_content.lower()) or \
-               any(keyword.lower() in attr.lower() for attr in result.important_attributes) or \
-               any(keyword.lower() in sim.lower() for sim in result.code_similarities):
+               keyword_in_attributes or \
+               keyword_in_similarities:
                 likely_techniques.append(technique)
                 break
     
-    query_analysis = {
+    return list(set(likely_techniques))  # Remove duplicates
+
+# Create a function to format the final analysis output
+def format_query_analysis(result, likely_techniques: List[str]) -> Dict:
+    """Format the final query analysis output."""
+    # Fallback if result is None
+    if result is None:
+        return {
+            "search_strategy": "hybrid",
+            "enhanced_query": "guitar 3D model",  # Provide a reasonable default
+            "important_attributes": [],
+            "style_preference": "Parametric",
+            "complexity": "MEDIUM",
+            "similarities_to_check": [],
+            "techniques_needed": likely_techniques or ["union", "difference"]
+        }
+    
+    return {
         "search_strategy": result.search_strategy,
         "enhanced_query": result.enhanced_query,
         "important_attributes": result.important_attributes,
         "style_preference": result.style_preference,
         "complexity": result.complexity,
         "similarities_to_check": result.code_similarities,
-        "techniques_needed": list(set(likely_techniques))  # Remove duplicates
+        "techniques_needed": likely_techniques
     }
+
+# Step 5: Finally, update the main analyze_query function to use these modular functions
+def analyze_query(state: State) -> Dict:
+    """Analyze the user query to determine the best approach for vectorstore search."""
+    debug_info = state.get("debug_info", {})
+    input_text = state.get("input_text", "")
     
-    print("\nSCAD Code Retrieval Analysis:")
-    print(f"Search Strategy: {query_analysis['search_strategy']}")
-    print(f"Enhanced Query: {query_analysis['enhanced_query']}")
-    print(f"Important Attributes: {query_analysis['important_attributes']}")
-    print(f"Style Preference: {query_analysis['style_preference']}")
-    print(f"Complexity: {query_analysis['complexity']}")
-    print(f"Code Similarities: {query_analysis['similarities_to_check']}")
-    print(f"Likely Techniques: {query_analysis['techniques_needed']}")
+    print("="*25,"Performing Query Analysis for SCAD Code Retrieval","="*25)
+    print()
+    
+    query_analysis_llm = ChatOllama(
+        model="llama3.2:3b-instruct-q4_K_M",
+        temperature=0.0,
+        base_url="http://localhost:11434"
+    )
+    
+    try:
+        # Use the modular functions
+        analysis_data = prepare_query_analysis_data(state)
+        result = perform_query_analysis(analysis_data, query_analysis_llm)
+        step_back_content = analysis_data.get("step_back_content", "")
+        likely_techniques = identify_likely_techniques(result, step_back_content)
+        query_analysis = format_query_analysis(result, likely_techniques)
+        
+        # Print analysis results
+        print("\nSCAD Code Retrieval Analysis:")
+        print(f"Search Strategy: {query_analysis['search_strategy']}")
+        print(f"Enhanced Query: {query_analysis['enhanced_query']}")
+        print(f"Important Attributes: {query_analysis['important_attributes']}")
+        print(f"Style Preference: {query_analysis['style_preference']}")
+        print(f"Complexity: {query_analysis['complexity']}")
+        print(f"Code Similarities: {query_analysis['similarities_to_check']}")
+        print(f"Likely Techniques: {query_analysis['techniques_needed']}")
+        
+    except Exception as e:
+        # If any part of the process fails, create a fallback analysis
+        print(f"Error in query analysis: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        # Create default query analysis
+        query_analysis = {
+            "search_strategy": "hybrid",
+            "enhanced_query": input_text + " 3D model",  # Add "3D model" to the original query
+            "important_attributes": [],
+            "style_preference": "Parametric",
+            "complexity": "MEDIUM",
+            "similarities_to_check": [],
+            "techniques_needed": ["union", "difference", "translate"] # Basic techniques
+        }
+        
+        print("\nUsing fallback query analysis due to error")
+        print(f"Search Strategy: {query_analysis['search_strategy']}")
+        print(f"Enhanced Query: {query_analysis['enhanced_query']}")
     
     updated_state = {
         **state,
@@ -1026,6 +1167,8 @@ def create_examples_retriever(kb_instance):
 def create_scad_code_generator(llm, kb_instance):
     """Create a SCAD code generator function with a specific LLM and knowledge base"""
     from prompts import BASIC_KNOWLEDGE, OPENSCAD_GNERATOR_PROMPT_TEMPLATE
+    from scad_code_validator import validate_scad_code, validate_scad_syntax
+    from parameter_tuner import ParameterTuner, identify_parameters_from_examples, get_user_parameter_input, suggest_parameters_from_description
     
     # Define helper functions within the closure
     def extract_techniques(code):
@@ -1097,8 +1240,11 @@ def create_scad_code_generator(llm, kb_instance):
         retrieved_metadata = state.get("retrieved_metadata", {})
         debug_info = state.get("debug_info", {})
         
+        export_model = "n"
+        formats = []
+        
         print("\n" + "="*50)
-        print("STEP 9: GENERATING SCAD CODE")
+        print("GENERATING SCAD CODE")
         print("="*50)
         
         # Print model information
@@ -1107,24 +1253,31 @@ def create_scad_code_generator(llm, kb_instance):
         
         try:
             # Format step-back analysis
+            print("Formatting step-back analysis...")
             step_back_text = ""
             if step_back_analysis:
-                principles = step_back_analysis.get('principles', [])
-                abstractions = step_back_analysis.get('abstractions', [])
-                approach = step_back_analysis.get('approach', [])
-                
-                step_back_text = f"""
-                CORE PRINCIPLES:
-                {chr(10).join(f'- {p}' for p in principles)}
-                
-                SHAPE COMPONENTS:
-                {chr(10).join(f'- {a}' for a in abstractions)}
-                
-                IMPLEMENTATION STEPS:
-                {chr(10).join(f'{i+1}. {s}' for i, s in enumerate(approach))}
-                """
+                # Handle the case where step_back_analysis is None or not a dictionary
+                if isinstance(step_back_analysis, dict):
+                    principles = step_back_analysis.get('principles', [])
+                    abstractions = step_back_analysis.get('abstractions', [])
+                    approach = step_back_analysis.get('approach', [])
+                    
+                    step_back_text = f"""
+                    CORE PRINCIPLES:
+                    {chr(10).join(f'- {p}' for p in principles)}
+                    
+                    SHAPE COMPONENTS:
+                    {chr(10).join(f'- {a}' for a in abstractions)}
+                    
+                    IMPLEMENTATION STEPS:
+                    {chr(10).join(f'{i+1}. {s}' for i, s in enumerate(approach))}
+                    """
+                else:
+                    # If it's not a dictionary, convert to string and use as is
+                    step_back_text = str(step_back_analysis) if step_back_analysis else ""
             
             # Format examples
+            print("Formatting examples...")
             examples_text = []
             for example in similar_examples:
                 example_text = f"""
@@ -1141,9 +1294,11 @@ def create_scad_code_generator(llm, kb_instance):
             examples_formatted = "\n".join(examples_text)
             
             # Format the enhanced query if available
+            print("Formatting enhanced query...")
             enhanced_query = query_analysis.get('enhanced_query', input_text) if query_analysis else input_text
             
             # Format web content from filtered search results
+            print("Formatting web content...")
             web_content = ""
             for category, results in filtered_search_results.items():
                 for result in results:
@@ -1152,16 +1307,177 @@ def create_scad_code_generator(llm, kb_instance):
                     if content:
                         web_content += f"\nTitle: {title}\nContent: {content}\n---\n"
             
+            # If web_content is empty, display a message
+            if not web_content.strip():
+                web_content = "No relevant web content was found."
+            else:
+                web_content = "Here is relevant information from web searches:\n" + web_content
+            
+            # Try to identify parameters from examples and customize them
+            parameter_suggestions = ""
+            template_suggestion = "Consider using appropriate module structure based on the object type."
+            
+            # First try to extract parameters
+            try:
+                # First extract parameters from the description
+                print("\nAnalyzing description to identify appropriate parameters...")
+                desc_parameters = None
+                # Extract information about the object from state
+                object_type = ""
+                if state.get("extracted_keywords") and "core_type" in state.get("extracted_keywords", {}):
+                    object_type = state.get("extracted_keywords", {}).get("core_type", "")
+                
+                # Get step-back analysis for context
+                step_back_result = state.get("step_back_analysis", {})
+                
+                # Get parameters from description
+                desc_parameters = suggest_parameters_from_description(input_text, object_type, step_back_result, llm)
+                
+                # Then identify parameters from examples
+                example_parameters = None
+                if similar_examples:
+                    print("\nAnalyzing examples for additional parameters...")
+                    example_parameters = identify_parameters_from_examples(similar_examples, input_text, llm)
+                
+                # Merge the parameters, prioritizing those from the description
+                merged_parameters = {}
+                
+                # Add parameters from examples first (if any)
+                if example_parameters:
+                    for name, info in example_parameters.items():
+                        merged_parameters[name] = info
+                
+                # Add or overwrite with parameters from description (if any)
+                if desc_parameters:
+                    for name, info in desc_parameters.items():
+                        merged_parameters[name] = info
+                
+                # Get user input for the merged parameters
+                parameters = None
+                if merged_parameters:
+                    print("\nSuggested parameters based on your description and similar examples:")
+                    parameters = get_user_parameter_input(merged_parameters)
+                    
+                    # Format parameter information for the prompt
+                    if parameters:
+                        parameter_suggestions = "SUGGESTED PARAMETERS:\n"
+                        for name, info in parameters.items():
+                            value = info.get("value")
+                            description = info.get("description", "")
+                            
+                            # Format based on type
+                            if isinstance(value, list):
+                                # Vector format
+                                value_str = f"[{', '.join(str(x) for x in value)}]"
+                            elif isinstance(value, bool):
+                                # Boolean format
+                                value_str = "true" if value else "false"
+                            else:
+                                value_str = str(value)
+                            
+                            parameter_suggestions += f"{name} = {value_str}; // {description}\n"
+                else:
+                    # If no parameters could be identified, provide some default ones based on object type
+                    print("\nNo specific parameters could be identified. Using default parameters for this object type.")
+                    parameter_suggestions = """SUGGESTED PARAMETERS:
+// Basic dimensions that should work for most objects
+width = 100; // Width of the object
+height = 150; // Height of the object
+depth = 70; // Depth of the object
+wall_thickness = 2; // Wall thickness for hollow objects
+resolution = 100; // Resolution for curved surfaces ($fn value)
+"""
+            except Exception as e:
+                error_message = str(e)
+                print(f"Error identifying parameters: {error_message}")
+                import traceback
+                traceback.print_exc()
+                # Provide default parameters as fallback
+                parameter_suggestions = """SUGGESTED PARAMETERS:
+// Default parameters since extraction failed
+width = 100; // Width of the object
+height = 150; // Height of the object
+depth = 70; // Depth of the object
+wall_thickness = 2; // Wall thickness for hollow objects
+resolution = 100; // Resolution for curved surfaces ($fn value)
+"""
+
+            # Now try to select a template in a separate try/except block
+            try:
+                # Select appropriate template based on object characteristics
+                print("\nSelecting appropriate template...")
+                
+                # Import template utilities
+                from scad_templates import select_template_for_object, generate_template_params, apply_template, SCAD_TEMPLATES
+
+                # Get object type and modifiers from extracted keywords
+                modifiers = []
+                extracted_keywords = state.get("extracted_keywords", {})
+                
+                if extracted_keywords:
+                    object_type = extracted_keywords.get("core_type", "")
+                    modifiers = extracted_keywords.get("modifiers", [])
+                
+                # Select appropriate template based on object characteristics
+                template_name = select_template_for_object(object_type, modifiers, step_back_result)
+                
+                # Generate template parameters
+                template_params = generate_template_params(object_type, modifiers, step_back_result)
+                
+                # Apply the template to get example code
+                template_code = apply_template(template_name, template_params)
+                
+                # Create template descriptions to inform the LLM about available templates
+                template_descriptions = "AVAILABLE TEMPLATES:\n"
+                for template_key, template_value in SCAD_TEMPLATES.items():
+                    template_descriptions += f"- {template_key}: For {template_key}-type objects\n"
+                
+                # Add template information to the inputs
+                template_suggestion = f"""
+                SUGGESTED TEMPLATE:
+                The object appears to be a "{template_name}" type. Here's a suggested structure:
+                
+                ```scad
+                {template_code}
+                ```
+                
+                {template_descriptions}
+                
+                Feel free to use this template as a starting point and modify it as needed.
+                """
+                
+                print(f"Selected template: {template_name}")
+            except Exception as e:
+                print(f"Error generating template suggestion: {str(e)}")
+                template_suggestion = "Consider using appropriate module structure based on the object type."
+
             # Prepare the prompt inputs
             inputs = {
                 "basic_knowledge": BASIC_KNOWLEDGE,
                 "examples": examples_formatted,
                 "request": enhanced_query,
-                "step_back_analysis": step_back_text.strip() if step_back_text else ""
+                "step_back_analysis": step_back_text.strip() if step_back_text else "",
+                "template_suggestion": template_suggestion,  # Use the dynamically created template suggestion
+                "parameter_suggestions": parameter_suggestions,  # Use the dynamically built parameter suggestions
+                "web_content": web_content  # Add the formatted web content
             }
             
             # Generate the prompt and log it
             prompt_value = OPENSCAD_GNERATOR_PROMPT_TEMPLATE.format(**inputs)
+            
+            # Save the full prompt to a file for debugging
+            try:
+                with open("full_prompts.txt", "a") as f:
+                    f.write("\n\n" + "="*80 + "\n")
+                    f.write(f"PROMPT FOR: {input_text}\n")
+                    f.write("="*80 + "\n\n")
+                    f.write(prompt_value)
+                    f.write("\n\n" + "="*80 + "\n\n")
+                print(f"Full prompt saved to full_prompts.txt for debugging")
+            except Exception as e:
+                print(f"Warning: Could not save prompt to file: {str(e)}")
+                
+            # Continue with code generation
             
             # Get response from the LLM
             print("Generating OpenSCAD code...")
@@ -1190,14 +1506,28 @@ def create_scad_code_generator(llm, kb_instance):
             
             scad_code = None
             
-            # First, check for Claude's artifact format (more flexible pattern)
-            artifact_pattern = r'<antArtifact\s+[^>]*?type="application/vnd\.ant\.code"[^>]*?>(.*?)</antArtifact>'
-            artifact_match = re.search(artifact_pattern, content, re.DOTALL)
-            if artifact_match:
-                scad_code = artifact_match.group(1).strip()
-                print("\nCode extracted from Claude artifact format")
+            # First, check for Claude's artifact formats with multiple patterns
+            artifact_patterns = [
+                r'<antArtifact\s+[^>]*?type="application/vnd\.ant\.code"[^>]*?>(.*?)</antArtifact>',  # Standard pattern
+                r'<antArtifact\s+[^>]*?language="scad"[^>]*?>(.*?)</antArtifact>',  # Language-specific pattern
+                r'<antArtifact\s+[^>]*?identifier="[^"]*?"[^>]*?>(.*?)</antArtifact>',  # Identifier pattern
+                r'<antArtifact[^>]*?>(.*?)</antArtifact>',  # More lenient pattern
+                r'<artifact[^>]*?>(.*?)</artifact>',  # Alternative naming
+                r'<ant[^>]*?>(.*?)</ant>'  # Shortest possible match
+            ]
             
-            # Next, try other code tag formats if needed
+            # Try each pattern in order
+            for pattern in artifact_patterns:
+                artifact_match = re.search(pattern, content, re.DOTALL)
+                if artifact_match:
+                    extracted_code = artifact_match.group(1).strip()
+                    # Only use it if we got something substantial
+                    if len(extracted_code) > 10:
+                        scad_code = extracted_code
+                        print(f"\nCode extracted using artifact pattern: {pattern}")
+                        break
+                    
+            # If no artifact found, try standard code tag extraction
             if not scad_code:
                 for start_tag, end_tag in code_tags:
                     if start_tag in content and end_tag in content:
@@ -1205,71 +1535,127 @@ def create_scad_code_generator(llm, kb_instance):
                         code_end = content.find(end_tag, code_start)
                         if code_end > code_start:
                             scad_code = content[code_start:code_end].strip()
-                            print(f"\nCode extracted using {start_tag} tags")
+                            print(f"\nCode extracted using tags: {start_tag}...{end_tag}")
                             break
-            
-            # If no code tags found, try a last resort approach to extract code-like content
-            if not scad_code and content:
-                # Print a preview of the response for debugging
-                print("\nNo code tags found. Response preview:")
-                preview_length = min(500, len(content))
-                print(f"{content[:preview_length]}...")
-                
-                # Try to find content that looks like code - multiple lines with common OpenSCAD syntax
-                lines = content.split('\n')
-                code_candidates = []
-                in_potential_code = False
-                current_segment = []
-                
-                for line in lines:
-                    stripped = line.strip()
-                    # Look for typical OpenSCAD syntax patterns
-                    if ('(' in stripped and ')' in stripped) or \
-                       ('{' in stripped and '}' in stripped) or \
-                       stripped.startswith('module ') or \
-                       stripped.startswith('function ') or \
-                       stripped.endswith(';'):
-                        if not in_potential_code:
-                            in_potential_code = True
-                        current_segment.append(line)
-                    else:
-                        # If we were collecting code and hit a non-code line
-                        if in_potential_code and len(current_segment) > 3:  # At least 3 lines to consider it code
-                            code_candidates.append('\n'.join(current_segment))
-                            current_segment = []
-                            in_potential_code = False
-                        elif in_potential_code:
-                            current_segment.append(line)
-                
-                # Don't forget the last segment if we were still collecting
-                if in_potential_code and len(current_segment) > 3:
-                    code_candidates.append('\n'.join(current_segment))
-                
-                # Use the longest candidate as our code if available
-                if code_candidates:
-                    scad_code = max(code_candidates, key=len)
-                    print("\nExtracted potential code without tags using heuristics.")
-            
+                        
+            # If standard extraction fails, try to fix the raw response
             if not scad_code:
-                error_msg = "No code section found in response"
-                print(f"\nError: {error_msg}")
-                print("\nFull response content (for debugging):")
-                print("-" * 40)
-                print(content)
-                print("-" * 40)
-                return {
-                    "generated_code": {
-                        "success": False,
-                        "error": error_msg
-                    },
-                    "debug_info": {
-                        **debug_info,
-                        "stage": "code_generation",
-                        "success": False,
-                        "error": error_msg,
-                        "response_content": content[:1000]  # Include part of the response for debugging
-                    }
-                }
+                print("\nAttempting to fix and extract code from response...")
+                fixed_content = attempt_to_fix_raw_response(content)
+                
+                # If the content was modified, try extraction again
+                if fixed_content != content:
+                    print("Response was fixed, trying to extract code again")
+                    
+                    # Try extraction with the fixed content
+                    for start_tag, end_tag in code_tags:
+                        if start_tag in fixed_content and end_tag in fixed_content:
+                            code_start = fixed_content.find(start_tag) + len(start_tag)
+                            code_end = fixed_content.find(end_tag, code_start)
+                            if code_end > code_start:
+                                scad_code = fixed_content[code_start:code_end].strip()
+                                print("Successfully extracted code from fixed response")
+                                break
+                                
+            # If fixed response extraction fails, check if it looks like complete OpenSCAD code
+            if not scad_code and looks_like_complete_openscad(content):
+                print("\nThe entire response appears to be OpenSCAD code without tags")
+                scad_code = content.strip()
+                            
+            # If all extraction methods fail, try one more time with a more explicit prompt
+            if not scad_code:
+                print("\nFirst attempt failed. Retrying with more explicit prompt...")
+                retry_prompt = f"""
+                            I need ONLY OpenSCAD code for: {input_text}
+
+                            Here are the key elements from the step-back analysis:
+                            {step_back_result.get('principles', [''])[0] if isinstance(step_back_result, dict) and 'principles' in step_back_result else ''}
+
+                            DO NOT include any explanations, questions, or text outside the code block.
+                            ONLY respond with code inside ```scad tags like this:
+
+                            ```scad
+                            // Your OpenSCAD code here
+                            ```
+
+                            The code must include basic OpenSCAD elements (cube, sphere, cylinder, etc.) and be syntactically correct.
+                            """
+            
+                # Get streaming response for retry
+                retry_content = ""
+                print("Retrying...", end="", flush=True)
+                for chunk in llm.stream(prompt_value):
+                    if hasattr(chunk, 'content'):
+                        chunk_content = chunk.content
+                    else:
+                        chunk_content = str(chunk)
+                    retry_content += chunk_content
+                    print(".", end="", flush=True)
+                
+                print("\n")  # New line after progress dots
+                
+                # Try to extract code from retry attempt
+                for start_tag, end_tag in code_tags:
+                    if start_tag in retry_content and end_tag in retry_content:
+                        code_start = retry_content.find(start_tag) + len(start_tag)
+                        code_end = retry_content.find(end_tag, code_start)
+                        if code_end > code_start:
+                            scad_code = retry_content[code_start:code_end].strip()
+                            print("Successfully extracted code from retry attempt")
+                            break
+                            
+                # If retry still failed, try pattern matching on the retry content
+                if not scad_code:
+                    print("No code tags found in retry response. Attempting pattern matching.")
+                    
+                    # Try with fixed response and pattern matching
+                    fixed_retry = attempt_to_fix_raw_response(retry_content)
+                    if fixed_retry != retry_content:
+                        # Try extraction with the fixed retry content
+                        for start_tag, end_tag in code_tags:
+                            if start_tag in fixed_retry and end_tag in fixed_retry:
+                                code_start = fixed_retry.find(start_tag) + len(start_tag)
+                                code_end = fixed_retry.find(end_tag, code_start)
+                                if code_end > code_start:
+                                    scad_code = fixed_retry[code_start:code_end].strip()
+                                    print("Successfully extracted code from fixed retry response")
+                                    break
+                                    
+                    # If fixing failed, check if response looks like complete OpenSCAD code                
+                    if not scad_code and looks_like_complete_openscad(retry_content):
+                        print("The retry response appears to be OpenSCAD code without tags")
+                        scad_code = retry_content.strip()
+            
+            # Validate the generated code
+            print("\nValidating OpenSCAD code...")
+            is_valid_syntax = validate_scad_syntax(scad_code)
+            valid_code, validation_messages = validate_scad_code(scad_code)
+            
+            if not is_valid_syntax:
+                print("\nWarning: OpenSCAD code has syntax issues that may prevent proper rendering.")
+                # Try to fix simple syntax issues
+                fixed_code = scad_code
+                # Basic fixes for missing semicolons, braces and parentheses
+                if fixed_code.count('{') > fixed_code.count('}'): 
+                    fixed_code += '\n' + ('}'*(fixed_code.count('{')-fixed_code.count('}')))
+                    print("- Added missing closing braces.")
+                if fixed_code.count('(') > fixed_code.count(')'): 
+                    fixed_code += ')' * (fixed_code.count('(')-fixed_code.count(')'))
+                    print("- Added missing closing parentheses.")
+                # Only use the fixed code if we made changes
+                if fixed_code != scad_code:
+                    scad_code = fixed_code
+                    print("- Applied automatic fixes to the code.")
+            
+            # Print validation results
+            print("\nCode validation results:")
+            for msg in validation_messages:
+                if "Error:" in msg:
+                    print(f"❌ {msg}")
+                elif "Warning:" in msg:
+                    print(f"⚠️ {msg}")
+                else:
+                    print(f"✓ {msg}")
             
             # Save the generated code to a file
             try:
@@ -1306,6 +1692,76 @@ def create_scad_code_generator(llm, kb_instance):
             print(f"\n// Total: {total_lines} lines of OpenSCAD code")
             print("-" * 40)
             
+            # Ask user if they want to preview the model
+            preview_model = input("\nWould you like to generate a preview of this model? (y/n): ").lower().strip()
+            
+            if preview_model == 'y':
+                try:
+                    # Import ModelExporter if not already imported
+                    from model_exporter import ModelExporter
+                    
+                    # Get custom preview settings
+                    preview_settings = get_preview_settings()
+                    
+                    print("\nGenerating preview...")
+                    preview_path = generate_model_preview(
+                        scad_code=scad_code,
+                        filename="preview",
+                        resolution=preview_settings["resolution"],
+                        camera_params=preview_settings["camera_params"],
+                        width=preview_settings["width"],
+                        height=preview_settings["height"]
+                    )
+                    
+                    if preview_path and os.path.exists(preview_path):
+                        print(f"\nPreview generated successfully: {preview_path}")
+                        
+                        # Try to open the preview image with the default viewer
+                        try:
+                            import subprocess
+                            if os.name == 'posix':  # macOS or Linux
+                                if os.path.exists('/usr/bin/open'):  # macOS
+                                    subprocess.run(["open", preview_path])
+                                else:  # Linux
+                                    subprocess.run(["xdg-open", preview_path])
+                            elif os.name == 'nt':  # Windows
+                                os.startfile(preview_path)
+                            print("\nOpened preview in default image viewer.")
+                        except Exception as e:
+                            print(f"\nCould not automatically open preview: {e}")
+                            print(f"Please open the preview image located at: {preview_path}")
+                    else:
+                        print("\nFailed to generate preview. Please check the logs for details.")
+                except Exception as e:
+                    print(f"\nError generating preview: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
+            
+            # Ask user if they want to tune parameters
+            tune_params = input("\nWould you like to tune the parameters for this model? (y/n): ").lower().strip()
+            
+            if tune_params == 'y':
+                try:
+                    print("\nTuning parameters...")
+                    parameter_tuner = ParameterTuner(llm=llm)
+                    tuning_result = parameter_tuner.tune_parameters(scad_code, input_text)
+                    
+                    if tuning_result.get("success") and tuning_result.get("adjustments"):
+                        scad_code = tuning_result.get("updated_code")
+                        print("\nParameters tuned successfully!")
+                        
+                        # Save updated code to file
+                        with open("output.scad", "w") as f:
+                            f.write(scad_code)
+                        
+                        print("\nUpdated OpenSCAD code has been saved to 'output.scad'")
+                    else:
+                        print("\nNo parameter changes were applied.")
+                except Exception as e:
+                    print(f"\nError tuning parameters: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
+            
             # Ask user if they want to add this to the knowledge base
             add_to_kb = input("\nWould you like to add this example to the knowledge base? (y/n): ").lower().strip()
             
@@ -1314,7 +1770,12 @@ def create_scad_code_generator(llm, kb_instance):
                 "success": True,
                 "code": scad_code,
                 "prompt": prompt_value,
-                "add_to_kb": add_to_kb == 'y'
+                "add_to_kb": add_to_kb == 'y',
+                "validation": {
+                    "is_valid_syntax": is_valid_syntax,
+                    "is_valid_code": valid_code,
+                    "messages": validation_messages
+                }
             }
             
             # Only add to knowledge base if requested
@@ -1330,12 +1791,15 @@ def create_scad_code_generator(llm, kb_instance):
                         },
                         "techniques_used": extract_techniques(scad_code),
                         "primary_parameters": extract_parameters(scad_code),
-                        "step_back_info": {
+                    }
+                    
+                    # Add step_back_info if step_back_analysis is available and is a dictionary
+                    if step_back_analysis and isinstance(step_back_analysis, dict):
+                        enhanced_metadata["step_back_info"] = {
                             "principles": step_back_analysis.get("principles", []),
                             "abstractions": step_back_analysis.get("abstractions", []),
                             "approach": step_back_analysis.get("approach", [])
                         }
-                    }
                     
                     # Call with enhanced metadata (INSIDE if block)
                     kb_success = kb_instance.add_example(input_text, scad_code, metadata=enhanced_metadata)
@@ -1348,7 +1812,61 @@ def create_scad_code_generator(llm, kb_instance):
                     print(f"Error adding to knowledge base: {str(e)}")
                     import traceback
                     traceback.print_exc()
-            
+                    
+            export_model = input("\nWould you like to export this model to other formats? (y/n): ").lower().strip()
+
+            if export_model == 'y':
+                # Import the model exporter
+                from model_exporter import ModelExporter
+                from models import ExportResult
+                
+                # Create exporter instance
+                exporter = ModelExporter(output_dir="output")
+                
+                print("\nAvailable export formats: stl, off, amf, 3mf, csg, dxf, svg, png")
+                formats_input = input("Enter comma-separated formats to export (default: stl): ").strip()
+                formats = [f.strip() for f in formats_input.split(',')] if formats_input else ["stl"]
+                
+                resolution = input("Enter resolution value (default: 100): ").strip()
+                resolution = int(resolution) if resolution.isdigit() else 100
+                
+                filename = input("Enter base filename (default: model): ").strip() or "model"
+                
+                print("\nExporting model to selected formats...")
+                
+                # Export to each selected format
+                exported_files = {}
+                for fmt in formats:
+                    output_path = exporter.export_model(
+                        scad_code=scad_code,
+                        filename=filename,
+                        export_format=fmt,
+                        resolution=resolution
+                    )
+                    
+                    # Create a proper ExportResult
+                    export_result = ExportResult(
+                        success=output_path is not None,
+                        format=fmt,
+                        file_path=output_path,
+                        file_size=os.path.getsize(output_path) if output_path and os.path.exists(output_path) else None
+                    )
+                    
+                    # Add to exported_files dictionary
+                    exported_files[fmt] = export_result
+                
+                # Print export results
+                print("\nExport Results:")
+                for fmt, result_info in exported_files.items():
+                    if result_info.success:
+                        print(f"  - {fmt}: Success! Saved to {result_info.file_path}")
+                    else:
+                        print(f"  - {fmt}: Failed")
+                
+                # Include export results in the returned data
+                result["exported_files"] = exported_files
+                    
+            # The rest of the return statement remains the same
             return {
                 "generated_code": result,
                 "debug_info": {
@@ -1356,12 +1874,20 @@ def create_scad_code_generator(llm, kb_instance):
                     "stage": "code_generation",
                     "success": True,
                     "code_length": len(scad_code),
-                    "add_to_kb": add_to_kb == 'y'
+                    "add_to_kb": add_to_kb == 'y',
+                    "parameters_tuned": tune_params == 'y',
+                    "exported_model": export_model == 'y',
+                    "export_formats": formats if export_model == 'y' else None,
+                    "validation": {
+                        "is_valid_syntax": is_valid_syntax,
+                        "is_valid_code": valid_code,
+                        "error_count": sum(1 for msg in validation_messages if "Error:" in msg),
+                        "warning_count": sum(1 for msg in validation_messages if "Warning:" in msg)
+                    }
                 }
             }
-            
         except Exception as e:
-            error_msg = f"Error generating SCAD code: {str(e)}"
+            error_msg = f"Error in generate_scad_code: {str(e)}"
             print(f"\n{error_msg}")
             import traceback
             traceback.print_exc()
@@ -1377,5 +1903,229 @@ def create_scad_code_generator(llm, kb_instance):
                     "error": error_msg
                 }
             }
-    
+
+    # Return the inner function
     return generate_scad_code
+
+# Helper functions for model preview generation
+
+def get_preview_settings():
+    """Get user input for preview settings.
+    
+    Returns:
+        dict: Preview settings including resolution, camera parameters, and image dimensions
+    """
+    print("\nPreview Settings:")
+    print("-" * 30)
+    
+    # Get resolution
+    resolution_input = input("Enter resolution value ($fn) [default: 100]: ").strip()
+    resolution = int(resolution_input) if resolution_input.isdigit() else 100
+    
+    # Ask if user wants to use custom camera settings
+    custom_camera = input("Do you want to use custom camera settings? (y/n) [default: n]: ").lower().strip() == 'y'
+    
+    if custom_camera:
+        print("\nCamera settings are in format: translateX,translateY,translateZ,rotateX,rotateY,rotateZ,distance")
+        print("Default is: 0,0,0,55,0,25,140")
+        
+        camera_input = input("Enter camera parameters: ").strip()
+        # Validate camera input format (should be 7 comma-separated numbers)
+        if camera_input and len(camera_input.split(',')) == 7 and all(part.replace('-', '', 1).replace('.', '', 1).isdigit() for part in camera_input.split(',')):
+            camera_params = camera_input
+        else:
+            print("Invalid camera parameters. Using default settings.")
+            camera_params = "0,0,0,55,0,25,140"
+    else:
+        camera_params = "0,0,0,55,0,25,140"
+    
+    # Get image dimensions
+    custom_dimensions = input("Do you want to use custom image dimensions? (y/n) [default: n]: ").lower().strip() == 'y'
+    
+    if custom_dimensions:
+        width_input = input("Enter image width (pixels) [default: 800]: ").strip()
+        width = int(width_input) if width_input.isdigit() and int(width_input) > 0 else 800
+        
+        height_input = input("Enter image height (pixels) [default: 600]: ").strip()
+        height = int(height_input) if height_input.isdigit() and int(height_input) > 0 else 600
+    else:
+        width = 800
+        height = 600
+    
+    return {
+        "resolution": resolution,
+        "camera_params": camera_params,
+        "width": width,
+        "height": height
+    }
+
+def generate_model_preview(scad_code: str, filename: str = "preview", 
+                     resolution: int = 100, camera_params: str = "0,0,0,55,0,25,140", 
+                     width: int = 800, height: int = 600) -> Optional[str]:
+    """Generate a preview image of the model
+    
+    Args:
+        scad_code (str): The OpenSCAD code to render
+        filename (str): Base name for the output file (without extension)
+        resolution (int): Resolution for curves ($fn value)
+        camera_params (str): Camera position for the render
+        width (int): Image width in pixels
+        height (int): Image height in pixels
+        
+    Returns:
+        Optional[str]: Path to the generated preview image or None if failed
+    """
+    try:
+        # Import ModelExporter
+        from model_exporter import ModelExporter
+        
+        # Initialize model exporter with default output directory
+        model_exporter = ModelExporter(output_dir="output")
+        
+        print(f"Generating preview with resolution {resolution} and dimensions {width}x{height}...")
+        
+        # Use the model exporter to generate the preview
+        preview_path = model_exporter.generate_preview(
+            scad_code=scad_code,
+            filename=filename,
+            resolution=resolution,
+            camera_params=camera_params,
+            width=width,
+            height=height
+        )
+        
+        return preview_path
+    except Exception as e:
+        error_msg = f"Error generating model preview: {str(e)}"
+        print(f"\n{error_msg}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+# Helper functions for code extraction
+
+def attempt_to_fix_raw_response(content):
+    """
+    Attempt to fix the raw response by adding or correcting code tags.
+    This is a fallback for when the LLM doesn't properly format its response.
+    
+    Args:
+        content: The raw response from the LLM
+        
+    Returns:
+        Fixed response with proper code tags if fixed, or original content if not
+    """
+    # Check if there's something that looks like OpenSCAD code but no tags
+    openscad_patterns = ['module ', 'function ', 'cube(', 'sphere(', 'cylinder(', 'translate(', 'rotate(', 
+                         'scale(', 'difference(', 'union(', 'intersection(', 'color(', 'linear_extrude(', 
+                         '$fn=', 'hull(', 'minkowski(']
+    
+    # If we have no code tags but have OpenSCAD patterns, try to add tags
+    if '```' not in content and '<code>' not in content:
+        pattern_matches = 0
+        for pattern in openscad_patterns:
+            if pattern in content:
+                pattern_matches += 1
+        
+        # If we have enough OpenSCAD patterns, add tags around the content
+        if pattern_matches >= 3:
+            print(f"Found {pattern_matches} OpenSCAD patterns without tags, adding tags")
+            return f"```scad\n{content}\n```"
+    
+    # Check if we have incomplete tags and try to fix them
+    if '```scad' in content and '```' not in content[content.find('```scad') + 7:]:
+        print("Found incomplete code block, adding closing tag")
+        return content + "\n```"
+        
+    if '<code>' in content and '</code>' not in content:
+        print("Found incomplete code tag, adding closing tag")
+        return content + "\n</code>"
+        
+    # Check if content contains code without proper formatting
+    code_indicators = ['Here is the code', 'Here\'s the code', 'The OpenSCAD code', 'OpenSCAD implementation']
+    for indicator in code_indicators:
+        if indicator in content:
+            indicator_pos = content.find(indicator)
+            next_paragraph_start = content.find('\n\n', indicator_pos)
+            
+            if next_paragraph_start > indicator_pos:
+                # Look for the actual code after the indicator
+                potential_code = content[next_paragraph_start:].strip()
+                
+                # Count OpenSCAD patterns in the potential code
+                pattern_matches = 0
+                for pattern in openscad_patterns:
+                    if pattern in potential_code:
+                        pattern_matches += 1
+                
+                # If there are enough patterns, this is likely code
+                if pattern_matches >= 3:
+                    print(f"Found {pattern_matches} OpenSCAD patterns after '{indicator}', wrapping with code tags")
+                    fixed_content = content[:next_paragraph_start] + "\n\n```scad\n" + potential_code + "\n```"
+                    return fixed_content
+    
+    # Return original content if we couldn't fix it
+    return content
+
+def looks_like_complete_openscad(content):
+    """
+    Check if the content looks like a complete OpenSCAD program even without tags.
+    
+    Args:
+        content: The text to check
+        
+    Returns:
+        Boolean indicating whether the content appears to be a complete OpenSCAD program
+    """
+    # Core OpenSCAD elements that indicate a complete program
+    core_patterns = [
+        # Basic shapes
+        'cube(', 'sphere(', 'cylinder(', 'polyhedron(',
+        # 2D shapes
+        'circle(', 'square(', 'polygon(',
+        # Operations
+        'union(', 'difference(', 'intersection(', 
+        # Transformations
+        'translate(', 'rotate(', 'scale(', 'mirror(', 'multmatrix(', 'color('
+    ]
+    
+    # Program structure elements
+    structure_patterns = [
+        'module ', 'function ', '};', '){', '() {', 
+        '$fn=', 'import(', 'include <', 'use <'
+    ]
+    
+    # Variables and parameters
+    variable_patterns = [
+        'let(', 'for(', 'if(', 'else {', '= [', '= "', 
+        'true;', 'false;', 'undef;'
+    ]
+    
+    # Count matches of different types of patterns
+    core_matches = sum(1 for pattern in core_patterns if pattern in content)
+    structure_matches = sum(1 for pattern in structure_patterns if pattern in content)
+    variable_matches = sum(1 for pattern in variable_patterns if pattern in content)
+    
+    # Check for balanced curly braces
+    open_braces = content.count('{')
+    close_braces = content.count('}')
+    balanced_braces = abs(open_braces - close_braces) <= 1  # Allow for one missing brace
+    
+    # Check for multiple semicolons (statement terminators in OpenSCAD)
+    semicolons = content.count(';')
+    
+    # Heuristic: If we have enough core elements, some structure elements, 
+    # relatively balanced braces, and multiple semicolons, it's likely OpenSCAD
+    is_likely_openscad = (
+        core_matches >= 2 and 
+        structure_matches >= 1 and
+        variable_matches >= 1 and
+        balanced_braces and
+        semicolons >= 3 and
+        len(content.strip()) > 50  # Not too short
+    )
+    
+    if is_likely_openscad:
+        print(f"Content appears to be complete OpenSCAD code: {core_matches} core elements, {structure_matches} structure elements, {semicolons} semicolons")
+    
+    return is_likely_openscad

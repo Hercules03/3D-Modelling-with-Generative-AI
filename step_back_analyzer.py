@@ -6,6 +6,8 @@ import datetime
 import json
 import logging
 
+from models import StepBackAnalysis, KeywordData
+
 logger = logging.getLogger(__name__)
 
 class StepBackAnalyzer:
@@ -25,24 +27,24 @@ class StepBackAnalyzer:
         logger.info("Step-back analyzer initialised")
         print("Step-back analyzer initialised")
 
+
     def write_debug(self, *messages):
         """Write messages to debug log"""
         for message in messages:
             self.debug_log.append(message)
 
     def perform_analysis(self, query: str, description: str, keyword_data, max_retries: int = 3, auto_approve: bool = True) -> Optional[Dict]:
-        """Perform step-back analysis with user validation.
-        
-        Args:
-            description: The description to analyze
-            keyword_data: The extracted keyword data
-            max_retries: Maximum number of retry attempts
-            auto_approve: If True, automatically approve results (for testing)
-            
-        Returns:
-            Dictionary containing step-back analysis if successful, None otherwise
-        """
+        """Perform step-back analysis with user validation."""
         retry_count = 0
+        
+        # Validate keyword_data using Pydantic if it's not already a KeywordData model
+        if not isinstance(keyword_data, KeywordData):
+            try:
+                keyword_data = KeywordData(**keyword_data)
+            except Exception as e:
+                logger.error(f"Error validating keyword data: {e}")
+                # Create a default if validation fails
+                keyword_data = KeywordData(core_type="object")
         
         while retry_count < max_retries:
             try:
@@ -65,9 +67,9 @@ class StepBackAnalyzer:
                 
                 # Format the step-back prompt with keyword data
                 step_back_prompt_value = self.step_back_prompt.format(
-                    Object=keyword_data.get('compound_type', ''),
-                    Type=keyword_data.get('core_type', ''),
-                    Modifiers=', '.join(keyword_data.get('modifiers', [])),
+                    Object=keyword_data.compound_type if hasattr(keyword_data, 'compound_type') else '',
+                    Type=keyword_data.core_type if hasattr(keyword_data, 'core_type') else '',
+                    Modifiers=', '.join(keyword_data.modifiers if hasattr(keyword_data, 'modifiers') else []),
                     description=description
                 )
                 
@@ -78,9 +80,9 @@ class StepBackAnalyzer:
                     "Query:\n",
                     f"{query}\n\n",
                     "Keyword Data:\n",
-                    f"Core Type: {keyword_data.get('core_type', '')}\n",
-                    f"Modifiers: {', '.join(keyword_data.get('modifiers', []))}\n",
-                    f"Compound Type: {keyword_data.get('compound_type', '')}\n\n",
+                    f"Core Type: {keyword_data.core_type if hasattr(keyword_data, 'core_type') else ''}\n",
+                    f"Modifiers: {', '.join(keyword_data.modifiers if hasattr(keyword_data, 'modifiers') else [])}\n",
+                    f"Compound Type: {keyword_data.compound_type if hasattr(keyword_data, 'compound_type') else ''}\n\n",
                     "Full Prompt Sent to LLM:\n",
                     f"{step_back_prompt_value}\n\n"
                 )
@@ -170,13 +172,13 @@ class StepBackAnalyzer:
                             approach.append(p)
                 
                 # Create analysis result
-                analysis_result = {
-                    'principles': principles,
-                    'abstractions': abstractions,
-                    'approach': approach,
-                    'original_query': description,
-                    'keyword_analysis': keyword_data
-                }
+                analysis_result = StepBackAnalysis(
+                    principles=principles,
+                    abstractions=abstractions,
+                    approach=approach,
+                    original_query=description,
+                    keyword_analysis=keyword_data
+                )
                 
                 # Log analysis results
                 self.write_debug(
@@ -236,7 +238,7 @@ class StepBackAnalyzer:
                             "user_approved": True
                         }
                     })
-                    return analysis_result
+                    return analysis_result.model_dump()
                 
                 retry_count += 1
                 if retry_count < max_retries:

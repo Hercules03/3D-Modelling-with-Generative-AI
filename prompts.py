@@ -42,6 +42,26 @@ Basic Syntax:
 - Call: name(parameters)
 10. Echo Command: echo("text", variable);
 11. Children: Using $children and children() for module composition
+
+Templates:
+The system provides templates for common object types:
+- container: For hollow objects with inner space
+- mechanical: For objects with moving or functional parts
+- furniture: For chairs, tables, and other furniture pieces
+- decorative: For artistic and decorative objects
+- tableware: For plates, cups, and other food-related items
+- architectural: For building and structural elements
+- organizer: For storage and organizing objects
+- electronic: For device cases and holders
+- instrument: For tools and functional instruments
+- jewelry: For decorative wearable items
+- utility: For practical everyday objects
+- toy: For playful and recreational items
+- enclosure: For cases with lids or covers
+- fixture: For mounting and attachment components 
+- modular: For systems with interchangeable parts
+
+You can use these templates by calling the appropriate module template.
 """
 
 # System prompt for Ollama models
@@ -148,6 +168,15 @@ RELEVANT EXAMPLES:
 STEP-BACK ANALYSIS:
 {step_back_analysis}
 
+TEMPLATE SUGGESTION:
+{template_suggestion}
+
+PARAMETER SUGGESTIONS:
+{parameter_suggestions}
+
+WEB CONTENT AND REFERENCE INFORMATION:
+{web_content}
+
 USER REQUEST:
 {request}
 
@@ -159,23 +188,17 @@ Please generate OpenSCAD code that satisfies the user's request. Follow these gu
 5. Make the design parametric where appropriate (using variables for key dimensions)
 6. Implement the design following the step-back analysis principles
 7. Use techniques from relevant examples when applicable
+8. Consider the suggested template structure if it's appropriate for this design
 
-IMPORTANT: Your response must ONLY contain the OpenSCAD code and nothing else.
+CRITICAL INSTRUCTIONS:
+- Your response must ONLY contain the OpenSCAD code and NOTHING else
+- Do NOT include any explanations, questions, or other text outside the code block
+- Do NOT ask for clarification - implement the best solution based on the information provided
+- ALWAYS enclose your code in triple backtick code blocks with the scad tag, like this:
 
-You MUST provide your code in one of these formats:
-
-1. Using code blocks with markdown syntax:
 ```scad
-// Your OpenSCAD code here
+// Your code here
 ```
-
-2. Using HTML-style code tags:
-<code>
-// Your OpenSCAD code here
-</code>
-
-Do not include any explanations, descriptions, or other text outside of the code block.
-The first line of your response should be the start of a code block.
 
 OpenSCAD code:"""
 
@@ -259,6 +282,7 @@ Instructions:
 1. Select the most appropriate categories from the list above (you can select multiple if applicable)
 2. For each selected property type, choose the most appropriate value from its predefined options
 3. Suggest similar objects from the examples in our standard categories
+4. ALWAYS include the object_type field in your response, preserving the input object_type
 
 Respond in JSON format:
 {{
@@ -266,10 +290,12 @@ Respond in JSON format:
     "properties": {{
         "property_name": "value from predefined options only"
     }},
-    "similar_objects": ["list of similar objects from our standard examples only"]
+    "similar_objects": ["list of similar objects from our standard examples only"],
+    "object_type": "{object_type}"
 }}
 
-Ensure all categories and property values exactly match the provided standard options."""
+Ensure all categories and property values exactly match the provided standard options.
+It is CRITICAL that you include the "object_type" field with the same value as provided in the input."""
 
 WEB_CONTENT_GRADER_PROMPT = """You are a grader assessing relevance of retrieved web content to a user question.
     If the web content contains keyword(s) or semantic meaning related to the user question, grade it as relevant.

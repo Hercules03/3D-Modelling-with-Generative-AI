@@ -73,6 +73,21 @@ class Manual_Knowledge_Graph:
         workflow.add_edge("analyze_query", "store_knowledge")
         workflow.add_edge("store_knowledge", END)
         
+        # Debug function to print the final state
+        def debug_end_state(state):
+            print("\nDEBUG - Final state at END node:")
+            print(f"State type: {type(state)}")
+            print(f"State content: {state}")
+            # Only print a few key fields to avoid overwhelming
+            success = state.get("success", "NOT_FOUND")
+            print(f"Success value: {success}")
+            return state
+            
+        # Add a node to debug the final state
+        #workflow.add_node("debug_end", debug_end_state)
+        workflow.add_edge("store_knowledge", END)
+        #workflow.add_edge("debug_end", END)
+        
         return workflow.compile(checkpointer=self.memory)
     
     def _store_knowledge(self, state: State) -> dict:
@@ -182,7 +197,7 @@ class Manual_Knowledge_Graph:
             
             if result:
                 print("\nManual knowledge successfully added to the knowledge base!")
-                return {
+                return_value = {
                     "success": True,
                     "debug_info": {
                         **debug_info,
@@ -190,10 +205,13 @@ class Manual_Knowledge_Graph:
                         "success": True
                     }
                 }
+                print("\nDEBUG - Returning from _store_knowledge (success):")
+                print(f"Return value: {return_value}")
+                return return_value
             else:
                 error_msg = "Failed to add manual knowledge to the knowledge base."
                 print(f"\n{error_msg}")
-                return {
+                return_value = {
                     "success": False,
                     "error": error_msg,
                     "debug_info": {
@@ -203,13 +221,16 @@ class Manual_Knowledge_Graph:
                         "error": error_msg
                     }
                 }
+                print("\nDEBUG - Returning from _store_knowledge (failure):")
+                print(f"Return value: {return_value}")
+                return return_value
             
         except Exception as e:
             error_msg = f"Error storing knowledge: {str(e)}"
             print(f"\n{error_msg}")
             import traceback
             traceback.print_exc()
-            return {
+            return_value = {
                 "success": False,
                 "error": error_msg,
                 "debug_info": {
@@ -219,6 +240,9 @@ class Manual_Knowledge_Graph:
                     "error": error_msg
                 }
             }
+            print("\nDEBUG - Returning from _store_knowledge (exception):")
+            print(f"Return value: {return_value}")
+            return return_value
     
     def process_manual_knowledge(self, input_text):
         """Process manual knowledge input based on the description"""
@@ -234,6 +258,9 @@ class Manual_Knowledge_Graph:
             },
             config=config
         )
+        print("\nDEBUG - Result from graph.invoke:")
+        print(f"Result type: {type(result)}")
+        print(f"Result content: {result}")
         return result
         
     def handle_manual_knowledge_input(self):
@@ -291,13 +318,21 @@ class Manual_Knowledge_Graph:
         print("\nProcessing your description. This may take a moment...")
         result = self.process_manual_knowledge(description)
         
+        print("\nDEBUG - Result in handle_manual_knowledge_input:")
+        print(f"Result type: {type(result)}")
+        print(f"Result content: {result}")
+        print(f"Success value: {result.get('success', 'NOT_FOUND')}")
+        
         # Step 5: Report result to user
-        success = result.get("success", False)
+        # The success status is nested inside debug_info
+        debug_info = result.get("debug_info", {})
+        success = debug_info.get("success", False)
+        
         if success:
             print("\nSuccess! Your knowledge has been added to the database.")
             print("\nYou can view it in the knowledge base explorer (option 4 from the main menu).")
         else:
-            error = result.get("error", "Unknown error")
+            error = debug_info.get("error", "Unknown error")
             print(f"\nFailed to add knowledge: {error}")
             
             # If validation failed, show more details

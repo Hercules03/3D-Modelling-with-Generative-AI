@@ -99,9 +99,10 @@ class Model_Generator_Graph:
     def generate(self, input_text):
         """Generate 3D model information based on input text"""
         config = {
-            "thread_id": str(uuid.uuid4()),  # Unique identifier for this run
-            "checkpoint_ns": "3d_model_gen",  # Namespace for checkpoints
-            "checkpoint_id": str(int(time.time()))  # Unique checkpoint ID
+            "thread_id": str(uuid.uuid4()),
+            "checkpoint_ns": "3d_model_gen",
+            "checkpoint_id": str(int(time.time())),
+            "recursion_limit": 50  # Increase from default 25
         }
         
         result = self.graph.invoke(
@@ -111,3 +112,4 @@ class Model_Generator_Graph:
             config=config
         )
         return result
+
