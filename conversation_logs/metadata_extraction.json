@@ -7631,5 +7631,1381 @@
       "input_tokens": 4,
       "output_tokens": 105
     }
+  },
+  {
+    "timestamp": "2025-04-11T09:31:48.893429",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "geometric",
+        "mechanical",
+        "functional",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": ""
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 57
+    }
+  },
+  {
+    "timestamp": "2025-04-12T13:43:21.691013",
+    "input": {
+      "description": "gripper driven by servo",
+      "code": ""
+    },
+    "output": {
+      "object_type": "gripper driven by a servo",
+      "features": [
+        "Force transmission mechanism converting servo rotational motion to linear gripper movement",
+        "Mechanical advantage through gear/linkage systems to amplify gripping force",
+        "Symmetrical movement of opposing jaws for centered object grasping"
+      ],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [
+        "Proportional control of gripper position via servo angle",
+        "Range of motion limitation to prevent mechanical damage"
+      ],
+      "complexity": "MEDIUM",
+      "style": "No style information available",
+      "use_case": [
+        "Robotic gripper adjustment according to an object's shape and form",
+        "Precise grip opening and closing via servo position control"
+      ],
+      "categories": [
+        "functional",
+        "mechanical",
+        "modular"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "no",
+        "complexity": "simple",
+        "symmetry": "asymmetric",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 117
+    }
+  },
+  {
+    "timestamp": "2025-04-12T14:49:47.539845",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [
+        "hub",
+        "spokes",
+        "outer lip",
+        "ventilation holes"
+      ],
+      "geometric_properties": [
+        "symmetrical",
+        "curved",
+        "angular"
+      ],
+      "materials": [
+        "aluminum",
+        "steel"
+      ],
+      "technical_requirements": [
+        "load rating",
+        "tire compatibility"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Mounting the tire",
+        "Structural integrity"
+      ],
+      "categories": [
+        "geometric",
+        "mechanical",
+        "other"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 70
+    }
+  },
+  {
+    "timestamp": "2025-04-12T14:57:25.751217",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [
+        "Hub",
+        "Spokes",
+        "Bolt holes (lug nuts)",
+        "Center cap"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "Metal"
+      ],
+      "technical_requirements": [
+        "Implementation Technique: minkowski"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Rendering",
+        "Gaming",
+        "3D printing"
+      ],
+      "categories": [
+        "functional",
+        "mechanical",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 63
+    }
+  },
+  {
+    "timestamp": "2025-04-12T15:06:39.158607",
+    "input": {
+      "description": "guitar 3D model",
+      "code": ""
+    },
+    "output": {
+      "object_type": "guitar",
+      "features": [
+        "body",
+        "neck",
+        "strings"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "wood"
+      ],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Music Instrument",
+      "use_case": [
+        "Playing",
+        "Display"
+      ],
+      "categories": [
+        "decorative",
+        "geometric",
+        "other"
+      ],
+      "properties": {
+        "size": "small",
+        "style": "artistic",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "decorative"
+      }
+    },
+    "tokens": {
+      "input_tokens": 3,
+      "output_tokens": 53
+    }
+  },
+  {
+    "timestamp": "2025-04-12T15:56:11.515778",
+    "input": {
+      "description": "car rim with 5 strokes",
+      "code": ""
+    },
+    "output": {
+      "object_type": "car rim with 5 strokes",
+      "features": [
+        "central hub",
+        "bolt holes",
+        "spokes",
+        "outer rim",
+        "lip or bead seat"
+      ],
+      "geometric_properties": [
+        "symmetrical",
+        "curved"
+      ],
+      "materials": [
+        "alloy",
+        "chrome",
+        "matte alloy"
+      ],
+      "technical_requirements": [
+        "load-bearing capacity"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Minimalist",
+      "use_case": [
+        "Vehicle mounting",
+        "Tire holding",
+        "Aesthetic enhancement"
+      ],
+      "categories": [
+        "functional",
+        "mechanical",
+        "other"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "geometric",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 77
+    }
+  },
+  {
+    "timestamp": "2025-04-12T16:07:05.883491",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [
+        "barrel (cylindrical section)",
+        "outer rim lip that holds the tire bead",
+        "center hub (bolt pattern and center bore)",
+        "spokes or design elements connecting hub to outer rim"
+      ],
+      "geometric_properties": [
+        "cylindrical",
+        "angular"
+      ],
+      "materials": [
+        "metal"
+      ],
+      "technical_requirements": [
+        "Structural integrity to support vehicle weight and withstand road stress",
+        "Precision in dimensions and proportions for proper tire fitment",
+        "Aerodynamic properties to reduce drag and improve vehicle efficiency"
+      ],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Vehicle",
+        "Tire fitment"
+      ],
+      "categories": [
+        "functional",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "no",
+        "style": "geometric",
+        "complexity": "moderate",
+        "symmetry": "radial",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 106
+    }
+  },
+  {
+    "timestamp": "2025-04-12T17:46:28.093125",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [
+        "Center hub",
+        "Bolt holes",
+        "Spokes",
+        "Outer rim edge",
+        "Valve stem hole",
+        "Lip or flange designs"
+      ],
+      "geometric_properties": [
+        "Symmetrical",
+        "Curved",
+        "Angular"
+      ],
+      "materials": [
+        "Material selection appropriate for stress distribution and manufacturing"
+      ],
+      "technical_requirements": [
+        "Dimensional accuracy",
+        "Weight optimization",
+        "Aerodynamic considerations"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Aesthetic design that balances form and function",
+      "use_case": [
+        "Support vehicle weight and transmit forces",
+        "Fit standard tire sizes and vehicle hubs"
+      ],
+      "categories": [
+        "functional",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "geometric",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 99
+    }
+  },
+  {
+    "timestamp": "2025-04-12T18:42:59.483300",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "geometric",
+        "functional",
+        "mechanical",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "",
+        "assembly": "",
+        "stability": "self_standing",
+        "adjustability": "",
+        "material_compatibility": "any",
+        "surface_finish": "",
+        "post_processing": "",
+        "durability": "",
+        "water_resistance": "",
+        "heat_resistance": "",
+        "customization": "",
+        "purpose": ""
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 57
+    }
+  },
+  {
+    "timestamp": "2025-04-12T18:48:29.483436",
+    "input": {
+      "description": "rim of a racing car with high structural integrity and aerodynamic efficiency",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "geometric",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "medium",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "moderate",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "medium_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 12,
+      "output_tokens": 53
+    }
+  },
+  {
+    "timestamp": "2025-04-12T18:54:20.536970",
+    "input": {
+      "description": "racing car rim with lightweight design and aerodynamic efficiency",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [
+        "Center hub with bolt pattern",
+        "Outer rim lip for tire mounting",
+        "Spokes/arms connecting hub to outer rim",
+        "Valve stem hole for tire inflation",
+        "Ventilation holes/slots for brake cooling and weight reduction",
+        "Bead seat for proper tire mounting"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "Aluminum or magnesium alloys"
+      ],
+      "technical_requirements": [
+        "Lightweight design for performance and aerodynamics",
+        "Aerodynamic efficiency to reduce drag"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Racing",
+      "use_case": [
+        "Racing car",
+        "High-performance vehicle"
+      ],
+      "categories": [
+        "functional",
+        "geometric",
+        "mechanical",
+        "other"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "thin",
+        "hollow": "yes",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 9,
+      "output_tokens": 108
+    }
+  },
+  {
+    "timestamp": "2025-04-12T19:06:10.242216",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [
+        "Center hub with bolt pattern",
+        "Spokes/design elements connecting hub to outer rim",
+        "Outer rim with bead seat for tire mounting",
+        "Valve stem hole for tire inflation"
+      ],
+      "geometric_properties": [
+        "Cylindrical",
+        "Angular",
+        "Curved"
+      ],
+      "materials": [
+        "Metal"
+      ],
+      "technical_requirements": [
+        "Structural integrity",
+        "Material properties",
+        "Aerodynamic considerations"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Aesthetic",
+      "use_case": [
+        "Vehicle support and performance",
+        "Tire mounting and retention",
+        "Aerodynamic considerations"
+      ],
+      "categories": [
+        "functional",
+        "mechanical",
+        "other"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "",
+        "complexity": "simple",
+        "symmetry": "",
+        "printability": "",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "",
+        "assembly": "",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "",
+        "surface_finish": "",
+        "post_processing": "",
+        "durability": "",
+        "water_resistance": "",
+        "heat_resistance": "",
+        "customization": "",
+        "purpose": ""
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 97
+    }
+  },
+  {
+    "timestamp": "2025-04-12T19:19:10.147500",
+    "input": {
+      "description": "racing car rim with center hub bolt pattern 4-6 lug configuration",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [
+        "Hub bolt pattern",
+        "Spoke design (Y-spokes, mesh, split-spoke or multi-spoke patterns)",
+        "Barrel/lip connecting spokes to the tire mounting surface",
+        "Valve stem hole for tire inflation",
+        "Bead seat for secure tire mounting"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "Metal"
+      ],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "Racing",
+      "use_case": [
+        "Automotive",
+        "Racing"
+      ],
+      "categories": [
+        "functional",
+        "mechanical",
+        "geometric"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 11,
+      "output_tokens": 86
+    }
+  },
+  {
+    "timestamp": "2025-04-12T19:26:49.519693",
+    "input": {
+      "description": "rim racing car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "geometric",
+        "mechanical",
+        "other"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "challenging",
+        "orientation": "flat",
+        "support_needed": "minimal",
+        "infill_requirement": "medium",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 3,
+      "output_tokens": 56
+    }
+  },
+  {
+    "timestamp": "2025-04-12T19:33:22.883571",
+    "input": {
+      "description": "rim racing car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "geometric",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "moderate",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 3,
+      "output_tokens": 55
+    }
+  },
+  {
+    "timestamp": "2025-04-12T19:38:55.756347",
+    "input": {
+      "description": "racing car rim with aerodynamic efficiency and structural integrity",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [
+        "Central hub with bolt pattern for wheel attachment",
+        "Spokes/arms connecting hub to outer rim (typically 5-10 spokes)",
+        "Outer rim structure that holds the tire bead",
+        "Valve stem hole for tire inflation",
+        "Lip and flange designs that prevent tire slippage",
+        "Ventilation holes/patterns for brake cooling"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "Metal"
+      ],
+      "technical_requirements": [
+        "Structural integrity to withstand high-speed forces and stress",
+        "Weight optimization for acceleration and handling"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Aerodynamic",
+      "use_case": [
+        "Racing",
+        "High-performance vehicle"
+      ],
+      "categories": [
+        "geometric",
+        "functional",
+        "mechanical",
+        "enclosure"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low"
+      }
+    },
+    "tokens": {
+      "input_tokens": 9,
+      "output_tokens": 110
+    }
+  },
+  {
+    "timestamp": "2025-04-12T19:42:34.630415",
+    "input": {
+      "description": "racing car rim 3D model",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "geometric",
+        "functional",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "yes",
+        "style": "modern",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low"
+      }
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 49
+    }
+  },
+  {
+    "timestamp": "2025-04-12T19:49:37.444202",
+    "input": {
+      "description": "racing car rim with high structural integrity and aerodynamic efficiency",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "mechanical",
+        "functional",
+        "geometric"
+      ],
+      "properties": {
+        "size": "large",
+        "hollow": "yes",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "challenging",
+        "orientation": "angled",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "minimal",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed"
+      }
+    },
+    "tokens": {
+      "input_tokens": 10,
+      "output_tokens": 51
+    }
+  },
+  {
+    "timestamp": "2025-04-12T20:18:45.285654",
+    "input": {
+      "description": "racing car rim design",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [
+        "spoke design",
+        "outer rim/barrel",
+        "valve stem hole",
+        "bolt circle pattern",
+        "weight reduction pockets/perforations",
+        "brake cooling vents/channels"
+      ],
+      "geometric_properties": [
+        "symmetrical",
+        "curved"
+      ],
+      "materials": [
+        "aluminum alloy",
+        "magnesium"
+      ],
+      "technical_requirements": [
+        "Structural integrity",
+        "Aerodynamics",
+        "Heat dissipation"
+      ],
+      "complexity": "MEDIUM",
+      "style": "Aerodynamic",
+      "use_case": [
+        "Racing car wheel",
+        "Automotive component"
+      ],
+      "categories": [
+        "geometric",
+        "mechanical",
+        "enclosure",
+        "functional"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "medium",
+        "hollow": "yes",
+        "style": "geometric",
+        "complexity": "simple",
+        "symmetry": "radial",
+        "printability": "moderate",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 82
+    }
+  },
+  {
+    "timestamp": "2025-04-12T20:23:07.892447",
+    "input": {
+      "description": "rim of a racing car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "racing car rim",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "geometric",
+        "mechanical",
+        "functional"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "asymmetric",
+        "printability": "challenging",
+        "orientation": "flat",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 53
+    }
+  },
+  {
+    "timestamp": "2025-04-12T20:27:24.315901",
+    "input": {
+      "description": "guitar 3D model",
+      "code": ""
+    },
+    "output": {
+      "object_type": "guitar 3D model",
+      "features": [
+        "Rim",
+        "Spokes",
+        "Center hub",
+        "Valve stem hole",
+        "Bead seat",
+        "Outer lip"
+      ],
+      "geometric_properties": [
+        "Circular",
+        "Tire mounting"
+      ],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "MEDIUM",
+      "style": "",
+      "use_case": [
+        "Vehicle"
+      ],
+      "categories": [
+        "decorative",
+        "geometric",
+        "mechanical",
+        "other"
+      ],
+      "properties": {
+        "size": "small",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "any",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed"
+      }
+    },
+    "tokens": {
+      "input_tokens": 3,
+      "output_tokens": 63
+    }
+  },
+  {
+    "timestamp": "2025-04-12T20:34:37.044022",
+    "input": {
+      "description": "rim of a sport car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a sport car",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "functional",
+        "mechanical",
+        "geometric"
+      ],
+      "properties": {
+        "size": "medium",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "flat",
+        "support_needed": "minimal",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "medium_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 5,
+      "output_tokens": 55
+    }
+  },
+  {
+    "timestamp": "2025-04-12T20:41:45.379745",
+    "input": {
+      "description": "robotics arm with motor selection and precision control",
+      "code": ""
+    },
+    "output": {
+      "object_type": "robotics arm",
+      "features": [
+        "Base/rotary base",
+        "Shoulder joint",
+        "Upper arm/forearm",
+        "Elbow joint",
+        "Wrist mechanism",
+        "Gripper/end effector",
+        "Motor housings",
+        "Cable/wiring channels"
+      ],
+      "geometric_properties": [],
+      "materials": [
+        "Steel",
+        "Plastics"
+      ],
+      "technical_requirements": [
+        "Motor selection",
+        "Precision control"
+      ],
+      "complexity": "COMPLEX",
+      "style": "Mechanical",
+      "use_case": [
+        "Assembly",
+        "Packaging",
+        "Material handling"
+      ],
+      "categories": [
+        "functional",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "medium",
+        "wall_thickness": "thin",
+        "hollow": "no",
+        "style": "industrial",
+        "complexity": "moderate",
+        "symmetry": "bilateral",
+        "printability": "easy",
+        "orientation": "any",
+        "support_needed": "none",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "pla",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 8,
+      "output_tokens": 75
+    }
+  },
+  {
+    "timestamp": "2025-04-12T21:15:21.157334",
+    "input": {
+      "description": "rim of a car",
+      "code": ""
+    },
+    "output": {
+      "object_type": "rim of a car",
+      "features": [],
+      "geometric_properties": [],
+      "materials": [],
+      "technical_requirements": [],
+      "complexity": "SIMPLE",
+      "style": "Modern",
+      "use_case": [],
+      "categories": [
+        "furniture",
+        "geometric",
+        "mechanical"
+      ],
+      "properties": {
+        "size": "small",
+        "wall_thickness": "medium",
+        "hollow": "no",
+        "style": "modern",
+        "complexity": "simple",
+        "symmetry": "bilateral",
+        "printability": "moderate",
+        "orientation": "flat",
+        "support_needed": "minimal",
+        "infill_requirement": "low",
+        "assembly": "single_piece",
+        "stability": "self_standing",
+        "adjustability": "fixed",
+        "material_compatibility": "any",
+        "surface_finish": "smooth",
+        "post_processing": "none",
+        "durability": "light_duty",
+        "water_resistance": "none",
+        "heat_resistance": "low",
+        "customization": "fixed",
+        "purpose": "practical"
+      }
+    },
+    "tokens": {
+      "input_tokens": 4,
+      "output_tokens": 56
+    }
   }
 ]

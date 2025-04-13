@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 import logging
 import json
 from pathlib import Path
-
 # Import our new caching manager
 from llm_cache import LLMCacheManager
 
@@ -27,8 +26,10 @@ load_dotenv()
 # Model Definitions
 class ModelDefinitions:
     """Centralized model definitions"""
-    ANTHROPIC = "claude-3-7-sonnet-20250219"
-    OPENAI = "o3-mini"
+    #ANTHROPIC = "claude-3-7-sonnet-20250219"
+    ANTHROPIC = "deepseek-v3-0324"
+
+    OPENAI = "gpt-4.5-preview"
     GEMMA = "gemma3:4b-it-q8_0"
     DEEPSEEK = "deepseek-r1:7b"
     

@@ -1,0 +1,9 @@
+================================================================================
+ERROR IN LLM RESPONSE:
+================================================================================
+
+Error getting LLM response: LLM returned empty response
+Time elapsed: 1.0 seconds
+Chunks received: 0
+Content received so far:
+

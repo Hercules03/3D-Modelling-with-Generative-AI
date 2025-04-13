@@ -1,0 +1,248 @@
+// Car Rim - Parametric Design
+// A customizable car wheel rim with modern styling
+
+// Main Parameters
+rim_diameter = 450;        // Overall rim diameter in mm
+rim_width = 200;           // Width of the rim in mm
+hub_diameter = 150;        // Center hub diameter in mm
+bolt_circle_diameter = 120; // Diameter of bolt circle
+num_bolts = 5;             // Number of bolt holes
+bolt_hole_diameter = 14;   // Diameter of bolt holes
+spoke_count = 5;           // Number of spokes
+spoke_width = 25;          // Width of each spoke
+spoke_style = "Y";         // "Y", "V", "Straight", or "Curved"
+lip_height = 25;           // Height of outer rim lip
+valve_hole_diameter = 10;  // Diameter of valve stem hole
+center_bore = 72.6;        // Center bore diameter
+
+// Detail Parameters
+detail_level = 100;        // Detail level for circles
+spoke_taper = 0.7;         // Taper factor for spokes (0-1)
+add_weight_reduction = true; // Add weight reduction holes
+weight_reduction_size = 30; // Size of weight reduction holes
+add_decorative_elements = true; // Add decorative elements
+
+// Derived parameters
+rim_radius = rim_diameter / 2;
+hub_radius = hub_diameter / 2;
+bolt_circle_radius = bolt_circle_diameter / 2;
+
+// Rim profile module - creates the outer structure of the rim
+module rim_profile() {
+    difference() {
+        // Outer rim
+        cylinder(h=rim_width, d=rim_diameter, $fn=detail_level, center=true);
+        
+        // Inner cutout
+        translate([0, 0, -1])
+            cylinder(h=rim_width+2, d=rim_diameter-lip_height*2, $fn=detail_level, center=true);
+    }
+    
+    // Add rim flanges for tire mounting
+    translate([0, 0, rim_width/2 - lip_height/2])
+    difference() {
+        cylinder(h=lip_height, d=rim_diameter, $fn=detail_level, center=true);
+        translate([0, 0, 0])
+            cylinder(h=lip_height+1, d=rim_diameter-10, $fn=detail_level, center=true);
+    }
+    
+    translate([0, 0, -rim_width/2 + lip_height/2])
+    difference() {
+        cylinder(h=lip_height, d=rim_diameter, $fn=detail_level, center=true);
+        translate([0, 0, 0])
+            cylinder(h=lip_height+1, d=rim_diameter-10, $fn=detail_level, center=true);
+    }
+}
+
+// Hub module - creates the center hub with bolt holes
+module hub() {
+    difference() {
+        union() {
+            // Main hub
+            cylinder(h=rim_width, d=hub_diameter, $fn=detail_level, center=true);
+            
+            // Hub flange
+            translate([0, 0, rim_width/2-10])
+                cylinder(h=10, d=hub_diameter+20, $fn=detail_level, center=false);
+            translate([0, 0, -rim_width/2])
+                cylinder(h=10, d=hub_diameter+20, $fn=detail_level, center=false);
+        }
+        
+        // Center bore
+        cylinder(h=rim_width+2, d=center_bore, $fn=detail_level, center=true);
+        
+        // Bolt holes
+        for(i = [0:num_bolts-1]) {
+            rotate([0, 0, i * (360/num_bolts)])
+                translate([bolt_circle_radius, 0, 0])
+                    cylinder(h=rim_width+2, d=bolt_hole_diameter, $fn=detail_level, center=true);
+        }
+    }
+}
+
+// Single spoke module - different styles available
+module spoke() {
+    if (spoke_style == "Y") {
+        // Y-shaped spoke
+        hull() {
+            // Inner end (hub connection)
+            translate([hub_radius, 0, 0])
+                scale([0.5, spoke_width, rim_width-40])
+                    sphere(d=1, $fn=detail_level);
+            
+            // Mid-point split
+            translate([hub_radius + (rim_radius-hub_radius-lip_height) * 0.4, 0, 0])
+                scale([0.5, spoke_width * 0.8, rim_width-35])
+                    sphere(d=1, $fn=detail_level);
+        }
+        
+        // First branch
+        hull() {
+            translate([hub_radius + (rim_radius-hub_radius-lip_height) * 0.4, 0, 0])
+                scale([0.5, spoke_width * 0.8, rim_width-35])
+                    sphere(d=1, $fn=detail_level);
+                    
+            translate([rim_radius-lip_height, spoke_width, 0])
+                scale([0.5, spoke_width * spoke_taper * 0.6, rim_width-45])
+                    sphere(d=1, $fn=detail_level);
+        }
+        
+        // Second branch
+        hull() {
+            translate([hub_radius + (rim_radius-hub_radius-lip_height) * 0.4, 0, 0])
+                scale([0.5, spoke_width * 0.8, rim_width-35])
+                    sphere(d=1, $fn=detail_level);
+                    
+            translate([rim_radius-lip_height, -spoke_width, 0])
+                scale([0.5, spoke_width * spoke_taper * 0.6, rim_width-45])
+                    sphere(d=1, $fn=detail_level);
+        }
+    }
+    else if (spoke_style == "V") {
+        // V-shaped spoke
+        hull() {
+            // Inner end (hub connection)
+            translate([hub_radius, 0, 0])
+                scale([0.5, spoke_width, rim_width-40])
+                    sphere(d=1, $fn=detail_level);
+                    
+            translate([rim_radius-lip_height, spoke_width, 0])
+                scale([0.5, spoke_width * spoke_taper * 0.6, rim_width-45])
+                    sphere(d=1, $fn=detail_level);
+        }
+        
+        hull() {
+            // Inner end (hub connection)
+            translate([hub_radius, 0, 0])
+                scale([0.5, spoke_width, rim_width-40])
+                    sphere(d=1, $fn=detail_level);
+                    
+            translate([rim_radius-lip_height, -spoke_width, 0])
+                scale([0.5, spoke_width * spoke_taper * 0.6, rim_width-45])
+                    sphere(d=1, $fn=detail_level);
+        }
+    }
+    else if (spoke_style == "Curved") {
+        // Curved spoke
+        spoke_length = (rim_radius - hub_radius - lip_height);
+        for (i = [0:4]) {
+            pos = i / 4;
+            curve_factor = sin(pos * 180) * 0.6 * spoke_width;
+            width_factor = 1 - (pos * (1 - spoke_taper));
+            
+            translate([hub_radius + pos * spoke_length, 
+                      curve_factor, 
+                      0])
+                scale([spoke_length/10, spoke_width * width_factor, rim_width-(40-pos*10)])
+                    sphere(d=1, $fn=detail_level);
+        }
+    }
+    else {
+        // Default: Straight spoke
+        hull() {
+            // Inner end (hub connection)
+            translate([hub_radius, 0, 0])
+                scale([0.5, spoke_width, rim_width-40])
+                    sphere(d=1, $fn=detail_level);
+            
+            // Outer end (rim connection)
+            translate([rim_radius-lip_height, 0, 0])
+                scale([0.5, spoke_width * spoke_taper, rim_width-45])
+                    sphere(d=1, $fn=detail_level);
+        }
+    }
+}
+
+// Weight reduction holes module
+module weight_reduction() {
+    if (add_weight_reduction) {
+        mid_radius = (rim_radius + hub_radius) / 2;
+        hole_count = spoke_count;
+        for(i = [0:hole_count-1]) {
+            rotate([0, 0, i * (360/hole_count) + (360/spoke_count/2)])
+                translate([mid_radius, 0, 0])
+                    rotate([90, 0, 0])
+                        cylinder(h=rim_width*2, d=weight_reduction_size, $fn=detail_level, center=true);
+        }
+    }
+}
+
+// Valve stem hole
+module valve_hole() {
+    rotate([0, 0, 360/spoke_count/2])
+        translate([rim_radius - lip_height/2, 0, 0])
+            rotate([90, 0, 0])
+                cylinder(h=rim_width*2, d=valve_hole_diameter, $fn=detail_level, center=true);
+}
+
+// Decorative elements module
+module decorative_elements() {
+    if (add_decorative_elements) {
+        // Add decorative grooves on the rim face
+        for(i = [0:spoke_count*2-1]) {
+            rotate([0, 0, i * (360/(spoke_count*2))])
+            translate([rim_radius - lip_height - 10, 0, rim_width/2 - 5])
+            rotate([0, 0, 0])
+                scale([10, 2, 1])
+                    cylinder(h=10, d=2, $fn=detail_level, center=true);
+        }
+        
+        // Add decorative ring around the hub
+        translate([0, 0, 0])
+            difference() {
+                cylinder(h=5, d=hub_diameter + 15, $fn=detail_level, center=true);
+                cylinder(h=6, d=hub_diameter + 5, $fn=detail_level, center=true);
+            }
+    }
+}
+
+// Complete rim assembly
+module car_rim() {
+    difference() {
+        union() {
+            // Base rim
+            rim_profile();
+            
+            // Hub
+            hub();
+            
+            // Spokes
+            for(i = [0:spoke_count-1]) {
+                rotate([0, 0, i * (360/spoke_count)])
+                    spoke();
+            }
+            
+            // Add decorative elements
+            decorative_elements();
+        }
+        
+        // Subtract weight reduction holes
+        weight_reduction();
+        
+        // Add valve stem hole
+        valve_hole();
+    }
+}
+
+// Render the rim
+car_rim();

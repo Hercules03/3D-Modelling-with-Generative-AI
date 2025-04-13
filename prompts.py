@@ -190,14 +190,21 @@ Please generate OpenSCAD code that satisfies the user's request. Follow these gu
 7. Use techniques from relevant examples when applicable
 8. Consider the suggested template structure if it's appropriate for this design
 
-CRITICAL INSTRUCTIONS:
-- Your response must ONLY contain the OpenSCAD code and NOTHING else
-- Do NOT include any explanations, questions, or other text outside the code block
-- Do NOT ask for clarification - implement the best solution based on the information provided
-- ALWAYS enclose your code in triple backtick code blocks with the scad tag, like this:
+CRITICAL FORMATTING INSTRUCTIONS:
+- I MUST ONLY see OpenSCAD code in your response
+- DO NOT include ANY explanations, comments, notes or ANY text outside the code block
+- DO NOT ask questions
+- DO NOT apologize
+- DO NOT explain your reasoning
+- DO NOT say "here is the code" or anything similar
+- ONLY provide the OpenSCAD code within code blocks as shown below
+- Your entire response should ONLY be a single code block containing OpenSCAD code
+
+YOUR ENTIRE RESPONSE MUST BE IN THIS EXACT FORMAT, with nothing before or after:
 
 ```scad
-// Your code here
+// Your OpenSCAD code here
+// Include parameters, modules, and the final object
 ```
 
 OpenSCAD code:"""

@@ -1,0 +1,103 @@
+// Sport Car Rim with 5 Spokes
+// Parametric design for easy customization
+
+// Main Parameters
+rim_diameter = 480;        // Overall rim diameter in mm
+rim_width = 220;           // Rim width in mm
+hub_diameter = 160;        // Center hub diameter in mm
+bolt_circle_diameter = 120; // Diameter of bolt circle in mm
+num_bolts = 5;             // Number of bolt holes
+bolt_hole_diameter = 14;   // Diameter of bolt holes in mm
+spoke_count = 5;           // Number of spokes (as per user request)
+spoke_width = 25;          // Width of each spoke in mm
+spoke_thickness = 10;      // Thickness of spokes in mm
+lip_height = 25;           // Height of outer rim lip in mm
+valve_hole_diameter = 10;  // Diameter of valve stem hole in mm
+center_bore = 72.6;        // Center bore diameter in mm
+detail_level = 100;        // Detail level for circles
+
+// Module for the outer rim profile
+module rim_profile() {
+    difference() {
+        // Outer rim cylinder
+        cylinder(h=rim_width, d=rim_diameter, $fn=detail_level, center=true);
+        
+        // Inner cutout to create the lip
+        translate([0, 0, -1])
+            cylinder(h=rim_width+2, d=rim_diameter-lip_height*2, $fn=detail_level, center=true);
+    }
+}
+
+// Module for the central hub
+module hub() {
+    difference() {
+        union() {
+            // Main hub body
+            cylinder(h=rim_width, d=hub_diameter, $fn=detail_level, center=true);
+            
+            // Hub flanges for added detail
+            translate([0, 0, rim_width/2-10])
+                cylinder(h=10, d=hub_diameter+20, $fn=detail_level, center=false);
+            translate([0, 0, -rim_width/2])
+                cylinder(h=10, d=hub_diameter+20, $fn=detail_level, center=false);
+        }
+        
+        // Center bore cutout
+        cylinder(h=rim_width+2, d=center_bore, $fn=detail_level, center=true);
+        
+        // Bolt holes arranged in a circle
+        for(i = [0:num_bolts-1]) {
+            rotate([0, 0, i * (360/num_bolts)])
+                translate([bolt_circle_diameter/2, 0, 0])
+                    cylinder(h=rim_width+2, d=bolt_hole_diameter, $fn=detail_level, center=true);
+        }
+    }
+}
+
+// Module for a single spoke
+module spoke() {
+    hull() {
+        // Inner end connecting to hub
+        translate([hub_diameter/2, 0, 0])
+            scale([0.5, spoke_width, rim_width-20])
+                sphere(d=1, $fn=detail_level);
+        
+        // Outer end connecting to rim
+        translate([rim_diameter/2-lip_height, 0, 0])
+            scale([0.5, spoke_width * 0.7, rim_width-40])
+                sphere(d=1, $fn=detail_level);
+    }
+}
+
+// Module for valve stem hole
+module valve_hole() {
+    rotate([0, 0, 360/spoke_count/2])
+        translate([rim_diameter/2 - lip_height/2, 0, 0])
+            rotate([90, 0, 0])
+                cylinder(h=rim_width*2, d=valve_hole_diameter, $fn=detail_level, center=true);
+}
+
+// Main assembly module for the car rim
+module car_rim() {
+    difference() {
+        union() {
+            // Outer rim
+            rim_profile();
+            
+            // Central hub
+            hub();
+            
+            // Spokes (5 as requested)
+            for(i = [0:spoke_count-1]) {
+                rotate([0, 0, i * (360/spoke_count)])
+                    spoke();
+            }
+        }
+        
+        // Subtract valve stem hole
+        valve_hole();
+    }
+}
+
+// Render the final car rim
+car_rim();
